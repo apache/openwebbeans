@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -45,6 +46,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.NotificationOptions;
@@ -61,7 +63,17 @@ import javax.enterprise.inject.spi.EventContext;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.inject.spi.ProcessBeanAttributes;
+import javax.enterprise.inject.spi.ProcessInjectionPoint;
+import javax.enterprise.inject.spi.ProcessInjectionTarget;
+import javax.enterprise.inject.spi.ProcessManagedBean;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducer;
+import javax.enterprise.inject.spi.ProcessProducerField;
+import javax.enterprise.inject.spi.ProcessProducerMethod;
+import javax.enterprise.inject.spi.ProcessSyntheticBean;
+import javax.enterprise.inject.spi.ProcessSyntheticObserverMethod;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.OWBLogConst;
@@ -81,6 +93,9 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toMap;
 
 public final class NotificationManager
 {
@@ -112,10 +127,38 @@ public final class NotificationManager
                 }
             };
 
+    // idea is to be able to skip O(n) events in favor of an algorithm closer to O(1) impl
+    // statistically, it is not rare to not use all these events so we enable to skip most of them
+    private Map<Type, Set<ObserverMethod<?>>> processAnnotatedTypeObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processBeanAttributesObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processInjectionTargetObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processManagedBeanObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processBeanObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processInjectionPointObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processObserverMethodObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processProducerObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processProducerFieldObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processProducerMethodObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processSyntheticBeanObservers;
+    private Map<Type, Set<ObserverMethod<?>>> processSyntheticObserverMethodObservers;
+
     public NotificationManager(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
         this.defaultNotificationOptions = NotificationOptions.ofExecutor(getDefaultExecutor());
+    }
+
+    public void afterStart()
+    {
+        Stream.of(
+                processAnnotatedTypeObservers, processBeanAttributesObservers,
+                processInjectionTargetObservers, processManagedBeanObservers,
+                processBeanObservers, processInjectionPointObservers,
+                processObserverMethodObservers, processProducerObservers,
+                processProducerFieldObservers, processProducerMethodObservers,
+                processSyntheticBeanObservers, processSyntheticObserverMethodObservers)
+                .filter(Objects::nonNull)
+                .forEach(Map::clear);
     }
 
     private Executor getDefaultExecutor()
@@ -189,6 +232,177 @@ public final class NotificationManager
 
     public <T> Collection<ObserverMethod<? super T>> resolveObservers(T event, EventMetadataImpl metadata, boolean isLifecycleEvent)
     {
+        if (isLifecycleEvent) // goal here is to skip any resolution if not needed
+        {
+            if (event instanceof ProcessAnnotatedType)
+            {
+                if (processAnnotatedTypeObservers == null)
+                {
+                    processAnnotatedTypeObservers = findObservers(ProcessAnnotatedType.class);
+                }
+                if (processAnnotatedTypeObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessManagedBean)
+            {
+                if (processManagedBeanObservers == null)
+                {
+                    processManagedBeanObservers = findObservers(ProcessManagedBean.class);
+                    if (processBeanObservers == null)
+                    {
+                        processBeanObservers = findObservers(ProcessBean.class);
+                    }
+                    processBeanObservers.forEach((k, v) -> processManagedBeanObservers
+                            .computeIfAbsent(k, it -> new HashSet<>())
+                            .addAll(v));
+                }
+                if (processManagedBeanObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessProducerField)
+            {
+                if (processProducerFieldObservers == null)
+                {
+                    processProducerFieldObservers = findObservers(ProcessProducerField.class);
+                    if (processBeanObservers == null)
+                    {
+                        processBeanObservers = findObservers(ProcessBean.class);
+                    }
+                        processBeanObservers.forEach((k, v) -> processProducerFieldObservers
+                                .computeIfAbsent(k, it -> new HashSet<>())
+                                .addAll(v));
+                    }
+                    if (processProducerFieldObservers.isEmpty())
+                    {
+                        return emptyList();
+                    }
+            }
+            else if (event instanceof ProcessProducerMethod)
+            {
+                if (processProducerMethodObservers == null)
+                {
+                    processProducerMethodObservers = findObservers(ProcessProducerMethod.class);
+                    if (processBeanObservers == null)
+                    {
+                        processBeanObservers = findObservers(ProcessBean.class);
+                    }
+                    processBeanObservers.forEach((k, v) -> processProducerMethodObservers
+                            .computeIfAbsent(k, it -> new HashSet<>())
+                            .addAll(v));
+                }
+                if (processProducerMethodObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessSyntheticBean)
+            {
+                if (processSyntheticBeanObservers == null)
+                {
+                    processSyntheticBeanObservers = findObservers(ProcessSyntheticBean.class);
+                    if (processBeanObservers == null)
+                    {
+                        processBeanObservers = findObservers(ProcessBean.class);
+                    }
+                    processBeanObservers.forEach((k, v) -> processSyntheticBeanObservers
+                            .computeIfAbsent(k, it -> new HashSet<>())
+                            .addAll(v));
+                }
+                if (processSyntheticBeanObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessSyntheticObserverMethod)
+            {
+                if (processSyntheticObserverMethodObservers == null)
+                {
+                    processSyntheticObserverMethodObservers = findObservers(ProcessSyntheticObserverMethod.class);
+                    if (processObserverMethodObservers == null)
+                    {
+                        processObserverMethodObservers = findObservers(ProcessObserverMethod.class);
+                    }
+                    processObserverMethodObservers.forEach((k, v) -> processSyntheticObserverMethodObservers
+                            .computeIfAbsent(k, it -> new HashSet<>())
+                            .addAll(v));
+                }
+                if (processSyntheticObserverMethodObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessBean)
+            {
+                if (processBeanObservers == null)
+                {
+                    processBeanObservers = findObservers(ProcessBean.class);
+                }
+                if (processBeanObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessBeanAttributes)
+            {
+                if (processBeanAttributesObservers == null)
+                {
+                    processBeanAttributesObservers = findObservers(ProcessBeanAttributes.class);
+                }
+                if (processBeanAttributesObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessInjectionTarget)
+            {
+                if (processInjectionTargetObservers == null)
+                {
+                    processInjectionTargetObservers = findObservers(ProcessInjectionTarget.class);
+                }
+                if (processInjectionTargetObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessInjectionPoint)
+            {
+                if (processInjectionPointObservers == null)
+                {
+                    processInjectionPointObservers = findObservers(ProcessInjectionPoint.class);
+                }
+                if (processInjectionPointObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessObserverMethod)
+            {
+                if (processObserverMethodObservers == null)
+                {
+                    processObserverMethodObservers = findObservers(ProcessObserverMethod.class);
+                }
+                if (processObserverMethodObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            else if (event instanceof ProcessProducer)
+            {
+                if (processProducerObservers == null)
+                {
+                    processProducerObservers = findObservers(ProcessProducer.class);
+                }
+                if (processProducerObservers.isEmpty())
+                {
+                    return emptyList();
+                }
+            }
+            // note: don't forget to update filterByExtensionEventType method too
+        }
         Type eventType = metadata.validatedType();
         Collection<ObserverMethod<? super T>> observersMethods = filterByQualifiers(
                 filterByType(event, eventType, isLifecycleEvent), metadata.getQualifiers());
@@ -197,8 +411,7 @@ public final class NotificationManager
         {
             observersMethods = filterByWithAnnotations(observersMethods, ((ProcessAnnotatedType) event).getAnnotatedType());
         }
-
-        if (!isLifecycleEvent && observersMethods.isEmpty())
+        else if (!isLifecycleEvent && observersMethods.isEmpty())
         {
             //this check for the TCK is only needed if no observer was found
             EventUtil.checkEventBindings(webBeansContext, metadata.getQualifiers());
@@ -367,7 +580,61 @@ public final class NotificationManager
     {
         Class<?> eventClass = ClassUtil.getClazz(eventType);
         Set<ObserverMethod<? super T>> matching = new HashSet<>();
-        Set<Type> keySet = observers.keySet();
+        final Map<Type, Set<ObserverMethod<?>>> sourceMap;
+        if (event instanceof ProcessAnnotatedType) // check resolveObservers
+        {
+            sourceMap = processAnnotatedTypeObservers;
+        }
+        else if (event instanceof ProcessSyntheticObserverMethod)
+        {
+            sourceMap = processSyntheticObserverMethodObservers;
+        }
+        else if (event instanceof ProcessObserverMethod)
+        {
+            sourceMap = processObserverMethodObservers;
+        }
+        else if (event instanceof ProcessProducerField)
+        {
+            sourceMap = processProducerFieldObservers;
+        }
+        else if (event instanceof ProcessProducerMethod)
+        {
+            sourceMap = processProducerMethodObservers;
+        }
+        else if (event instanceof ProcessSyntheticBean)
+        {
+            sourceMap = processSyntheticBeanObservers;
+        }
+        else if (event instanceof ProcessProducer)
+        {
+            sourceMap = processProducerObservers;
+        }
+        else if (event instanceof ProcessManagedBean)
+        {
+            sourceMap = processManagedBeanObservers;
+        }
+        else if (event instanceof ProcessBean)
+        {
+            sourceMap = processBeanObservers;
+        }
+        else if (event instanceof ProcessBeanAttributes)
+        {
+            sourceMap = processBeanAttributesObservers;
+        }
+        else if (event instanceof ProcessInjectionTarget)
+        {
+            sourceMap = processInjectionTargetObservers;
+        }
+        else if (event instanceof ProcessInjectionPoint)
+        {
+            sourceMap = processInjectionPointObservers;
+        }
+        else
+        {
+            sourceMap = observers;
+        }
+
+        Set<Type> keySet = sourceMap.keySet();
         for (Type type : keySet)
         {
             Class<?> beanClass;
@@ -911,6 +1178,17 @@ public final class NotificationManager
         }
         Class<?> paramType = AnnotatedMethod.class.cast(method).getJavaMember().getParameterTypes()[0];
         return webBeansContext.getWebBeansUtil().isContainerEventType(paramType);
+    }
+
+    // for lifecycle parameterized events for now
+    private Map<Type, Set<ObserverMethod<?>>> findObservers(final Class<?> type)
+    {
+        return observers.entrySet().stream()
+                .filter(it -> {
+                    final Class<?> keyType = ClassUtil.getClass(it.getKey());
+                    return type.isAssignableFrom(keyType);
+                })
+                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     // this behaves as a future aggregator, we don't strictly need to represent it but found it more expressive

@@ -79,7 +79,6 @@ public class PortableEventTest extends AbstractUnitTest
     }
     
     @Test
-
     public void testRawTypeExtension()
     {
         Collection<String> beanXmls = new ArrayList<String>();
