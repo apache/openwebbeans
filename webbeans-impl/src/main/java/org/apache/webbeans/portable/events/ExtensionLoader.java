@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
@@ -58,9 +57,6 @@ import org.apache.xbean.finder.archive.FileArchive;
  */
 public class ExtensionLoader
 {
-    /**Logger instance*/
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(ExtensionLoader.class);
-
     /**Map of extensions*/
     private final  Map<Class<?>, Object> extensions = new ConcurrentHashMap<>();
     private final Set<Class<? extends Extension>> extensionClasses = new HashSet<>();
@@ -102,8 +98,10 @@ public class ExtensionLoader
         Set<String> ignoredExtensions = webBeansContext.getOpenWebBeansConfiguration().getIgnoredExtensions();
         if (!ignoredExtensions.isEmpty())
         {
-            logger.info("Ignoring the following CDI Extensions. See " + OpenWebBeansConfiguration.IGNORED_EXTENSIONS +
-                " " + ignoredExtensions.toString());
+            WebBeansLoggerFacade.getLogger(ExtensionLoader.class)
+                    .info("Ignoring the following CDI Extensions. " +
+                            "See " + OpenWebBeansConfiguration.IGNORED_EXTENSIONS +
+                            " " + ignoredExtensions.toString());
         }
 
         List<Extension> loader = webBeansContext.getLoaderService().load(Extension.class, classLoader);
@@ -111,7 +109,8 @@ public class ExtensionLoader
         {
             if (ignoredExtensions.contains(extension.getClass().getName()))
             {
-                logger.info("Skipping CDI Extension due to exclusion: " + extension.getClass().getName());
+                WebBeansLoggerFacade.getLogger(ExtensionLoader.class)
+                        .info("Skipping CDI Extension due to exclusion: " + extension.getClass().getName());
                 continue;
             }
 
@@ -177,7 +176,7 @@ public class ExtensionLoader
         }
         catch (final IOException ioe)
         {
-            logger.warning(ioe.getMessage());
+            WebBeansLoggerFacade.getLogger(ExtensionLoader.class).warning(ioe.getMessage());
         }
         return null;
     }

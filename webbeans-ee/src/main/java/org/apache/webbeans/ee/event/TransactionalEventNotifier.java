@@ -34,13 +34,10 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.TransactionService;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @SuppressWarnings("unchecked")
 public final class TransactionalEventNotifier
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(TransactionalEventNotifier.class);
-
     private TransactionalEventNotifier()
     {
         // utility class ct
@@ -162,7 +159,8 @@ public final class TransactionalEventNotifier
             }
             catch (Exception e)
             {
-                logger.log(Level.SEVERE, OWBLogConst.ERROR_0003, e);
+                WebBeansLoggerFacade.getLogger(TransactionalEventNotifier.class)
+                        .log(Level.SEVERE, OWBLogConst.ERROR_0003, e);
             }
         }
     }

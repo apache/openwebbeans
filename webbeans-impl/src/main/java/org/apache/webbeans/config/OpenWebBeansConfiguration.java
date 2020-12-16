@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -51,10 +50,6 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
  */
 public class OpenWebBeansConfiguration
 {
-    /**Logger instance*/
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(OpenWebBeansConfiguration.class);
-
-
     /**Timeout interval in ms*/
     public static final String CONVERSATION_TIMEOUT_INTERVAL = "org.apache.webbeans.conversation.Conversation.timeoutInterval";
 
@@ -316,8 +311,6 @@ public class OpenWebBeansConfiguration
 
     private void overrideWithGlobalSettings(Properties configProperties)
     {
-        logger.fine("Overriding properties from System and Env properties");
-
         Properties systemProperties;
         if(System.getSecurityManager() != null)
         {
@@ -508,7 +501,8 @@ public class OpenWebBeansConfiguration
         }
         catch (IOException e)
         {
-            logger.log(Level.SEVERE, "Error while loading the propertyFile " + DEFAULT_CONFIG_PROPERTIES_NAME, e);
+            WebBeansLoggerFacade.getLogger(OpenWebBeansConfiguration.class)
+                    .log(Level.SEVERE, "Error while loading the propertyFile " + DEFAULT_CONFIG_PROPERTIES_NAME, e);
             return Collections.EMPTY_SET;
         }
 

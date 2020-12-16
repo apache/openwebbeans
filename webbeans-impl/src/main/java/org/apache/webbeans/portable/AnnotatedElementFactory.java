@@ -50,9 +50,6 @@ public final class AnnotatedElementFactory
 
     public static final String OWB_DEFAULT_KEY = "OWB_DEFAULT_KEY";
 
-    // Logger instance
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
-
     /**
      * Cache of the initial AnnotatedTypes
      */
@@ -192,6 +189,7 @@ public final class AnnotatedElementFactory
             {
                 if (e instanceof ClassNotFoundException || e instanceof ArrayStoreException)
                 {
+                    final Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
                     if (logger.isLoggable(Level.SEVERE))
                     {
                         logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0027, annotatedClass.getName(), e.getCause()), e);
@@ -206,6 +204,7 @@ public final class AnnotatedElementFactory
             } 
             catch (NoClassDefFoundError ncdfe)
             {
+                final Logger logger = WebBeansLoggerFacade.getLogger(AnnotatedElementFactory.class);
                 if (logger.isLoggable(Level.SEVERE))
                 {
                     logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0027, annotatedClass.getName(), ncdfe.getCause()), ncdfe);

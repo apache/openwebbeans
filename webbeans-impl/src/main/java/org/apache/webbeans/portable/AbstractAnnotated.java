@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Annotated;
 
@@ -48,8 +47,6 @@ import static java.util.stream.Collectors.toList;
  */
 public abstract class AbstractAnnotated implements Annotated
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractAnnotated.class);
-
     /**Base type of an annotated element*/
     private final Type baseType;
     
@@ -121,8 +118,9 @@ public abstract class AbstractAnnotated implements Annotated
                 }
                 catch (IllegalAccessException | InvocationTargetException e)
                 {
-                    logger.log(Level.FINER, "Problem while handling repeatable Annotations "
-                        + annotation.annotationType());
+                    WebBeansLoggerFacade.getLogger(AbstractAnnotated.class)
+                            .log(Level.FINER, "Problem while handling repeatable Annotations "
+                                    + annotation.annotationType());
                 }
             }
         }

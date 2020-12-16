@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -80,8 +79,6 @@ import org.apache.webbeans.xml.DefaultBeanArchiveService;
  */
 public class WebBeansContext
 {
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(WebBeansContext.class);
-
     private final Map<Class<?>, Object> managerMap = new HashMap<>();
 
     private final Map<Class<?>, Object> serviceMap = new HashMap<>();
@@ -635,7 +632,8 @@ public class WebBeansContext
                 }
                 catch (IOException e)
                 {
-                    logger.log(Level.SEVERE, "Error while destroying SPI service " + spiService.getClass().getName(), e);
+                    WebBeansLoggerFacade.getLogger(WebBeansContext.class)
+                            .log(Level.SEVERE, "Error while destroying SPI service " + spiService.getClass().getName(), e);
                 }
             }
             else if (ExecutorService.class.isInstance(spiService))
@@ -648,7 +646,7 @@ public class WebBeansContext
                     }
                     catch (RuntimeException re)
                     {
-                        logger.warning(re.getMessage());
+                        WebBeansLoggerFacade.getLogger(WebBeansContext.class).warning(re.getMessage());
                     }
                 });
             }

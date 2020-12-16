@@ -24,7 +24,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.TransientReference;
@@ -48,9 +47,6 @@ import org.apache.webbeans.util.SecurityUtil;
 
 public class DeploymentValidationService
 {
-    /**Logger instance*/
-    private static final Logger logger = WebBeansLoggerFacade.getLogger(DeploymentValidationService.class);
-
     private WebBeansContext webBeansContext;
 
     /**
@@ -110,9 +106,12 @@ public class DeploymentValidationService
                         {
                             if (allowProxyingClasses.contains(beanClass.getName()))
                             {
-                                logger.info(beanClass.getName() + " has final method " + finalMethodName + ". CDI doesn't allow to proxy that." +
-                                    " Continuing because the class is explicitly configured to be treated as proxyable." +
-                                    " Final methods shall not get invoked on this proxy!");
+                                WebBeansLoggerFacade.getLogger(DeploymentValidationService.class)
+                                        .info(beanClass.getName() + " has final method " +
+                                                finalMethodName + ". CDI doesn't allow to proxy that." +
+                                                " Continuing because the class is explicitly configured " +
+                                                "to be treated as proxyable." +
+                                                " Final methods shall not get invoked on this proxy!");
                             }
                             else
                             {
