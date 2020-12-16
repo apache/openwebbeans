@@ -70,9 +70,18 @@ public class OWBInitializer extends SeContainerInitializer
         thread.setContextClassLoader(loader);
         try
         {
-            services.putIfAbsent(ScannerService.class.getName(), getScannerService());
-            services.putIfAbsent(LoaderService.class.getName(), new CDISeLoaderService(extensions, loader));
-            services.putIfAbsent(BeanArchiveService.class.getName(), new CDISeBeanArchiveService(bai));
+            if (!properties.containsKey(ScannerService.class.getName()))
+            {
+                services.putIfAbsent(ScannerService.class.getName(), getScannerService());
+            }
+            if (!properties.containsKey(LoaderService.class.getName()))
+            {
+                services.putIfAbsent(LoaderService.class.getName(), new CDISeLoaderService(extensions, loader));
+            }
+            if (!properties.containsKey(BeanArchiveService.class.getName()))
+            {
+                services.putIfAbsent(BeanArchiveService.class.getName(), new CDISeBeanArchiveService(bai));
+            }
             addCustomServices(services);
             Map<Class<?>, Object> preparedServices = services.entrySet().stream()
                     .collect(toMap(e ->
@@ -233,8 +242,7 @@ public class OWBInitializer extends SeContainerInitializer
                 selectAlternativeStereotypes(list(value, this::loadClass).toArray(Class[]::new));
                 break;
             case "openwebbeans.extensions":
-                addExtensions((Class<? extends Extension>[]) list(value, this::loadClass)
-                        .toArray(Class[]::new));
+                addExtensions(list(value, this::loadClass).toArray(Class[]::new));
                 break;
             case "openwebbeans.packages":
                 addPackages(list(value, this::loadPackage).toArray(Package[]::new));
