@@ -1629,7 +1629,8 @@ public final class WebBeansUtil
             ProcessProducerField.class,
             ProcessProducerMethod.class,
             ProcessSessionBean.class,
-            ProcessSyntheticAnnotatedType.class
+            ProcessSyntheticAnnotatedType.class,
+            ProcessSyntheticObserverMethod.class
         };
     
     private static final Set<Class> CONTAINER_EVENT_CLASSES_SET = new HashSet<>(Arrays.asList(CONTAINER_EVENT_CLASSES));
