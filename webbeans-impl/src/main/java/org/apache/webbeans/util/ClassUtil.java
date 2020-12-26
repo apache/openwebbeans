@@ -89,12 +89,16 @@ public final class ClassUtil
 
     public static Class<?> getClassFromName(String name)
     {
+        return getClassFromName(name, WebBeansUtil.getCurrentClassLoader(), true);
+    }
+
+    public static Class<?> getClassFromName(String name, ClassLoader providedLoader, boolean init)
+    {
         Class<?> clazz;
-        ClassLoader loader;
+        ClassLoader loader = providedLoader;
         try
         {
-            loader = WebBeansUtil.getCurrentClassLoader();
-            clazz = Class.forName(name, true , loader);
+            clazz = Class.forName(name, init , loader);
             return clazz;
 
         }

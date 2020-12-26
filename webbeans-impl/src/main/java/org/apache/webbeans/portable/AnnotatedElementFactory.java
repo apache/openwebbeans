@@ -394,6 +394,6 @@ public final class AnnotatedElementFactory
                 annotatedTypes = oldAnnotatedTypes;
             }
         }
-        return (ConcurrentMap<String, AnnotatedType<T>>)(ConcurrentMap<?, ?>)annotatedTypes;
+        return ConcurrentMap.class.cast(annotatedTypes);
     }
 }

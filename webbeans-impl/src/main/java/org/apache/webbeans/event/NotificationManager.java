@@ -82,6 +82,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.portable.events.ProcessAnnotatedTypeImpl;
 import org.apache.webbeans.portable.events.generics.GProcessObserverMethod;
 import org.apache.webbeans.portable.events.generics.GenericBeanEvent;
 import org.apache.webbeans.portable.events.generics.GenericProducerObserverEvent;
@@ -95,6 +96,7 @@ import org.apache.webbeans.util.GenericsUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import static java.util.Collections.emptyList;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toMap;
 
 public final class NotificationManager
@@ -229,179 +231,21 @@ public final class NotificationManager
         set.add(observer);
     }
 
+    public boolean hasProcessAnnotatedTypeObservers()
+    {
+        cacheIfNeeded(new ProcessAnnotatedTypeImpl<>(null, null));
+        return !processAnnotatedTypeObservers.isEmpty();
+    }
 
     public <T> Collection<ObserverMethod<? super T>> resolveObservers(T event, EventMetadataImpl metadata, boolean isLifecycleEvent)
     {
         if (isLifecycleEvent) // goal here is to skip any resolution if not needed
         {
-            if (event instanceof ProcessAnnotatedType)
+            Collection<ObserverMethod<?>> observerMethods = cacheIfNeeded(event);
+            if (observerMethods != null) // emptyList()
             {
-                if (processAnnotatedTypeObservers == null)
-                {
-                    processAnnotatedTypeObservers = findObservers(ProcessAnnotatedType.class);
-                }
-                if (processAnnotatedTypeObservers.isEmpty())
-                {
-                    return emptyList();
-                }
+                return emptyList();
             }
-            else if (event instanceof ProcessManagedBean)
-            {
-                if (processManagedBeanObservers == null)
-                {
-                    processManagedBeanObservers = findObservers(ProcessManagedBean.class);
-                    if (processBeanObservers == null)
-                    {
-                        processBeanObservers = findObservers(ProcessBean.class);
-                    }
-                    processBeanObservers.forEach((k, v) -> processManagedBeanObservers
-                            .computeIfAbsent(k, it -> new HashSet<>())
-                            .addAll(v));
-                }
-                if (processManagedBeanObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            else if (event instanceof ProcessProducerField)
-            {
-                if (processProducerFieldObservers == null)
-                {
-                    processProducerFieldObservers = findObservers(ProcessProducerField.class);
-                    if (processBeanObservers == null)
-                    {
-                        processBeanObservers = findObservers(ProcessBean.class);
-                    }
-                        processBeanObservers.forEach((k, v) -> processProducerFieldObservers
-                                .computeIfAbsent(k, it -> new HashSet<>())
-                                .addAll(v));
-                    }
-                    if (processProducerFieldObservers.isEmpty())
-                    {
-                        return emptyList();
-                    }
-            }
-            else if (event instanceof ProcessProducerMethod)
-            {
-                if (processProducerMethodObservers == null)
-                {
-                    processProducerMethodObservers = findObservers(ProcessProducerMethod.class);
-                    if (processBeanObservers == null)
-                    {
-                        processBeanObservers = findObservers(ProcessBean.class);
-                    }
-                    processBeanObservers.forEach((k, v) -> processProducerMethodObservers
-                            .computeIfAbsent(k, it -> new HashSet<>())
-                            .addAll(v));
-                }
-                if (processProducerMethodObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            else if (event instanceof ProcessSyntheticBean)
-            {
-                if (processSyntheticBeanObservers == null)
-                {
-                    processSyntheticBeanObservers = findObservers(ProcessSyntheticBean.class);
-                    if (processBeanObservers == null)
-                    {
-                        processBeanObservers = findObservers(ProcessBean.class);
-                    }
-                    processBeanObservers.forEach((k, v) -> processSyntheticBeanObservers
-                            .computeIfAbsent(k, it -> new HashSet<>())
-                            .addAll(v));
-                }
-                if (processSyntheticBeanObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            else if (event instanceof ProcessSyntheticObserverMethod)
-            {
-                if (processSyntheticObserverMethodObservers == null)
-                {
-                    processSyntheticObserverMethodObservers = findObservers(ProcessSyntheticObserverMethod.class);
-                    if (processObserverMethodObservers == null)
-                    {
-                        processObserverMethodObservers = findObservers(ProcessObserverMethod.class);
-                    }
-                    processObserverMethodObservers.forEach((k, v) -> processSyntheticObserverMethodObservers
-                            .computeIfAbsent(k, it -> new HashSet<>())
-                            .addAll(v));
-                }
-                if (processSyntheticObserverMethodObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            else if (event instanceof ProcessBean)
-            {
-                if (processBeanObservers == null)
-                {
-                    processBeanObservers = findObservers(ProcessBean.class);
-                }
-                if (processBeanObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            else if (event instanceof ProcessBeanAttributes)
-            {
-                if (processBeanAttributesObservers == null)
-                {
-                    processBeanAttributesObservers = findObservers(ProcessBeanAttributes.class);
-                }
-                if (processBeanAttributesObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            else if (event instanceof ProcessInjectionTarget)
-            {
-                if (processInjectionTargetObservers == null)
-                {
-                    processInjectionTargetObservers = findObservers(ProcessInjectionTarget.class);
-                }
-                if (processInjectionTargetObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            else if (event instanceof ProcessInjectionPoint)
-            {
-                if (processInjectionPointObservers == null)
-                {
-                    processInjectionPointObservers = findObservers(ProcessInjectionPoint.class);
-                }
-                if (processInjectionPointObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            else if (event instanceof ProcessObserverMethod)
-            {
-                if (processObserverMethodObservers == null)
-                {
-                    processObserverMethodObservers = findObservers(ProcessObserverMethod.class);
-                }
-                if (processObserverMethodObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            else if (event instanceof ProcessProducer)
-            {
-                if (processProducerObservers == null)
-                {
-                    processProducerObservers = findObservers(ProcessProducer.class);
-                }
-                if (processProducerObservers.isEmpty())
-                {
-                    return emptyList();
-                }
-            }
-            // note: don't forget to update filterByExtensionEventType method too
         }
         Type eventType = metadata.validatedType();
         Collection<ObserverMethod<? super T>> observersMethods = filterByQualifiers(
@@ -419,6 +263,179 @@ public final class NotificationManager
         }
 
         return observersMethods;
+    }
+
+    private <T> Collection<ObserverMethod<?>> cacheIfNeeded(final T event)
+    {
+        if (event instanceof ProcessAnnotatedType)
+        {
+            if (processAnnotatedTypeObservers == null)
+            {
+                processAnnotatedTypeObservers = findObservers(ProcessAnnotatedType.class);
+            }
+            if (processAnnotatedTypeObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessManagedBean)
+        {
+            if (processManagedBeanObservers == null)
+            {
+                processManagedBeanObservers = findObservers(ProcessManagedBean.class);
+                if (processBeanObservers == null)
+                {
+                    processBeanObservers = findObservers(ProcessBean.class);
+                }
+                processBeanObservers.forEach((k, v) -> processManagedBeanObservers
+                        .computeIfAbsent(k, it -> new HashSet<>())
+                        .addAll(v));
+            }
+            if (processManagedBeanObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessProducerField)
+        {
+            if (processProducerFieldObservers == null)
+            {
+                processProducerFieldObservers = findObservers(ProcessProducerField.class);
+                if (processBeanObservers == null)
+                {
+                    processBeanObservers = findObservers(ProcessBean.class);
+                }
+                processBeanObservers.forEach((k, v) -> processProducerFieldObservers
+                        .computeIfAbsent(k, it -> new HashSet<>())
+                        .addAll(v));
+            }
+            if (processProducerFieldObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessProducerMethod)
+        {
+            if (processProducerMethodObservers == null)
+            {
+                processProducerMethodObservers = findObservers(ProcessProducerMethod.class);
+                if (processBeanObservers == null)
+                {
+                    processBeanObservers = findObservers(ProcessBean.class);
+                }
+                processBeanObservers.forEach((k, v) -> processProducerMethodObservers
+                        .computeIfAbsent(k, it -> new HashSet<>())
+                        .addAll(v));
+            }
+            if (processProducerMethodObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessSyntheticBean)
+        {
+            if (processSyntheticBeanObservers == null)
+            {
+                processSyntheticBeanObservers = findObservers(ProcessSyntheticBean.class);
+                if (processBeanObservers == null)
+                {
+                    processBeanObservers = findObservers(ProcessBean.class);
+                }
+                processBeanObservers.forEach((k, v) -> processSyntheticBeanObservers
+                        .computeIfAbsent(k, it -> new HashSet<>())
+                        .addAll(v));
+            }
+            if (processSyntheticBeanObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessSyntheticObserverMethod)
+        {
+            if (processSyntheticObserverMethodObservers == null)
+            {
+                processSyntheticObserverMethodObservers = findObservers(ProcessSyntheticObserverMethod.class);
+                if (processObserverMethodObservers == null)
+                {
+                    processObserverMethodObservers = findObservers(ProcessObserverMethod.class);
+                }
+                processObserverMethodObservers.forEach((k, v) -> processSyntheticObserverMethodObservers
+                        .computeIfAbsent(k, it -> new HashSet<>())
+                        .addAll(v));
+            }
+            if (processSyntheticObserverMethodObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessBean)
+        {
+            if (processBeanObservers == null)
+            {
+                processBeanObservers = findObservers(ProcessBean.class);
+            }
+            if (processBeanObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessBeanAttributes)
+        {
+            if (processBeanAttributesObservers == null)
+            {
+                processBeanAttributesObservers = findObservers(ProcessBeanAttributes.class);
+            }
+            if (processBeanAttributesObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessInjectionTarget)
+        {
+            if (processInjectionTargetObservers == null)
+            {
+                processInjectionTargetObservers = findObservers(ProcessInjectionTarget.class);
+            }
+            if (processInjectionTargetObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessInjectionPoint)
+        {
+            if (processInjectionPointObservers == null)
+            {
+                processInjectionPointObservers = findObservers(ProcessInjectionPoint.class);
+            }
+            if (processInjectionPointObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessObserverMethod)
+        {
+            if (processObserverMethodObservers == null)
+            {
+                processObserverMethodObservers = findObservers(ProcessObserverMethod.class);
+            }
+            if (processObserverMethodObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        else if (event instanceof ProcessProducer)
+        {
+            if (processProducerObservers == null)
+            {
+                processProducerObservers = findObservers(ProcessProducer.class);
+            }
+            if (processProducerObservers.isEmpty())
+            {
+                return emptyList();
+            }
+        }
+        // note: don't forget to update filterByExtensionEventType method too
+        return null;
     }
 
     private <T> Collection<ObserverMethod<? super T>> filterByWithAnnotations(Collection<ObserverMethod<? super T>> observersMethods, AnnotatedType annotatedType)
@@ -921,6 +938,14 @@ public final class NotificationManager
                                               List<ObserverMethod<? super Object>> observerMethods)
     {
         prepareObserverListForFire(isLifecycleEvent, async, observerMethods);
+        if (observerMethods.isEmpty())
+        {
+            if (async)
+            {
+                return completedFuture((T) event);
+            }
+            return null;
+        }
         EventContextImpl<Object> context = new EventContextImpl<>(event, metadata);
         if (async)
         {

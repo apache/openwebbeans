@@ -550,4 +550,10 @@ public class OpenWebBeansConfiguration
 
         return generatorJavaVersion;
     }
+
+    public boolean isSkipNoClassDefFoundErrorTriggers()
+    {
+        return Boolean.parseBoolean(getProperty(
+                "org.apache.webbeans.spi.deployer.skipNoClassDefFoundTriggers"));
+    }
 }

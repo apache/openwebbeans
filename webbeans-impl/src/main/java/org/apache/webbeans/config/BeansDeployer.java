@@ -111,6 +111,7 @@ import javax.enterprise.inject.spi.Producer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
@@ -164,6 +165,8 @@ public class BeansDeployer
     private final Map<String, Boolean> packageVetoCache = new HashMap<>();
 
     protected boolean skipVetoedOnPackages;
+    protected boolean skipNoClassDefFoundTriggers;
+    protected boolean skipValidations;
 
     /**
      * This BdaInfo is used for all manually added annotated types or in case
@@ -188,6 +191,9 @@ public class BeansDeployer
         discoverEjb = Boolean.parseBoolean(usage);
         skipVetoedOnPackages = Boolean.parseBoolean(this.webBeansContext.getOpenWebBeansConfiguration().getProperty(
                 "org.apache.webbeans.spi.deployer.skipVetoedOnPackages"));
+        skipValidations = Boolean.parseBoolean(this.webBeansContext.getOpenWebBeansConfiguration().getProperty(
+                "org.apache.webbeans.spi.deployer.skipValidations"));
+        skipNoClassDefFoundTriggers = this.webBeansContext.getOpenWebBeansConfiguration().isSkipNoClassDefFoundErrorTriggers();
 
         defaultBeanArchiveInformation = new DefaultBeanArchiveInformation("default");
         defaultBeanArchiveInformation.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
@@ -313,15 +319,18 @@ public class BeansDeployer
                 // drop no more needed memory data
                 webBeansContext.getNotificationManager().afterStart();
 
-                validateAlternatives(beanAttributesPerBda);
+                if (!skipValidations)
+                {
+                    validateAlternatives(beanAttributesPerBda);
 
-                validateInjectionPoints();
-                validateDisposeParameters();
+                    validateInjectionPoints();
+                    validateDisposeParameters();
 
-                validateDecoratorDecoratedTypes();
-                validateDecoratorGenericTypes();
+                    validateDecoratorDecoratedTypes();
+                    validateDecoratorGenericTypes();
 
-                validateNames();
+                    validateNames();
+                }
 
                 if (webBeansContext.getNotificationManager().getObserverMethods().stream()
                         .anyMatch(ObserverMethod::isAsync))
@@ -1295,10 +1304,11 @@ public class BeansDeployer
         if (classIndex != null)
         {
             AnnotatedElementFactory annotatedElementFactory = webBeansContext.getAnnotatedElementFactory();
-
+            boolean hasPATObserver = webBeansContext.getNotificationManager().hasProcessAnnotatedTypeObservers();
             for (Class<?> implClass : classIndex)
             {
-                if (foundClasses.contains(implClass))
+                if (foundClasses.contains(implClass) || implClass.isAnonymousClass() ||
+                        Modifier.isPrivate(implClass.getModifiers() /* likely inner class */))
                 {
                     // skip this class
                     continue;
@@ -1338,11 +1348,14 @@ public class BeansDeployer
 
                     // trigger a NoClassDefFoundError here, otherwise it would be thrown in observer methods
                     Class<?> javaClass = annotatedType.getJavaClass();
-                    javaClass.getDeclaredMethods();
-                    javaClass.getDeclaredFields();
+                    if (!skipNoClassDefFoundTriggers)
+                    {
+                        javaClass.getDeclaredMethods();
+                        javaClass.getDeclaredFields();
+                    }
 
                     // Fires ProcessAnnotatedType
-                    if (!javaClass.isAnnotation())
+                    if (hasPATObserver && !javaClass.isAnnotation())
                     {
                         GProcessAnnotatedType processAnnotatedEvent = webBeansContext.getWebBeansUtil().fireProcessAnnotatedTypeEvent(annotatedType);
                         if (!processAnnotatedEvent.isVeto())
