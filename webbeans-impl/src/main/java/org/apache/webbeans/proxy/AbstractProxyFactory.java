@@ -249,8 +249,10 @@ public abstract class AbstractProxyFactory
             // xxhash64 has very low collision so for this kind of has it is safe enough
             // and enables to avoid a big concatenation for names
             return Long.toString(Math.abs(XxHash64.apply(Stream.concat(
-                    Stream.of(proxiedMethods).map(Method::toGenericString).sorted(),
-                    Stream.of(notProxiedMethods).map(Method::toGenericString).map(it -> "<NOT>" + it).sorted()
+                    proxiedMethods == null ? Stream.empty() :
+                            Stream.of(proxiedMethods).map(Method::toGenericString).sorted(),
+                    notProxiedMethods == null ? Stream.empty() :
+                            Stream.of(notProxiedMethods).map(Method::toGenericString).map(it -> "<NOT>" + it).sorted()
             ).collect(joining("_")))));
         }
         // else unsafe - 1 proxy per class max!
