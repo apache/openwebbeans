@@ -104,7 +104,7 @@ public class CdiArchive implements Archive
         return delegate.iterator();
     }
 
-    public final class FoundClasses
+    public static final class FoundClasses
     {
         private URL url;
         private Collection<String> classNames;

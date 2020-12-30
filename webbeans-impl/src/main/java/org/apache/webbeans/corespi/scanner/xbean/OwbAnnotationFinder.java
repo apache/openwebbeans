@@ -20,6 +20,9 @@ package org.apache.webbeans.corespi.scanner.xbean;
 
 import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.archive.Archive;
+import org.apache.xbean.finder.archive.ClassesArchive;
+
+import java.util.stream.Stream;
 
 /**
  * We just extend the default AnnotationFinder to get Access to the original ClassInfo
@@ -35,6 +38,12 @@ public class OwbAnnotationFinder extends AnnotationFinder
     public OwbAnnotationFinder(Archive archive)
     {
         super(archive);
+    }
+
+    public OwbAnnotationFinder(final Class<?>[] classes)
+    {
+        super(new ClassesArchive(/*empty since we want to read from reflection, not form resources*/));
+        Stream.of(classes).forEach(super::readClassDef);
     }
 
     public ClassInfo getClassInfo(String className)
