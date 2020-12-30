@@ -89,21 +89,26 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
 
         if (!classes.isEmpty())
         {
-            try
+            addClassesDeploymentUrl();
+        }
+    }
+
+    protected void addClassesDeploymentUrl()
+    {
+        try
+        {
+            addDeploymentUrl(CDISeBeanArchiveService.EMBEDDED_URL, new URL("openwebbeans", null, 0, "cdise", new URLStreamHandler()
             {
-                addDeploymentUrl(CDISeBeanArchiveService.EMBEDDED_URL, new URL("openwebbeans", null, 0, "cdise", new URLStreamHandler()
+                @Override
+                protected URLConnection openConnection(URL u) throws IOException
                 {
-                    @Override
-                    protected URLConnection openConnection(URL u) throws IOException
-                    {
-                        return null;
-                    }
-                }));
-            }
-            catch (MalformedURLException e)
-            {
-                throw new IllegalArgumentException(e); // quite unlikely
-            }
+                    return null;
+                }
+            }));
+        }
+        catch (MalformedURLException e)
+        {
+            throw new IllegalArgumentException(e); // quite unlikely
         }
     }
 

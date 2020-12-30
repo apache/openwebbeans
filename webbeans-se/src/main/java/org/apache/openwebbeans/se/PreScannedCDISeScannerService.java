@@ -61,6 +61,7 @@ public class PreScannedCDISeScannerService extends CDISeScannerService
                 throw new IllegalArgumentException(e);
             }
         }).toArray(Class[]::new);
+        addClassesDeploymentUrl();
         final BeanArchiveService beanArchiveService = webBeansContext.getBeanArchiveService();
         archive = new CdiArchive(
                 beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
