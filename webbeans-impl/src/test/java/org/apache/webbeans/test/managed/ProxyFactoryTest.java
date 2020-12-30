@@ -123,7 +123,7 @@ public class ProxyFactoryTest extends AbstractUnitTest
         final ABean bean1 = getInstance("bean1");
         final ABean bean2 = getInstance("bean2");
         assertEquals(
-                "org.apache.webbeans.test.managed.ProxyFactoryTest$ABean$$OwbNormalScopeProxy8050522010792129812",
+                "org.apache.webbeans.test.managed.ProxyFactoryTest$ABean$$OwbNormalScopeProxy5751833139562769786",
                 bean1.getClass().getName());
         assertEquals(
                 "org.apache.webbeans.test.managed.ProxyFactoryTest$ABean$$OwbInterceptProxy5751833139562769786",

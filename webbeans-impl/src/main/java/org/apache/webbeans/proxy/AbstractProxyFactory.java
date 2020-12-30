@@ -252,7 +252,10 @@ public abstract class AbstractProxyFactory
                     proxiedMethods == null ? Stream.empty() :
                             Stream.of(proxiedMethods).map(Method::toGenericString).sorted(),
                     notProxiedMethods == null ? Stream.empty() :
-                            Stream.of(notProxiedMethods).map(Method::toGenericString).map(it -> "<NOT>" + it).sorted()
+                            Stream.of(notProxiedMethods)
+                                    .filter(it -> it.getDeclaringClass() != Object.class)
+                                    .map(Method::toGenericString)
+                                    .map(it -> "<NOT>" + it).sorted()
             ).collect(joining("_")))));
         }
         // else unsafe - 1 proxy per class max!

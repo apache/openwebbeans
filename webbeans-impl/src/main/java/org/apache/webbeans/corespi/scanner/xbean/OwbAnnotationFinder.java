@@ -42,8 +42,8 @@ public class OwbAnnotationFinder extends AnnotationFinder
 
     public OwbAnnotationFinder(final Class<?>[] classes)
     {
-        super(new ClassesArchive(/*empty since we want to read from reflection, not form resources*/));
-        Stream.of(classes).forEach(super::readClassDef);
+        super(new ClassesArchive(/*empty since we want to read from reflection, not from resources*/));
+        Stream.of(classes).forEach(c -> super.readClassDef(c));
     }
 
     public ClassInfo getClassInfo(String className)
