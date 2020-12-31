@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.DefiningClassService;
 
@@ -81,7 +82,7 @@ public class ClassLoaderProxyService implements DefiningClassService
         }
     }
 
-    // runtim companion of Spy - @Experimental
+    // runtime companion of Spy - @Experimental
     public static class LoadFirst extends ClassLoaderProxyService
     {
         public LoadFirst(final WebBeansContext context)
@@ -105,6 +106,30 @@ public class ClassLoaderProxyService implements DefiningClassService
             {
                 WebBeansLoggerFacade.getLogger(getClass()).warning(e.getMessage());
                 return super.defineAndLoad(name, bytecode, proxiedClass);
+            }
+        }
+    }
+
+    // strict load only impl, it changes LoadFirst by not creating a classloader at all (nice in graalvm) -@Experimental
+    public static class LoadOnly implements DefiningClassService
+    {
+        @Override
+        public ClassLoader getProxyClassLoader(final Class<?> forClass)
+        {
+            return Thread.currentThread().getContextClassLoader();
+        }
+
+        @Override
+        public <T> Class<T> defineAndLoad(final String name, final byte[] bytecode, final Class<T> proxiedClass)
+        {
+            try
+            {
+                return (Class<T>) getProxyClassLoader(null).loadClass(name);
+            }
+            catch (final ClassNotFoundException e)
+            {
+                WebBeansLoggerFacade.getLogger(getClass()).warning(e.getMessage());
+                throw new WebBeansException(e);
             }
         }
     }
