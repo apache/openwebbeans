@@ -58,7 +58,7 @@ public class PreScannedCDISeScannerService extends CDISeScannerService
             }
             catch (final ClassNotFoundException e)
             {
-                throw new IllegalArgumentException(e);
+                throw new IllegalArgumentException("Can't load '" + it + "'", e);
             }
         }).toArray(Class[]::new);
         addClassesDeploymentUrl();
