@@ -36,6 +36,18 @@ import static java.util.stream.Collectors.toList;
 public class PreScannedCDISeScannerService extends CDISeScannerService
 {
     @Override
+    protected void configure()
+    {
+        // no-op
+    }
+
+    @Override
+    protected void registerBeanArchives(final ClassLoader loader)
+    {
+        // no-op
+    }
+
+    @Override
     protected AnnotationFinder initFinder()
     {
         if (finder != null)
