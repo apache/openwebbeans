@@ -50,7 +50,7 @@ import static java.util.stream.Collectors.toMap;
 
 public class OWBInitializer extends SeContainerInitializer
 {
-    protected final CDISeScannerService scannerService = new CDISeScannerService();
+    protected final CDISeScannerService scannerService = createDefaultScannerService();
     protected final Properties properties = new Properties();
     protected final Map<String, Object> services = new HashMap<>();
     protected final Collection<Extension> extensions = new ArrayList<>();
@@ -60,6 +60,11 @@ public class OWBInitializer extends SeContainerInitializer
     public OWBInitializer()
     {
         scannerService.loader(loader);
+    }
+
+    protected CDISeScannerService createDefaultScannerService()
+    {
+        return new CDISeScannerService();
     }
 
     @Override
@@ -108,7 +113,6 @@ public class OWBInitializer extends SeContainerInitializer
             thread.setContextClassLoader(old);
         }
     }
-
     protected void addCustomServices(final Map<String, Object> services)
     {
         // for children classes
