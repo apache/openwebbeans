@@ -246,7 +246,8 @@ public class OWBInitializer extends SeContainerInitializer
                 selectAlternativeStereotypes(list(value, this::loadClass).toArray(Class[]::new));
                 break;
             case "openwebbeans.extensions":
-                addExtensions(list(value, this::loadClass).toArray(Class[]::new));
+                final Class<? extends Extension>[] extensions = list(value, this::loadClass).toArray(Class[]::new);
+                addExtensions(extensions);
                 break;
             case "openwebbeans.packages":
                 addPackages(list(value, this::loadPackage).toArray(Package[]::new));
