@@ -331,6 +331,51 @@ public class BeansDeployer
 
                     validateNames();
                 }
+                else
+                {
+                    webBeansContext.getBeanManagerImpl().getBeans().forEach(bean -> {
+                        if (BuiltInOwbBean.class.isInstance(bean))
+                        {
+                            Class<?> proxyable = BuiltInOwbBean.class.cast(bean).proxyableType();
+                            if (proxyable != null)
+                            {
+                                AbstractProducer producer = AbstractProducer.class.cast(OwbBean.class.cast(bean).getProducer());
+                                AnnotatedType<?> annotatedType = webBeansContext.getAnnotatedElementFactory()
+                                        .newAnnotatedType(proxyable);
+                                producer.defineInterceptorStack(bean, annotatedType, webBeansContext);
+                            }
+                        }
+                        else if (bean instanceof OwbBean &&
+                                !(bean instanceof Interceptor) &&
+                                !(bean instanceof Decorator))
+                        {
+                            AbstractProducer producer = null;
+                            OwbBean<?> owbBean = (OwbBean<?>) bean;
+                            if (ManagedBean.class.isInstance(bean)) // in this case don't use producer which can be wrapped
+                            {
+                                producer = ManagedBean.class.cast(bean).getOriginalInjectionTarget();
+                            }
+                            if (producer == null && owbBean.getProducer() instanceof AbstractProducer)
+                            {
+                                producer = (AbstractProducer) owbBean.getProducer();
+                            }
+                            if (producer != null)
+                            {
+                                AnnotatedType<?> annotatedType;
+                                if (owbBean instanceof InjectionTargetBean)
+                                {
+                                    annotatedType = ((InjectionTargetBean<?>) owbBean).getAnnotatedType();
+                                }
+                                else
+                                {
+                                    annotatedType = webBeansContext.getAnnotatedElementFactory()
+                                            .newAnnotatedType(owbBean.getReturnType());
+                                }
+                                producer.defineInterceptorStack(owbBean, annotatedType, webBeansContext);
+                            }
+                        }
+                    });
+                }
 
                 if (webBeansContext.getNotificationManager().getObserverMethods().stream()
                         .anyMatch(ObserverMethod::isAsync))

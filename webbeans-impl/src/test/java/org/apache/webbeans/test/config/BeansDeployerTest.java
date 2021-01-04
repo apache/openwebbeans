@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.test.config;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.logging.Level.FINE;
 import static org.junit.Assert.assertEquals;
@@ -32,6 +33,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import javax.annotation.Priority;
+import javax.enterprise.context.ApplicationScoped;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
@@ -47,6 +49,17 @@ public class BeansDeployerTest extends AbstractUnitTest
 {
     @Rule
     public final TestName testName = new TestName();
+
+    @Test
+    public void skipValidations()
+    {
+        addConfiguration("org.apache.webbeans.spi.deployer.skipValidations", "true");
+        startContainer(asList(TransactionalInterceptor.class, MyService.class),
+                singletonList(Thread.currentThread().getContextClassLoader()
+                        .getResource(getClass().getName().replace('.', '/') + "/interceptorLogging/beans.xml")
+                        .toExternalForm()));
+        assertEquals("tx", getInstance(MyService.class).tx());
+    }
 
     @Test
     public void interceptorLogging()
@@ -106,6 +119,16 @@ public class BeansDeployerTest extends AbstractUnitTest
                 " is already defined with priority 1000", record.getMessage());
     }
 
+    @ApplicationScoped
+    public static class MyService
+    {
+        @Transactional
+        public String tx()
+        {
+            return "service";
+        }
+    }
+
     @Interceptor
     @Transactional
     @Priority(Interceptor.Priority.LIBRARY_BEFORE)
@@ -114,7 +137,7 @@ public class BeansDeployerTest extends AbstractUnitTest
         @AroundInvoke
         public Object caller(final InvocationContext context) throws Exception
         {
-            return null;
+            return "tx";
         }
     }
 }
