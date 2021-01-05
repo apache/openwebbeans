@@ -90,10 +90,10 @@ public final class WebBeansLoggerFacade
                     .orElseGet(JULLoggerFactory::new);
         }
 
-        Logger logger = FACTORY.getLogger(WebBeansLoggerFacade.class);
-        if (error != null && logger.isLoggable(Level.SEVERE))
+        // ensure to not create any logger if there is no error
+        if (error != null && FACTORY.getLogger(WebBeansLoggerFacade.class).isLoggable(Level.SEVERE))
         {
-            logger.log(Level.SEVERE, OWBLogConst.ERROR_0028, error);
+            FACTORY.getLogger(WebBeansLoggerFacade.class).log(Level.SEVERE, OWBLogConst.ERROR_0028, error);
         }
     }
 
