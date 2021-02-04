@@ -97,3 +97,14 @@ Sample pom to use Jakarta artifacts/namespace instead of Javax one
   </dependency>
 </dependencies>
 +-------------------------------+
+
+Alternatively, you can use the Jakarta bom starting with version 2.0.22:
+
++-----+
+<dependency>
+  <artifactId>openwebbeans-se-bom</artifactId>
+  <groupId>org.apache.openwebbeans.bom</groupId>
+  <version>${owb.version}</version>
+  <type>pom</type>
+</dependency>
++-----+
