@@ -26,6 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -35,7 +36,7 @@ public class TestServlet implements Servlet
 {
 
     @Inject
-    private TestBean tb;
+    private TestBean injectedTestBean;
 
     public void destroy()
     {
@@ -54,13 +55,13 @@ public class TestServlet implements Servlet
 
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException
     {
-        if (tb != null)
+        if (injectedTestBean != null)
         {
             throw new RuntimeException("That's unexpected, we are in fatwar mode so cannot activate the tomcat7 " +
                     "plugin and yet injection is working!");
         }
         // now grab the beans by hand
-        tb = CDI.current().select(TestBean.class).get();
+        TestBean tb = CDI.current().select(TestBean.class).get();
 
         ServletContext context = CDI.current().select(ServletContext.class).get();
 
@@ -76,6 +77,39 @@ public class TestServlet implements Servlet
         {
             throw new RuntimeException("CDI Injection missing servlet request!");
         }
+
+        TestRequestBean requestBean = CDI.current().select(TestRequestBean.class).get();
+        TestSessionBean sessionBean = CDI.current().select(TestSessionBean.class).get();
+
+
+        String action = req.getParameter("action");
+        if ("setRequest".equals(action))
+        {
+            requestBean.setI(Integer.parseInt(req.getParameter("val")));
+            requestBean.setI(requestBean.getI() + 100);
+            res.getWriter().write("" + requestBean.getI());
+            return;
+        }
+
+        if ("setSession".equals(action))
+        {
+            sessionBean.setI(Integer.parseInt(req.getParameter("val")));
+            res.getWriter().write("" + sessionBean.getI());
+            return;
+        }
+
+        if ("getSession".equals(action))
+        {
+            res.getWriter().write(sessionBean.getI());
+            return;
+        }
+
+        if ("clearSession".equals(action))
+        {
+            ((HttpServletRequest)req).getSession(true).invalidate();
+        }
+
+
         res.getWriter().write(":thumb_up:");
     }
 

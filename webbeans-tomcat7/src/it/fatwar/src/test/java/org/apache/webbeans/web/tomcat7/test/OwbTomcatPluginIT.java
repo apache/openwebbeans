@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.StringBuilder;
 import java.net.URL;
@@ -35,10 +36,27 @@ public class OwbTomcatPluginIT
     @Test
     public void testTomcatRequest() throws Exception
     {
-        // Get the response
+
+        {
+            // Get the response
+            String response = getResponse("http://localhost:9082/owbtomcat7it/test.test");
+            Assert.assertEquals(":thumb_up:", response);
+        }
+        {
+            String response = getResponse("http://localhost:9082/owbtomcat7it/test.test?action=setRequest&val=3500");
+            Assert.assertEquals("3600", response);
+        }
+
+        {
+            String response = getResponse("http://localhost:9082/owbtomcat7it/test.test?action=setSession&val=500");
+            Assert.assertEquals("500", response);
+        }
+    }
+
+    private String getResponse(String url) throws IOException {
         StringBuilder builder = new StringBuilder();
         try (BufferedReader rd = new BufferedReader(
-                new InputStreamReader(new URL("http://localhost:9082/owbtomcat7it/test.test").openStream())))
+                new InputStreamReader(new URL(url).openStream())))
         {
 
             String line = "";
@@ -47,8 +65,7 @@ public class OwbTomcatPluginIT
                 builder.append(line);
             }
         }
-
-        Assert.assertEquals(":thumb_up:", builder.toString());
+        return builder.toString();
     }
 
 }
