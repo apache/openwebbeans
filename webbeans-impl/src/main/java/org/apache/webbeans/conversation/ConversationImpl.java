@@ -141,7 +141,7 @@ public class ConversationImpl implements Conversation, Serializable
 
         // now store this conversation in the SessionContext
         ConversationManager conversationManager = webBeansContext.getConversationManager();
-        ConversationContext conversationContext = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class);
+        ConversationContext conversationContext = (ConversationContext) webBeansContext.getContextsService().getCurrentContext(ConversationScoped.class, true);
         conversationManager.addToConversationStorage(conversationContext, id);
     }
 

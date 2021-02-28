@@ -273,10 +273,11 @@ public class WebContextsService extends AbstractContextsService
     {
         if(scopeType.equals(RequestScoped.class))
         {
-            return getRequestContext(true);
+            return getRequestContext(false);
         }
         else if(scopeType.equals(SessionScoped.class))
         {
+            // session gets created lazily, so we need to force the creation
             return getSessionContext(true);
         }
         else if(scopeType.equals(ApplicationScoped.class))
@@ -285,7 +286,7 @@ public class WebContextsService extends AbstractContextsService
         }
         else if(scopeType.equals(ConversationScoped.class))
         {
-            return getConversationContext(true, false);
+            return getConversationContext(false, false);
         }
         else if(scopeType.equals(Dependent.class))
         {
@@ -760,9 +761,9 @@ public class WebContextsService extends AbstractContextsService
     public SessionContext getSessionContext(boolean forceCreate)
     {
         SessionContext context = sessionContexts.get();
-        if (null == context)
+        if (null == context && forceCreate)
         {
-            lazyStartSessionContext(forceCreate);
+            lazyStartSessionContext(true);
             context = sessionContexts.get();
         }
 
@@ -778,7 +779,7 @@ public class WebContextsService extends AbstractContextsService
         ConversationContext conversationContext = conversationContexts.get();
         if (conversationContext == null)
         {
-            SessionContext sessionContext = getSessionContext(create);
+            SessionContext sessionContext = getSessionContext(true);
 
             if (sessionContext != null)
             {
@@ -819,10 +820,13 @@ public class WebContextsService extends AbstractContextsService
             logger.log(Level.FINE, ">lazyStartSessionContext");
         }
 
-        ServletRequestContext requestContext = getRequestContext(true);
+        ServletRequestContext requestContext = getRequestContext(false);
         if (requestContext == null)
         {
-            logger.log(Level.WARNING, "Could NOT lazily initialize session context because NO active request context");
+            if (createSession)
+            {
+                logger.log(Level.WARNING, "Could NOT lazily initialize session context because NO active request context");
+            }
             return;
         }
 

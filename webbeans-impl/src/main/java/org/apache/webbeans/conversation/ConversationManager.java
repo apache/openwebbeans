@@ -136,7 +136,7 @@ public class ConversationManager
     public void addToConversationStorage(ConversationContext conversationContext, String conversationId)
     {
         Asserts.assertNotNull(conversationId, "conversationId");
-        Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class);
+        Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class, true);
         Set<ConversationContext> sessionConversations = getSessionConversations(sessionContext, true);
 
         // check whether this conversation already exists
@@ -161,8 +161,13 @@ public class ConversationManager
     public boolean removeConversationFromStorage(ConversationContext conversationContext)
     {
         Context sessionContext = webBeansContext.getContextsService().getCurrentContext(SessionScoped.class);
-        Set<ConversationContext> sessionConversations = getSessionConversations(sessionContext, true);
-        return sessionConversations.remove(conversationContext);
+        if (sessionContext != null)
+        {
+            Set<ConversationContext> sessionConversations = getSessionConversations(sessionContext, true);
+            return sessionConversations.remove(conversationContext);
+        }
+
+        return false;
     }
 
 
@@ -228,7 +233,7 @@ public class ConversationManager
         if (payLoad == null)
         {
             RequestContext requestContext
-                = (RequestContext) webBeansContext.getContextsService().getCurrentContext(RequestScoped.class);
+                = (RequestContext) webBeansContext.getContextsService().getCurrentContext(RequestScoped.class, false);
             if (requestContext != null)
             {
                 payLoad = requestContext.getRequestObject();
