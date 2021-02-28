@@ -18,8 +18,6 @@
  */
 package org.apache.webbeans.test.events.observer;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -33,9 +31,7 @@ public class EventTest extends AbstractUnitTest {
     @Test
     public void multipleObserverMethodsWithSameName()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(Painter.class);
-        startContainer(beanClasses, null);
+        startContainer(Painter.class);
 
         final Orange orange = new Orange();
         getBeanManager().fireEvent(orange);
@@ -54,10 +50,7 @@ public class EventTest extends AbstractUnitTest {
     @Test
     public void testOverriddenObserverMethodsInSubclasses()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(Superclass.class);
-        beanClasses.add(BeanA.class);
-        startContainer(beanClasses, null);
+        startContainer(Superclass.class, BeanA.class);
 
         TestEvent testEvent = new TestEvent();
         getBeanManager().fireEvent(testEvent);
@@ -69,12 +62,24 @@ public class EventTest extends AbstractUnitTest {
     }
 
     @Test
+    public void testEventViaEventSource()
+    {
+        startContainer(Superclass.class, BeanA.class, EventSourceOwnerBean.class);
+
+        PrivateTestEvent testEvent = new PrivateTestEvent();
+        getInstance(EventSourceOwnerBean.class).fireForMe(testEvent);
+
+        Assert.assertEquals(2, testEvent.getCalledObservers().size());
+        Assert.assertTrue(testEvent.getCalledObservers().contains("BeanA"));
+        Assert.assertTrue(testEvent.getCalledObservers().contains("BeanA[Superclass]"));
+
+        shutDownContainer();
+    }
+
+    @Test
     public void testSubclassRemovesObserverAnnotationByOverriding()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(Superclass.class);
-        beanClasses.add(BeanB.class);
-        startContainer(beanClasses, null);
+        startContainer(Superclass.class, BeanB.class);
 
         TestEvent testEvent = new TestEvent();
         getBeanManager().fireEvent(testEvent);
@@ -86,10 +91,7 @@ public class EventTest extends AbstractUnitTest {
     
     @Test
     public void testObserverOnPrivateMethod() {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(Superclass.class);
-        beanClasses.add(BeanA.class);
-        startContainer(beanClasses, null);
+        startContainer(Superclass.class, BeanA.class);
 
         PrivateTestEvent testEvent = new PrivateTestEvent();
         getBeanManager().fireEvent(testEvent);
@@ -104,10 +106,7 @@ public class EventTest extends AbstractUnitTest {
     
     @Test
     public void testPrivateMethodCannotBeOverridden() {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(Superclass.class);
-        beanClasses.add(BeanB.class);
-        startContainer(beanClasses, null);
+        startContainer(Superclass.class, BeanB.class);
 
         PrivateTestEvent testEvent = new PrivateTestEvent();
         getBeanManager().fireEvent(testEvent);
@@ -121,10 +120,7 @@ public class EventTest extends AbstractUnitTest {
     
     @Test
     public void testObserverOnStaticMethod() {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(Superclass.class);
-        beanClasses.add(BeanA.class);
-        startContainer(beanClasses, null);
+        startContainer(Superclass.class, BeanA.class);
 
         StaticTestEvent testEvent = new StaticTestEvent();
         getBeanManager().fireEvent(testEvent);
@@ -139,10 +135,7 @@ public class EventTest extends AbstractUnitTest {
     
     @Test
     public void testStaticMethodCannotBeOverridden() {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        beanClasses.add(Superclass.class);
-        beanClasses.add(BeanB.class);
-        startContainer(beanClasses, null);
+        startContainer(Superclass.class, BeanB.class);
 
         StaticTestEvent testEvent = new StaticTestEvent();
         getBeanManager().fireEvent(testEvent);
