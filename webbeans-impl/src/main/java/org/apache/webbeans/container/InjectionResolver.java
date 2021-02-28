@@ -592,6 +592,12 @@ public class InjectionResolver
 
     private Set<Bean<?>> findByBeanType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)
     {
+        if (allComponents == null || allComponents.isEmpty())
+        {
+            // fast path
+            return allComponents;
+        }
+
         Set<Bean<?>> resolved = new HashSet<>();
         for (Bean<?> bean : allComponents)
         {
@@ -789,6 +795,12 @@ public class InjectionResolver
      */
     private Set<Bean<?>> findByQualifier(Set<Bean<?>> remainingSet, Type type, Annotation... annotations)
     {
+        if (remainingSet == null || remainingSet.isEmpty())
+        {
+            // fast path
+            return remainingSet;
+        }
+
         Iterator<Bean<?>> it = remainingSet.iterator();
         Set<Bean<?>> result = new HashSet<>();
 
