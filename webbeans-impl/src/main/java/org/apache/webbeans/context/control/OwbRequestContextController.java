@@ -31,6 +31,7 @@ import javax.enterprise.context.spi.Context;
 public class OwbRequestContextController implements RequestContextController
 {
     private final ContextsService contextsService;
+    private boolean didActivate = false;
 
     OwbRequestContextController(WebBeansContext context)
     {
@@ -44,6 +45,7 @@ public class OwbRequestContextController implements RequestContextController
         if (ctx == null || !ctx.isActive())
         {
             contextsService.startContext(RequestScoped.class, null);
+            didActivate = true;
             return true;
         }
         return false;
@@ -52,7 +54,11 @@ public class OwbRequestContextController implements RequestContextController
     @Override
     public void deactivate() throws ContextNotActiveException
     {
-        contextsService.endContext(RequestScoped.class, null);
-        RequestScopedBeanInterceptorHandler.removeThreadLocals();
+        // spec says we only must deactivate the RequestContest "f it was activated by this context controller"
+        if (didActivate)
+        {
+            contextsService.endContext(RequestScoped.class, null);
+            RequestScopedBeanInterceptorHandler.removeThreadLocals();
+        }
     }
 }
