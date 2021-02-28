@@ -99,7 +99,7 @@ import static java.util.Collections.emptyList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toMap;
 
-public final class NotificationManager
+public class NotificationManager
 {
     private final Map<Type, Set<ObserverMethod<?>>> observers = new ConcurrentHashMap<>();
     private final WebBeansContext webBeansContext;
@@ -1132,7 +1132,6 @@ public final class NotificationManager
     {
         //X TODO set up threads, requestcontext etc
         final ContextsService contextsService = webBeansContext.getContextsService();
-        contextsService.getCurrentContext(RequestScoped.class);
         contextsService.startContext(RequestScoped.class, null);
         try
         {
