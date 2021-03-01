@@ -177,7 +177,7 @@ public class EventImpl<T> implements Event<T>, Serializable
             if (defaultMetadataObservers == null)
             {
                 final List<ObserverMethod<? super Object>> tmp = new ArrayList<>( // faster than LinkedList
-                        webBeansContext.getBeanManagerImpl().resolveObserverMethods(event, metadata));
+                        notificationManager.resolveObservers(event, metadata, false));
                 notificationManager.prepareObserverListForFire(false, false, tmp);
                 this.defaultMetadataObservers = tmp;
             }
@@ -206,7 +206,7 @@ public class EventImpl<T> implements Event<T>, Serializable
             if (observerMethods == null)
             {
                 observerMethods = new ArrayList<>( // faster than LinkedList
-                        webBeansContext.getBeanManagerImpl().resolveObserverMethods(event, metadata));
+                        notificationManager.resolveObservers(event, metadata, false));
                 notificationManager.prepareObserverListForFire(false, false, observerMethods);
                 this.observers.putIfAbsent(key, observerMethods);
             }
@@ -223,7 +223,7 @@ public class EventImpl<T> implements Event<T>, Serializable
             if (defaultMetadataAsyncObservers == null)
             {
                 final List<ObserverMethod<? super Object>> tmp = new ArrayList<>( // faster than LinkedList
-                        webBeansContext.getBeanManagerImpl().resolveObserverMethods(event, metadata));
+                        notificationManager.resolveObservers(event, metadata, false));
                 notificationManager.prepareObserverListForFire(false, true, tmp);
                 this.defaultMetadataAsyncObservers = tmp;
             }
@@ -252,7 +252,7 @@ public class EventImpl<T> implements Event<T>, Serializable
             if (observerMethods == null)
             {
                 observerMethods = new ArrayList<>( // faster than LinkedList
-                        webBeansContext.getBeanManagerImpl().resolveObserverMethods(event, metadata));
+                        notificationManager.resolveObservers(event, metadata, false));
                 notificationManager.prepareObserverListForFire(false, true, observerMethods);
                 this.asyncObservers.putIfAbsent(key, observerMethods);
             }
