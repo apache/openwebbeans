@@ -273,6 +273,7 @@ public abstract class AbstractProxyFactory
     {
         proxyClassName = fixPreservedPackage(proxyClassName, "java.");
         proxyClassName = fixPreservedPackage(proxyClassName, "javax.");
+        proxyClassName = fixPreservedPackage(proxyClassName, "jakarta.");
         proxyClassName = fixPreservedPackage(proxyClassName, "sun.misc.");
 
         return proxyClassName;
