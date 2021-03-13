@@ -26,6 +26,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.webbeans.exception.ProxyGenerationException;
@@ -38,8 +39,8 @@ public class Unsafe
      * We use it for creating the proxy instance without fully
      * initializing the class.
      */
-    private Object unsafe;
-    private Object internalUnsafe;
+    private final Object unsafe;
+    private final Object internalUnsafe;
     private Method unsafeAllocateInstance;
     private final AtomicReference<Method> unsafeDefineClass = new AtomicReference<>();
 
@@ -66,7 +67,7 @@ public class Unsafe
             {
                 final Field theInternalUnsafe = unsafeClass.getDeclaredField("theInternalUnsafe");
                 theInternalUnsafe.setAccessible(true);
-                return theInternalUnsafe.get(null).getClass();
+                return theInternalUnsafe.get(null);
             }
             catch (final Exception notJ11OrMore)
             {
@@ -172,7 +173,7 @@ public class Unsafe
             else
             {
 
-                definedClass = (Class<T>) unsafeDefineClass().invoke(unsafe, proxyName, proxyBytes, 0, proxyBytes.length, classLoader, null);
+                definedClass = (Class<T>) unsafeDefineClass().invoke(internalUnsafe, proxyName, proxyBytes, 0, proxyBytes.length, classLoader, null);
             }
 
             return (Class<T>) Class.forName(definedClass.getName(), true, classLoader);
@@ -190,11 +191,31 @@ public class Unsafe
                     // default error handling
                 }
             }
-            throw new ProxyGenerationException(le.getCause());
+            throw new ProxyGenerationException(
+                    le.getMessage() + (isJava16OrMore() ? "\n" +
+                    "On Java 16 ensure to set --add-exports java.base/jdk.internal.misc=ALL-UNNAMED on the JVM" : ""),
+                    le.getCause());
         }
         catch (Throwable e)
         {
             throw new ProxyGenerationException(e);
+        }
+    }
+
+    private boolean isJava16OrMore()
+    {
+        final String version = System.getProperty("java.version", "-1");
+        final int end = IntStream.of(version.indexOf('-'), version.indexOf('.'))
+                .filter(i -> i > 0)
+                .min()
+                .orElseGet(version::length);
+        try
+        {
+            return Integer.parseInt(version.substring(0, end)) >= 16;
+        }
+        catch (final NumberFormatException nfe)
+        {
+            return false;
         }
     }
 
