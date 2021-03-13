@@ -269,15 +269,15 @@ public abstract class AbstractProxyFactory
         return "org.apache.webbeans.custom.signed." + classToProxy.getName();
     }
 
-    protected String fixPreservedPackages(String proxyClassName)
+    protected String fixPreservedPackages(final String proxyClassName)
     {
-        proxyClassName = fixPreservedPackage(proxyClassName, "java.");
-        proxyClassName = fixPreservedPackage(proxyClassName, "javax.");
-        proxyClassName = fixPreservedPackage(proxyClassName, "jakarta.");
-        proxyClassName = fixPreservedPackage(proxyClassName, "sun.misc.");
-
-        return proxyClassName;
+        return Stream.of("java.", "javax.", "jakarta.", "sun.misc.")
+                .filter(proxyClassName::startsWith)
+                .findFirst() // can only be one, you can't start with 2 of them
+                .map(it -> fixPreservedPackage(proxyClassName, it))
+                .orElse(proxyClassName);
     }
+
     /**
      * Detect if the provided className is in the forbidden package.
      * If so, move it to org.apache.webbeans.custom.
