@@ -289,7 +289,7 @@ public abstract class AbstractProxyFactory
 
         if (className.startsWith(forbiddenPackagePrefix))
         {
-            fixedClassName = "org.apache.webbeans.custom." + className.substring(forbiddenPackagePrefix.length());
+            fixedClassName = "org.apache.webbeans.custom." + className.substring(className.lastIndexOf('.') + 1);
         }
 
         return fixedClassName;
@@ -329,7 +329,7 @@ public abstract class AbstractProxyFactory
         {
             return definingService.defineAndLoad(proxyClassName, proxyBytes, classToProxy);
         }
-        return unsafe.defineAndLoadClass(classLoader, proxyClassName, proxyBytes);
+        return unsafe.defineAndLoadClass(classLoader, proxyClassName, proxyBytes, classToProxy);
     }
 
     protected  <T> T newInstance(final Class<? extends T> proxyClass)
