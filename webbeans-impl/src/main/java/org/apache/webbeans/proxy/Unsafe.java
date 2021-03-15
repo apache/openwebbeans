@@ -26,8 +26,6 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -50,8 +48,8 @@ public class Unsafe
     private final AtomicReference<Method> unsafeDefineClass = new AtomicReference<>();
 
     // defineClass method on ClassLoader
-    private Boolean useDefineClassMethod = null;
-    private final Map<ClassLoader, Method> defineClassMethodsByClassLoader = new HashMap<>();
+    private volatile boolean useDefineClassMethod = true;
+    private volatile Method defineClassMethod = null;
 
     // java 16
     private volatile Method privateLookup;
@@ -148,54 +146,42 @@ public class Unsafe
                                            Class<?> parent)
             throws ProxyGenerationException
     {
-        Method defineClassMethod = null;
 
-        if (useDefineClassMethod == null || Boolean.TRUE.equals(useDefineClassMethod))
+        if (defineClassMethod == null && useDefineClassMethod)
         {
-            defineClassMethod = defineClassMethodsByClassLoader.get(classLoader);
-
-            if (defineClassMethod == null)
+            Method defineClassMethodTmp = null;
+            try
             {
-                Class<?> clClazz = classLoader.getClass();
+                // defineClass is a final method on the abstract base ClassLoader
+                // thus we need to cache it only once
+                defineClassMethodTmp = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+            }
+            catch (NoSuchMethodException e)
+            {
+                // all fine, we just skip over from here
+            }
 
-                do
+
+            if (defineClassMethodTmp == null)
+            {
+                // This ClassLoader does not have any accessible defineClass method
+                useDefineClassMethod = false;
+            }
+            else if (!defineClassMethodTmp.isAccessible())
+            {
+                try
                 {
-                    try
-                    {
-                        defineClassMethod = clClazz.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-                    }
-                    catch (NoSuchMethodException e)
-                    {
-                        // do nothing, we need to search the superclass
-                    }
-
-                    clClazz = clClazz.getSuperclass();
-                } while (defineClassMethod == null && clClazz != Object.class);
-
-                if (defineClassMethod == null)
-                {
-                    // This ClassLoader does not have any accessible defineClass method
-                    useDefineClassMethod = Boolean.FALSE;
+                    defineClassMethodTmp.setAccessible(true);
                 }
-                else if (!defineClassMethod.isAccessible())
+                catch (RuntimeException re)
                 {
-                    try
-                    {
-                        defineClassMethod.setAccessible(true);
-                        defineClassMethodsByClassLoader.put(classLoader, defineClassMethod);
-                    }
-                    catch (RuntimeException re)
-                    {
-                        // likely j9 or not accessible via security, let's use unsafe
-                        defineClassMethod = null;
-                        useDefineClassMethod = Boolean.FALSE;
-                    }
-                }
-                else
-                {
-                    defineClassMethodsByClassLoader.put(classLoader, defineClassMethod);
+                    // likely j9 or not accessible via security, let's use unsafe or MethodHandle as fallbacks
+                    defineClassMethodTmp = null;
+                    useDefineClassMethod = false;
                 }
             }
+
+            defineClassMethod = defineClassMethodTmp;
         }
 
         try
