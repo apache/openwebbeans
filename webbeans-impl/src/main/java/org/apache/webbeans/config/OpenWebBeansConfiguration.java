@@ -31,9 +31,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Defines configuration for OpenWebBeans.
@@ -243,6 +247,15 @@ public class OpenWebBeansConfiguration
      *
      */
     private Map<String, Set<String>> configuredLists = new HashMap<>();
+
+    /**
+     * List of packages which can't be used to generate a proxy.
+     *
+     * Important: changing this default has runtime impacts on proxies name.
+     *            It is recommended to not tune it until really needed.
+     *            Also ensure it is consistent between generation and runtime if you use stable proxy names.
+     */
+    private volatile List<String> proxyReservedPackages;
 
 
     /**
@@ -555,5 +568,34 @@ public class OpenWebBeansConfiguration
     {
         return Boolean.parseBoolean(getProperty(
                 "org.apache.webbeans.spi.deployer.skipNoClassDefFoundTriggers"));
+    }
+
+    public List<String> getProxyReservedPackages()
+    {
+        if (proxyReservedPackages == null)
+        {
+            synchronized (this)
+            {
+                if (proxyReservedPackages == null)
+                {
+                    final String conf = getProperty("org.apache.webbeans.generator.proxyReservedPackages");
+                    if (conf == null)
+                    {
+                        proxyReservedPackages = asList("java.", "javax.", "sun.misc.");
+                    }
+                    else
+                    {
+                        proxyReservedPackages = Stream.concat(
+                                Stream.of("java.", "javax.", "sun.misc."),
+                                Stream.of(conf.split(","))
+                                        .map(String::trim)
+                                        .filter(it -> !it.isEmpty()))
+                                .distinct()
+                                .collect(toList());
+                    }
+                }
+            }
+        }
+        return proxyReservedPackages;
     }
 }

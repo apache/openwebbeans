@@ -31,6 +31,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.webbeans.custom.CustomProxyPackageMarker;
+import org.apache.webbeans.custom.signed.CustomSignedProxyPackageMarker;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 
@@ -222,8 +223,10 @@ public class Unsafe
                 final MethodHandles.Lookup lookupInstance = MethodHandles.Lookup.class.cast(
                         privateLookup.invoke(
                                 null,
-                                proxyName.startsWith("org.apache.webbeans.custom.") ?
-                                    CustomProxyPackageMarker.class : parent,
+                                proxyName.startsWith("org.apache.webbeans.custom.signed.") ?
+                                        CustomSignedProxyPackageMarker.class :
+                                        proxyName.startsWith("org.apache.webbeans.custom.") ?
+                                            CustomProxyPackageMarker.class : parent,
                                 lookup));
                 return (Class<T>) defineClass.invoke(lookupInstance, proxyBytes);
             }

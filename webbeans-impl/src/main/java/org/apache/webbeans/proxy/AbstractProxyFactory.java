@@ -266,12 +266,14 @@ public abstract class AbstractProxyFactory
     {
         // avoid java.lang.SecurityException: class's signer information
         // does not match signer information of other classes in the same package
-        return "org.apache.webbeans.custom.signed." + classToProxy.getName();
+        return "org.apache.webbeans.custom.signed." +
+                classToProxy.getSimpleName() +
+                Math.abs(classToProxy.hashCode()); // to include somehow the package too even if unlikely
     }
 
     protected String fixPreservedPackages(final String proxyClassName)
     {
-        return Stream.of("java.", "javax.", "jakarta.", "sun.misc.")
+        return webBeansContext.getOpenWebBeansConfiguration().getProxyReservedPackages().stream()
                 .filter(proxyClassName::startsWith)
                 .findFirst() // can only be one, you can't start with 2 of them
                 .map(it -> fixPreservedPackage(proxyClassName, it))
@@ -289,7 +291,9 @@ public abstract class AbstractProxyFactory
 
         if (className.startsWith(forbiddenPackagePrefix))
         {
-            fixedClassName = "org.apache.webbeans.custom." + className.substring(className.lastIndexOf('.') + 1);
+            fixedClassName = "org.apache.webbeans.custom." +
+                    className.substring(className.lastIndexOf('.') + 1) +
+                    Math.abs(className.hashCode()); // to include somehow the package too even if unlikely
         }
 
         return fixedClassName;
