@@ -26,6 +26,8 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -46,6 +48,10 @@ public class Unsafe
     private final Object internalUnsafe;
     private Method unsafeAllocateInstance;
     private final AtomicReference<Method> unsafeDefineClass = new AtomicReference<>();
+
+    // defineClass method on ClassLoader
+    private Boolean useDefineClassMethod = null;
+    private final Map<ClassLoader, Method> defineClassMethodsByClassLoader = new HashMap<>();
 
     // java 16
     private volatile Method privateLookup;
@@ -142,32 +148,53 @@ public class Unsafe
                                            Class<?> parent)
             throws ProxyGenerationException
     {
-        Class<?> clazz = classLoader.getClass();
-
         Method defineClassMethod = null;
-        do
-        {
-            try
-            {
-                defineClassMethod = clazz.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-            }
-            catch (NoSuchMethodException e)
-            {
-                // do nothing, we need to search the superclass
-            }
 
-            clazz = clazz.getSuperclass();
-        } while (defineClassMethod == null && clazz != Object.class);
-
-        if (defineClassMethod != null && !defineClassMethod.isAccessible())
+        if (useDefineClassMethod == null || Boolean.TRUE.equals(useDefineClassMethod))
         {
-            try
+            defineClassMethod = defineClassMethodsByClassLoader.get(classLoader);
+
+            if (defineClassMethod == null)
             {
-                defineClassMethod.setAccessible(true);
-            }
-            catch (RuntimeException re) // likely j9, let's use unsafe
-            {
-                defineClassMethod = null;
+                Class<?> clClazz = classLoader.getClass();
+
+                do
+                {
+                    try
+                    {
+                        defineClassMethod = clClazz.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+                    }
+                    catch (NoSuchMethodException e)
+                    {
+                        // do nothing, we need to search the superclass
+                    }
+
+                    clClazz = clClazz.getSuperclass();
+                } while (defineClassMethod == null && clClazz != Object.class);
+
+                if (defineClassMethod == null)
+                {
+                    // This ClassLoader does not have any accessible defineClass method
+                    useDefineClassMethod = Boolean.FALSE;
+                }
+                else if (!defineClassMethod.isAccessible())
+                {
+                    try
+                    {
+                        defineClassMethod.setAccessible(true);
+                        defineClassMethodsByClassLoader.put(classLoader, defineClassMethod);
+                    }
+                    catch (RuntimeException re)
+                    {
+                        // likely j9 or not accessible via security, let's use unsafe
+                        defineClassMethod = null;
+                        useDefineClassMethod = Boolean.FALSE;
+                    }
+                }
+                else
+                {
+                    defineClassMethodsByClassLoader.put(classLoader, defineClassMethod);
+                }
             }
         }
 
@@ -178,10 +205,10 @@ public class Unsafe
             if (defineClassMethod != null)
             {
                 definedClass = (Class<T>) defineClassMethod.invoke(classLoader, proxyName, proxyBytes, 0, proxyBytes.length);
+                useDefineClassMethod = Boolean.TRUE;
             }
             else
             {
-
                 definedClass = (Class<T>) unsafeDefineClass().invoke(internalUnsafe, proxyName, proxyBytes, 0, proxyBytes.length, classLoader, null);
             }
 
