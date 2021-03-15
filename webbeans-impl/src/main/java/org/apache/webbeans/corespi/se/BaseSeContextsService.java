@@ -355,26 +355,41 @@ public abstract class BaseSeContextsService extends AbstractContextsService
     {
 
         createSingletonContext();
-        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
-            new Object(), InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
+        if (fireApplicationScopeEvents())
+        {
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    new Object(), InitializedLiteral.INSTANCE_SINGLETON_SCOPED);
+        }
     }
 
     private void stopApplicationContext()
     {
         if(applicationContext != null && !applicationContext.isDestroyed())
         {
-            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
-                    new Object(), BeforeDestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
+            final boolean fireApplicationScopeEvents = fireApplicationScopeEvents();
+            if (fireApplicationScopeEvents)
+            {
+                webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                        new Object(), BeforeDestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
+            }
 
             applicationContext.destroy();
 
             // this is needed to get rid of ApplicationScoped beans which are cached inside the proxies...
             WebBeansContext.currentInstance().getBeanManagerImpl().clearCacheProxies();
-            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
-                new Object(), DestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
+            if (fireApplicationScopeEvents)
+            {
+                webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                        new Object(), DestroyedLiteral.INSTANCE_APPLICATION_SCOPED);
+            }
         }
     }
 
+    public boolean fireApplicationScopeEvents()
+    {
+        return Boolean.parseBoolean(webBeansContext.getOpenWebBeansConfiguration()
+                .getProperty("org.apache.webbeans.lifecycle.standalone.fireApplicationScopeEvents", "true"));
+    }
     
     private void stopConversationContext()
     {

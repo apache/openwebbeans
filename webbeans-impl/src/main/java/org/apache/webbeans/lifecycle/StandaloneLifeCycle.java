@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import org.apache.webbeans.annotation.InitializedLiteral;
 import org.apache.webbeans.config.WebBeansFinder;
+import org.apache.webbeans.corespi.se.BaseSeContextsService;
 import org.apache.webbeans.el.ELContextStore;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -58,10 +59,14 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     @Override
     protected void afterStartApplication(Object startupObject)
     {
-        // the ApplicationContext is already started, but we fire
-        // the event again as the userland beans are only available now
-        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
-            new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
+        if (!BaseSeContextsService.class.isInstance(webBeansContext.getContextsService()) ||
+                BaseSeContextsService.class.cast(webBeansContext.getContextsService()).fireApplicationScopeEvents())
+        {
+            // the ApplicationContext is already started, but we fire
+            // the event again as the userland beans are only available now
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                    new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
+        }
 
         webBeansContext.getContextsService().startContext(RequestScoped.class, null);
         webBeansContext.getContextsService().startContext(SessionScoped.class, null);
