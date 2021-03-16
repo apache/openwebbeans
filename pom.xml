@@ -476,6 +476,7 @@
                         <include>**/*TestCase.java</include>
                         <include>**/*Tests*.java</include>
                     </includes>
+                    <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
             <!-- force generating a *-sources.jar when building a jar, e.g. for a snapshot release -->
@@ -507,6 +508,7 @@
                     <configLocation>openwebbeans/owb-checks-default.xml</configLocation>
                     <headerLocation>openwebbeans/owb-header.txt</headerLocation>
                     <consoleOutput>true</consoleOutput>
+                    <excludes>**/Unsafe*</excludes> <!-- we abuse of switch and checkstyle is broken for it -->
                 </configuration>
                 <dependencies>
                     <dependency>

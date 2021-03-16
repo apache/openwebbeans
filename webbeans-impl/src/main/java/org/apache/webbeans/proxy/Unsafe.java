@@ -48,7 +48,7 @@ public class Unsafe
     private final AtomicReference<Method> unsafeDefineClass = new AtomicReference<>();
 
     // defineClass method on ClassLoader
-    private volatile boolean useDefineClassMethod = true;
+    private volatile byte defineClassImpl = 0; // 0 = unset, 1 = classloader, 2 = lookup, 3 = unsafe (unlikely on all jvm)
     private volatile Method defineClassMethod = null;
 
     // java 16
@@ -146,129 +146,169 @@ public class Unsafe
                                            Class<?> parent)
             throws ProxyGenerationException
     {
-
-        if (defineClassMethod == null && useDefineClassMethod)
-        {
-            Method defineClassMethodTmp = null;
-            try
-            {
-                // defineClass is a final method on the abstract base ClassLoader
-                // thus we need to cache it only once
-                defineClassMethodTmp = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-            }
-            catch (NoSuchMethodException e)
-            {
-                // all fine, we just skip over from here
-            }
-
-
-            if (defineClassMethodTmp == null)
-            {
-                // This ClassLoader does not have any accessible defineClass method
-                useDefineClassMethod = false;
-            }
-            else if (!defineClassMethodTmp.isAccessible())
-            {
-                try
-                {
-                    defineClassMethodTmp.setAccessible(true);
-                }
-                catch (RuntimeException re)
-                {
-                    // likely j9 or not accessible via security, let's use unsafe or MethodHandle as fallbacks
-                    defineClassMethodTmp = null;
-                    useDefineClassMethod = false;
-                }
-            }
-
-            defineClassMethod = defineClassMethodTmp;
-        }
-
+        Class<?> definedClass = null;
         try
         {
-            Class<T> definedClass;
+            // CHECKSTYLE:OFF
+            switch (defineClassImpl) {
+                case 0: // unset
+                case 1: // classloader
+                {
+                    if (defineClassMethod == null)
+                    {
+                        Method defineClassMethodTmp;
+                        try
+                        {
+                            // defineClass is a final method on the abstract base ClassLoader
+                            // thus we need to cache it only once
+                            defineClassMethodTmp = ClassLoader.class.getDeclaredMethod(
+                                    "defineClass", String.class, byte[].class, int.class, int.class);
+                            if (!defineClassMethodTmp.isAccessible())
+                            {
+                                try
+                                {
+                                    defineClassMethodTmp.setAccessible(true);
+                                    defineClassMethod = defineClassMethodTmp;
+                                }
+                                catch (final RuntimeException re)
+                                {
+                                    // likely j9 or not accessible via security, let's use unsafe or MethodHandle as fallbacks
+                                }
+                            }
+                        }
+                        catch (final NoSuchMethodException e)
+                        {
+                            // all fine, we just skip over from here
+                        }
+                    }
 
-            if (defineClassMethod != null)
-            {
-                definedClass = (Class<T>) defineClassMethod.invoke(classLoader, proxyName, proxyBytes, 0, proxyBytes.length);
-                useDefineClassMethod = Boolean.TRUE;
+                    if (defineClassMethod != null)
+                    {
+                        try
+                        {
+                            definedClass = Class.class.cast(defineClassMethod.invoke(
+                                    classLoader, proxyName, proxyBytes, 0, proxyBytes.length));
+                            defineClassImpl = 1;
+                            break;
+                        }
+                        catch (final Throwable t)
+                        {
+                            definedClass = handleLinkageError(t, proxyName, classLoader);
+                            if (definedClass != null)
+                            {
+                                defineClassImpl = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                case 2: // lookup
+                {
+                    if (privateLookup == null)
+                    {
+                        synchronized (this)
+                        {
+                            if (privateLookup == null)
+                            {
+                                try
+                                {
+                                    lookup = MethodHandles.lookup();
+                                    defineClass = lookup.getClass().getMethod("defineClass", byte[].class);
+                                    privateLookup = MethodHandles.class.getDeclaredMethod(
+                                            "privateLookupIn", Class.class, MethodHandles.Lookup.class);
+                                }
+                                catch (final Exception re)
+                                {
+                                    // no-op
+                                }
+                            }
+                        }
+                    }
+
+                    if (privateLookup != null)
+                    {
+                        try
+                        {
+                            final MethodHandles.Lookup lookupInstance = MethodHandles.Lookup.class.cast(
+                                    privateLookup.invoke(
+                                            null,
+                                            proxyName.startsWith("org.apache.webbeans.custom.signed.") ?
+                                                    CustomSignedProxyPackageMarker.class :
+                                                    proxyName.startsWith("org.apache.webbeans.custom.") ?
+                                                            CustomProxyPackageMarker.class : parent,
+                                            lookup));
+                            definedClass = (Class<T>) defineClass.invoke(lookupInstance, proxyBytes);
+                            defineClassImpl = 2;
+                            break;
+                        }
+                        catch (final Exception e)
+                        {
+                            definedClass = handleLinkageError(e, proxyName, classLoader);
+                            if (definedClass != null)
+                            {
+                                defineClassImpl = 2;
+                                break;
+                            }
+                        }
+                    }
+                }
+                case 3: // unlikely - unsafe
+                    try
+                    {
+                        definedClass = Class.class.cast(unsafeDefineClass().invoke(
+                                internalUnsafe, proxyName, proxyBytes, 0, proxyBytes.length, classLoader, null));
+                        defineClassImpl = 3;
+                    }
+                    catch (final Throwable t)
+                    {
+                        definedClass = handleLinkageError(t, proxyName, classLoader);
+                    }
+                    break;
+                default:
+                    throw new IllegalAccessError("Unknown defineclass impl: " + defineClassImpl);
             }
-            else
+
+            // CHECKSTYLE:ON
+            if (definedClass == null)
             {
-                definedClass = (Class<T>) unsafeDefineClass().invoke(internalUnsafe, proxyName, proxyBytes, 0, proxyBytes.length, classLoader, null);
+                throw new IllegalStateException("Can't define proxy " + proxyName);
             }
 
             return (Class<T>) Class.forName(definedClass.getName(), true, classLoader);
         }
-        catch (InvocationTargetException le) // if concurrent calls are done then ensure to just reload the created one
+        catch (final Throwable e)
         {
-            if (LinkageError.class.isInstance(le.getCause()))
-            {
-                try
-                {
-                    return (Class<T>) Class.forName(proxyName.replace('/', '.'), true, classLoader);
-                }
-                catch (ClassNotFoundException e)
-                {
-                    // default error handling
-                }
-            }
-            throw onProxyGenerationError(le);
-        }
-        catch (Throwable e)
-        {
-            // we can also defineHiddenClass but what would be the real point? let's keep it simple for now
-            try
-            {
-                if (privateLookup == null)
-                {
-                    synchronized (this)
-                    {
-                        if (privateLookup == null)
-                        {
-                            lookup = MethodHandles.lookup();
-                            privateLookup = MethodHandles.class.getDeclaredMethod(
-                                    "privateLookupIn", Class.class, MethodHandles.Lookup.class);
-                            defineClass = lookup.getClass().getMethod("defineClass", byte[].class);
-                        }
-                    }
-                }
-                final MethodHandles.Lookup lookupInstance = MethodHandles.Lookup.class.cast(
-                        privateLookup.invoke(
-                                null,
-                                proxyName.startsWith("org.apache.webbeans.custom.signed.") ?
-                                        CustomSignedProxyPackageMarker.class :
-                                        proxyName.startsWith("org.apache.webbeans.custom.") ?
-                                            CustomProxyPackageMarker.class : parent,
-                                lookup));
-                return (Class<T>) defineClass.invoke(lookupInstance, proxyBytes);
-            }
-            catch (final Exception exception)
-            {
-                if (LinkageError.class.isInstance(exception.getCause()))
-                {
-                    try
-                    {
-                        return (Class<T>) Class.forName(proxyName.replace('/', '.'), true, classLoader);
-                    }
-                    catch (ClassNotFoundException ignored)
-                    {
-                        // default error handling
-                    }
-                }
-                final ProxyGenerationException proxyGenerationException = onProxyGenerationError(e);
-                proxyGenerationException.addSuppressed(exception);
-                throw proxyGenerationException;
-            }
+            return onProxyGenerationError(e, proxyName, classLoader);
         }
     }
 
-    private ProxyGenerationException onProxyGenerationError(final Throwable throwable)
+    private <T> Class<T> onProxyGenerationError(final Throwable throwable, final String name, final ClassLoader loader)
     {
-        return new ProxyGenerationException(
+        final Class<T> clazz = handleLinkageError(throwable, name, loader);
+        if (clazz != null)
+        {
+            return clazz;
+        }
+        throw new ProxyGenerationException(
                 throwable.getMessage() + (isJava16OrMore() ? "\n" +
-                "On Java 16 ensure to set --add-exports java.base/jdk.internal.misc=ALL-UNNAMED on the JVM" : ""),
+                "On Java 16 you can set --add-exports java.base/jdk.internal.misc=ALL-UNNAMED on the JVM" : ""),
                 throwable.getCause());
+    }
+
+    private <T> Class<T> handleLinkageError(final Throwable throwable, final String name, final ClassLoader loader)
+    {
+        if (LinkageError.class.isInstance(throwable) || LinkageError.class.isInstance(throwable.getCause()))
+        {
+            try
+            {
+                return (Class<T>) Class.forName(name.replace('/', '.'), true, loader);
+            }
+            catch (ClassNotFoundException e)
+            {
+                // default error handling
+            }
+        }
+        return null;
     }
 
     private boolean isJava16OrMore()
