@@ -26,7 +26,7 @@ The minimum Java Version is Java-8.
 
 
 --------------------------------
-OpenWebBeans 2.0.19 Release Features
+OpenWebBeans Release Features
 --------------------------------
 
 - The latest OWB release supports the following features
@@ -63,6 +63,62 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.22
+-------------------------------------------
+Bug
+    [OWB-1371] - review getCurrentContext to automatically create Contexts
+    [OWB-1372] - RequestContextController#deactivate must be a nop if the context was already active before
+    [OWB-1373] - EventImpl does not resolve Observers properly when running with ParentBM setup
+    [OWB-1374] - Container Lifecycle events right now only work during startup
+    [OWB-1376] - Unsafe usage is broken
+    [OWB-1377] - Enable to configure the reserved packages for proxies
+    [OWB-1378] - Ensure @initialized(appscoped) and its symmetric events can be skipped in se mode
+
+New Feature
+    [OWB-1369] - Ensure OWB-web module configuration wins over OWB-se module
+    [OWB-1370] - Enable to select the CDI SE provider
+
+Improvement
+    [OWB-1367] - Bad filter url-pattern in demos
+    [OWB-1375] - improve support for Java 9++ hacks
+
+Task
+    [OWB-1365] - org.apache.webbeans.spi.deployer.skipValidations not usable in standard mode
+    [OWB-1366] - WebBeansLoggerFacade must not create any logger in its static init block if not needed
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.21
+-------------------------------------------
+Bug
+    [OWB-1355] - OwbRequestContextController does not work with web contexts service
+    [OWB-1358] - [CDI-SE] enable to configure custom services through properties
+    [OWB-1360] - ProcessSyntheticObserverMethod not considered as a container event
+
+Improvement
+    [OWB-1359] - Simplify extension manipulation by making DefaultLoaderService more easily extensible
+
+Task
+    [OWB-1356] - Use lazy logger lookup for error only usages
+    [OWB-1357] - Enable to skip some Extension resolution when there is no observer
+    [OWB-1361] - Some startup time improvements
+    [OWB-1362] - using static proxy names can lead to a NPE with xxhash64 algorithm
+    [OWB-1363] - Add a PreScannedCDISeScannerService service for cdi se module
+    [OWB-1364] - Proxy unique hash computation should ignore Object methods (always in the same bucket)
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.20
+-------------------------------------------
+Bug
+    [OWB-1353] - @ActivateRequestContext not supported
+    [OWB-1354] - Lifecycle interceptors inherit from method interceptors
+
+Task
+    [OWB-1352] - Add org.apache.webbeans.corespi.se.SimpleApplicationBoundaryService implementation to enable to use the startup classloader
 
 
 -------------------------------------------
