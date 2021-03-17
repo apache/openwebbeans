@@ -22,6 +22,7 @@ import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.archive.Archive;
 import org.apache.xbean.finder.archive.ClassesArchive;
 
+import java.lang.reflect.Field;
 import java.util.stream.Stream;
 
 /**
@@ -43,6 +44,19 @@ public class OwbAnnotationFinder extends AnnotationFinder
     public OwbAnnotationFinder(final Class<?>[] classes)
     {
         super(new ClassesArchive(/*empty since we want to read from reflection, not from resources*/));
+        try
+        {
+            final Field linking = AnnotationFinder.class.getDeclaredField("linking");
+            if (!linking.isAccessible())
+            {
+                linking.setAccessible(true);
+            }
+            linking.set(this, true);
+        }
+        catch (final Exception e)
+        {
+            // ignore, will not affect all cases
+        }
         Stream.of(classes).forEach(c -> super.readClassDef(c));
     }
 
