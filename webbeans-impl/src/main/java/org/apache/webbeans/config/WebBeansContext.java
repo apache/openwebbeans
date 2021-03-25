@@ -32,6 +32,7 @@ import java.util.logging.Level;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.CreationalContextFactory;
 import org.apache.webbeans.conversation.ConversationManager;
@@ -71,6 +72,9 @@ import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.DefaultBeanArchiveService;
 
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+
 /**
  * This is the central point to manage the whole CDI container
  * for a single application There is one WebBeansContext per BeanManagerImpl.
@@ -103,6 +107,8 @@ public class WebBeansContext
     private final InterceptorUtil interceptorUtil = new InterceptorUtil(this);
     private final SecurityService securityService;
     private final LoaderService loaderService;
+    private final InjectableBeanManager injectableBeanManager;
+    private final Bean<BeanManager> beanManagerBean;
     private BeanArchiveService beanArchiveService;
     private final InterceptorResolutionService interceptorResolutionService = new InterceptorResolutionService(this);
     private final DeploymentValidationService deploymentValidationService = new DeploymentValidationService(this);
@@ -172,6 +178,18 @@ public class WebBeansContext
 
         beanManagerImpl.getInjectionResolver().setFastMatching(!"false".equalsIgnoreCase(getOpenWebBeansConfiguration()
                 .getProperty(OpenWebBeansConfiguration.FAST_MATCHING)));
+        injectableBeanManager = new InjectableBeanManager(beanManagerImpl);
+        beanManagerBean = getWebBeansUtil().getManagerBean();
+    }
+
+    public Bean<BeanManager> getBeanManagerBean()
+    {
+        return beanManagerBean;
+    }
+
+    public InjectableBeanManager getInjectableBeanManager()
+    {
+        return injectableBeanManager;
     }
 
     public static WebBeansContext getInstance()

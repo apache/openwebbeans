@@ -232,7 +232,7 @@ public class BeansDeployer
                 }
 
                 // Register Manager built-in component
-                webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getManagerBean());
+                webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getBeanManagerBean());
                 // Register built-in RequestContextController
                 webBeansContext.getBeanManagerImpl().addInternalBean(webBeansContext.getWebBeansUtil().getRequestContextControllerBean());
                 webBeansContext.getInterceptorsManager().addCdiInterceptor(webBeansContext.getWebBeansUtil().getRequestContextInterceptorBean());

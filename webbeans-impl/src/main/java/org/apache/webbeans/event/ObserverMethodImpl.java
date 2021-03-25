@@ -43,12 +43,14 @@ import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.EventContext;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.OWBLogConst;
@@ -432,29 +434,39 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
 
         for (InjectionPoint injectionPoint: injectionPoints)
         {
-            Bean<Object> injectedBean = (Bean<Object>)manager.getInjectionResolver().getInjectionPointBean(injectionPoint);
-            
-            CreationalContextImpl<Object> creational = manager.createCreationalContext(injectedBean);
-            creational.putInjectionPoint(metadata.getInjectionPoint());
-            creational.putInjectionPoint(injectionPoint);
-            creational.putEventMetadata(metadata);
-            Object instance;
-            try
-            {
-                instance = manager.getReference(injectedBean, null, creational);
-            }
-            finally
-            {
-                creational.removeEventMetadata();
-                creational.removeInjectionPoint();
-                creational.removeInjectionPoint();
-            }
-                                
             ObserverParams param = new ObserverParams();
             param.isBean = true;
-            param.creational = creational;
-            param.instance = instance;
-            param.bean = injectedBean;
+            if (injectionPoint.getType() == BeanManager.class &&
+                    injectionPoint.getQualifiers().contains(DefaultLiteral.INSTANCE))
+            {
+                param.instance = webBeansContext.getInjectableBeanManager();
+                param.isBean = false; // no need to release
+            }
+            else
+            {
+                Bean<Object> injectedBean = (Bean<Object>) manager.getInjectionResolver().getInjectionPointBean(injectionPoint);
+
+                CreationalContextImpl<Object> creational = manager.createCreationalContext(injectedBean);
+                creational.putInjectionPoint(metadata.getInjectionPoint());
+                creational.putInjectionPoint(injectionPoint);
+                creational.putEventMetadata(metadata);
+                Object instance;
+                try
+                {
+                    instance = manager.getReference(injectedBean, null, creational);
+                }
+                finally
+                {
+                    creational.removeEventMetadata();
+                    creational.removeInjectionPoint();
+                    creational.removeInjectionPoint();
+                }
+
+                param.creational = creational;
+                param.instance = instance;
+                param.bean = injectedBean;
+            }
+
             list.add(param);
 
             if (list.size() == annotatedObservesParameter.getPosition())
