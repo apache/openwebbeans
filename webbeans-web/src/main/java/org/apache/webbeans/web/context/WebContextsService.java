@@ -604,7 +604,11 @@ public class WebContextsService extends AbstractContextsService
             catch (IllegalStateException e) 
             {
                 // Jetty will throw an ISE if you attempt to query the last accessed time of a session that is being invalidated
-                return true;
+                if ("Session not valid".equals(e.getMessage()) 
+                {
+                    return true;
+                }
+                throw e;
             }
         }
         return false;
