@@ -42,56 +42,41 @@ public class ConversationScopedTest extends AbstractUnitTest
     @Test
     public void testTransientConversation() throws Exception
     {
-        try
-        {
-            System.setProperty(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION, "true");
-            startContainer(ConversationScopedBean.class);
+        addConfiguration(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION, "true");
+        startContainer(ConversationScopedBean.class);
 
-            ConversationScopedBean instance = getInstance(ConversationScopedBean.class);
-            instance.setValue("a");
-            instance.begin();
-            ensureSerialisableContext();
+        ConversationScopedBean instance = getInstance(ConversationScopedBean.class);
+        instance.setValue("a");
+        instance.begin();
+        ensureSerialisableContext();
 
-            restartContext(RequestScoped.class);
+        restartContext(RequestScoped.class);
 
 
-            instance.end();
-            Assert.assertNull(instance.getValue());
-
-        }
-        finally
-        {
-            System.clearProperty(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION);
-        }
+        instance.end();
+        Assert.assertNull(instance.getValue());
     }
 
 
     @Test
     public void testConversationEvents() throws Exception
     {
-        try
-        {
-            ConversationScopedInitBean.gotStarted = false;
-            EndConversationObserver.endConversationCalled = false;
+        ConversationScopedInitBean.gotStarted = false;
+        EndConversationObserver.endConversationCalled = false;
 
-            System.setProperty(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION, "true");
-            startContainer(ConversationScopedInitBean.class, EndConversationObserver.class);
+        addConfiguration(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION, "true");
+        startContainer(ConversationScopedInitBean.class, EndConversationObserver.class);
 
-            ConversationScopedInitBean instance = getInstance(ConversationScopedInitBean.class);
-            instance.ping();
+        ConversationScopedInitBean instance = getInstance(ConversationScopedInitBean.class);
+        instance.ping();
 
-            Assert.assertTrue(ConversationScopedInitBean.gotStarted);
+        Assert.assertTrue(ConversationScopedInitBean.gotStarted);
 
-            ensureSerialisableContext();
+        ensureSerialisableContext();
 
-            shutDownContainer();
+        shutDownContainer();
 
-            Assert.assertTrue(EndConversationObserver.endConversationCalled);
-        }
-        finally
-        {
-            System.clearProperty(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION);
-        }
+        Assert.assertTrue(EndConversationObserver.endConversationCalled);
     }
 
     private void ensureSerialisableContext() throws IOException, ClassNotFoundException

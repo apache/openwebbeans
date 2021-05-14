@@ -59,6 +59,10 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
     @Override
     protected void afterStartApplication(Object startupObject)
     {
+        webBeansContext.getContextsService().startContext(RequestScoped.class, null);
+        webBeansContext.getContextsService().startContext(SessionScoped.class, null);
+        webBeansContext.getContextsService().startContext(ConversationScoped.class, null);
+
         if (!BaseSeContextsService.class.isInstance(webBeansContext.getContextsService()) ||
                 BaseSeContextsService.class.cast(webBeansContext.getContextsService()).fireApplicationScopeEvents())
         {
@@ -67,10 +71,6 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                     new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
         }
-
-        webBeansContext.getContextsService().startContext(RequestScoped.class, null);
-        webBeansContext.getContextsService().startContext(SessionScoped.class, null);
-        webBeansContext.getContextsService().startContext(ConversationScoped.class, null);
     }
 
     @Override

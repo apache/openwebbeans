@@ -45,6 +45,8 @@ public class OwbRequestContextControllerTest extends AbstractUnitTest
         assertFalse(getInstance(RequestContextController.class).activate());
         assertTrue(cs.getCurrentContext(RequestScoped.class).isActive());
         controller.deactivate();
+        controller.deactivate();
+        controller.deactivate();
         assertNull(cs.getCurrentContext(RequestScoped.class));
     }
 }

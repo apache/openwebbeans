@@ -307,6 +307,10 @@ public abstract class BaseSeContextsService extends AbstractContextsService
     
     private void startConversationContext()
     {
+        if (!supportsConversation)
+        {
+            return;
+        }
         ConversationManager conversationManager = webBeansContext.getConversationManager();
         ConversationContext ctx = conversationManager.getConversationContext(getCurrentSessionContext());
         ctx.setActive(true);
@@ -393,6 +397,10 @@ public abstract class BaseSeContextsService extends AbstractContextsService
     
     private void stopConversationContext()
     {
+        if (!supportsConversation)
+        {
+            return;
+        }
         if(conversationContext.get() != null)
         {
             conversationContext.get().destroy();   
