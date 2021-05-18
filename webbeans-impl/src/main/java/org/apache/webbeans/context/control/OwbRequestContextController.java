@@ -27,87 +27,37 @@ import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.control.RequestContextController;
 import javax.enterprise.context.spi.Context;
-import java.util.ArrayList;
-import java.util.List;
 
 public class OwbRequestContextController implements RequestContextController
 {
     private final ContextsService contextsService;
-    private final ThreadLocal<List<Op>> deactivateOperations;
+    private boolean enabled;
 
     OwbRequestContextController(final WebBeansContext context)
     {
         this.contextsService = context.getContextsService();
-        this.deactivateOperations = findThreadLocal(context);
     }
 
     @Override
     public boolean activate()
     {
         final Context ctx = contextsService.getCurrentContext(RequestScoped.class, false);
-        if (ctx == null || !ctx.isActive())
+        enabled = ctx == null || !ctx.isActive();
+        if (enabled)
         {
             contextsService.startContext(RequestScoped.class, null);
-            final List<Op> ops = new ArrayList<>();
-            ops.add(Op.DEACTIVATE);
-            deactivateOperations.set(ops);
-            return true;
         }
-        List<Op> deactivateOps = deactivateOperations.get();
-        if (deactivateOps == null)
-        {
-            deactivateOps = new ArrayList<>();
-            deactivateOperations.set(deactivateOps);
-        }
-        deactivateOps.add(Op.NOOP);
-        return false;
+        return enabled;
     }
 
     @Override
     public void deactivate() throws ContextNotActiveException
     {
-        // spec says we only must deactivate the RequestContest "if it was activated by this context controller"
-        final List<Op> ops = deactivateOperations.get();
-        if (ops == null)
-        {
-            return;
-        }
-        if (ops.remove(ops.size() - 1) == Op.DEACTIVATE)
+        if (enabled)
         {
             contextsService.endContext(RequestScoped.class, null);
             RequestScopedBeanInterceptorHandler.removeThreadLocals();
+            enabled = false;
         }
-        if (ops.isEmpty())
-        {
-            deactivateOperations.remove();
-        }
-    }
-
-    // must be per webbeanscontext
-    private ThreadLocal<List<Op>> findThreadLocal(final WebBeansContext context)
-    {
-        ThreadLocalService service = context.getService(ThreadLocalService.class);
-        if (service == null)
-        {
-            synchronized (context)
-            {
-                if (service == null)
-                {
-                    service = new ThreadLocalService();
-                    context.registerService(ThreadLocalService.class, service);
-                }
-            }
-        }
-        return service.instance;
-    }
-
-    private enum Op
-    {
-        DEACTIVATE, NOOP
-    }
-
-    private static class ThreadLocalService
-    {
-        private final ThreadLocal<List<Op>> instance = new ThreadLocal<>();
     }
 }

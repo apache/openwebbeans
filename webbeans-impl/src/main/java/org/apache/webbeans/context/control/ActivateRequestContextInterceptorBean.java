@@ -47,12 +47,10 @@ public class ActivateRequestContextInterceptorBean
     private static final InterceptorClass INSTANCE = new InterceptorClass();
 
     private final WebBeansContext webBeansContext;
-    private transient RequestContextController contextController;
 
     public ActivateRequestContextInterceptorBean(final WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        this.contextController = new OwbRequestContextController(webBeansContext);
     }
 
     @Override
@@ -71,21 +69,15 @@ public class ActivateRequestContextInterceptorBean
     public Object intercept(final InterceptionType type, final InterceptorClass instance,
                             final InvocationContext ctx) throws Exception
     {
-        if (contextController == null) // synchro is not needed since the instance is backed by contextsservice
-        {
-            contextController = new OwbRequestContextController(webBeansContext);
-        }
-        final boolean activated = contextController.activate();
+        final RequestContextController contextController = new OwbRequestContextController(webBeansContext);
+        contextController.activate();
         try
         {
             return ctx.proceed();
         }
         finally
         {
-            if (activated)
-            {
-                contextController.deactivate();
-            }
+            contextController.deactivate();
         }
     }
 
