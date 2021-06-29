@@ -35,7 +35,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletRequest;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;
@@ -66,7 +66,7 @@ public class WebBeansTest {
             final Bean<?> context = mgr.resolve(mgr.getBeans(ServletContext.class));
             assertEquals("ok", ServletContext.class.cast(mgr.getReference(context, ServletContext.class, null)).getAttribute("test"));
             assertNotNull(context);
-            assertNotNull(mgr.resolve(mgr.getBeans(HttpServletRequest.class)));
+            assertNotNull(mgr.resolve(mgr.getBeans(ServletRequest.class)));
         }
         finally
         {

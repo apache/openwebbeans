@@ -27,17 +27,17 @@ import org.apache.webbeans.web.context.ServletRequestContext;
 import org.apache.webbeans.web.context.WebContextsService;
 
 import javax.inject.Provider;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletRequest;
 
-class ServletRequestBean extends BuiltInOwbBean<HttpServletRequest>
+class ServletRequestBean extends BuiltInOwbBean<ServletRequest>
 {
     ServletRequestBean(WebBeansContext ctx, WebContextsService contexts)
     {
-        super(ctx, WebBeansType.SERVLET_REQUEST, HttpServletRequest.class, new SimpleProducerFactory<>(
-            new ProviderBasedProducer<>(ctx, HttpServletRequest.class, new Provider<HttpServletRequest>()
+        super(ctx, WebBeansType.SERVLET_REQUEST, ServletRequest.class, new SimpleProducerFactory<>(
+            new ProviderBasedProducer<>(ctx, ServletRequest.class, new Provider<ServletRequest>()
             {
                 @Override
-                public HttpServletRequest get()
+                public ServletRequest get()
                 {
                     ServletRequestContext requestContext = contexts.getRequestContext(false);
                     return requestContext == null ? null : requestContext.getServletRequest();
@@ -48,6 +48,6 @@ class ServletRequestBean extends BuiltInOwbBean<HttpServletRequest>
     @Override
     public Class<?> proxyableType()
     {
-        return HttpServletRequest.class;
+        return ServletRequest.class;
     }
 }

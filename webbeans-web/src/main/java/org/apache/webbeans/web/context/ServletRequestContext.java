@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.web.context;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletRequest;
 
 import org.apache.webbeans.context.RequestContext;
 
@@ -32,7 +32,7 @@ public class ServletRequestContext extends RequestContext
     private static final long serialVersionUID = -8375349845543590243L;
 
     // this can only be accessed when the context is active
-    private transient HttpServletRequest servletRequest;
+    private transient ServletRequest servletRequest;
 
 
     public ServletRequestContext()
@@ -46,7 +46,7 @@ public class ServletRequestContext extends RequestContext
         return getServletRequest();
     }
 
-    public HttpServletRequest getServletRequest()
+    public ServletRequest getServletRequest()
     {
         if (active)
         {
@@ -58,7 +58,7 @@ public class ServletRequestContext extends RequestContext
         }
     }
 
-    public void setServletRequest(HttpServletRequest servletRequest)
+    public void setServletRequest(ServletRequest servletRequest)
     {
         this.servletRequest = servletRequest;
     }

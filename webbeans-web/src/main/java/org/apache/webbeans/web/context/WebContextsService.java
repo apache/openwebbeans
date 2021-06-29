@@ -46,6 +46,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -355,16 +356,21 @@ public class WebContextsService extends AbstractContextsService
 
         if(startupObject instanceof ServletRequestEvent)
         {
-            HttpServletRequest request = (HttpServletRequest) ((ServletRequestEvent) startupObject).getServletRequest();
+            ServletRequest request = ((ServletRequestEvent) startupObject).getServletRequest();
             requestContext.setServletRequest(request);
             
             if (request != null)
             {
                 payload = request;
 
-                if (shouldEagerlyInitializeSession(request))
+                if (request instanceof HttpServletRequest)
                 {
-                    request.getSession(true);
+                    HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+
+                    if (shouldEagerlyInitializeSession(httpServletRequest))
+                    {
+                        httpServletRequest.getSession(true);
+                    }
                 }
             }
         }
@@ -411,13 +417,14 @@ public class WebContextsService extends AbstractContextsService
             SessionContext sessionContext = context.getPropagatedSessionContext();
 
             Object payload = null;
-            if (context.getServletRequest() != null)
+            final ServletRequest servletRequest = context.getServletRequest();
+            if (servletRequest != null)
             {
                 payload = context.getHttpSession();
                 if (payload == null)
                 {
                     // in tomcat it will be null if invalidate was called
-                    payload = context.getServletRequest().getSession(false);
+                    payload = getSession(servletRequest);
                 }
             }
 
@@ -557,7 +564,7 @@ public class WebContextsService extends AbstractContextsService
 
             if (destroySessionImmediately
                 || requestContext == null || requestContext.getServletRequest() == null
-                || requestContext.getServletRequest().getSession(false) == null
+                || getSession(requestContext.getServletRequest()) == null
                 || sessionIsExpiring)
             {
                 webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
@@ -582,6 +589,27 @@ public class WebContextsService extends AbstractContextsService
         }
 
         SessionScopedBeanInterceptorHandler.removeThreadLocals();
+    }
+
+    private HttpSession getSession(ServletRequest servletRequest)
+    {
+        return getSession(servletRequest, false);
+    }
+
+    private HttpSession getSession(ServletRequest servletRequest, boolean create)
+    {
+        if (servletRequest == null)
+        {
+            return null;
+        }
+
+        if (servletRequest instanceof HttpServletRequest)
+        {
+            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            return httpServletRequest.getSession(create);
+        }
+
+        return null;
     }
 
 
@@ -830,13 +858,13 @@ public class WebContextsService extends AbstractContextsService
             return;
         }
 
-        HttpServletRequest servletRequest = requestContext.getServletRequest();
+        ServletRequest servletRequest = requestContext.getServletRequest();
         // this could be null if there is no active request context
         if (servletRequest != null)
         {
             try
             {
-                HttpSession currentSession = servletRequest.getSession(createSession);
+                HttpSession currentSession = getSession(servletRequest, createSession);
                 if (currentSession != null)
                 {
                     initSessionContext(currentSession);
