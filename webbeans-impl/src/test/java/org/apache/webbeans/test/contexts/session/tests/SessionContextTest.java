@@ -112,4 +112,44 @@ public class SessionContextTest extends AbstractUnitTest
 
         Assert.assertEquals(1, AppScopedBean.appContextDestroyedEvent.size());
     }
+
+    @Test
+    public void testRequestContextDestroyedEventOnShutdown()
+    {
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(PersonalDataBean.class);
+        classes.add(AppScopedBean.class);
+        classes.add(CircularDependentScopedBean.class);
+        classes.add(CircularApplicationScopedBean.class);
+
+        AppScopedBean.appContextInitializedEvent.clear();
+        AppScopedBean.appContextDestroyedEvent.clear();
+        AppScopedBean.sessionContextInitializedEvent.clear();
+        AppScopedBean.sessionContextDestroyedEvent.clear();
+        AppScopedBean.requestContextInitializedEvent.clear();
+        AppScopedBean.requestContextDestroyedEvent.clear();
+
+        startContainer(classes);
+        
+        AppScopedBean appBeanInstance = getInstance(AppScopedBean.class);
+        Assert.assertNotNull(appBeanInstance);
+        PersonalDataBean pdb1 = appBeanInstance.getPdb().getInstance();
+        Assert.assertNotNull(pdb1);
+        
+        // now we reset the session Context so we should get a new contextual instance.
+        getWebBeansContext().getContextsService().endContext(SessionScoped.class, null);
+        getWebBeansContext().getContextsService().endContext(RequestScoped.class, null);
+
+        Assert.assertEquals(1, AppScopedBean.appContextInitializedEvent.size());
+        Assert.assertEquals(1, AppScopedBean.sessionContextInitializedEvent.size());
+        Assert.assertEquals(1, AppScopedBean.sessionContextDestroyedEvent.size());
+        Assert.assertEquals(1, AppScopedBean.requestContextInitializedEvent.size());
+        Assert.assertEquals(1, AppScopedBean.requestContextDestroyedEvent.size());
+
+        shutDownContainer();
+        Assert.assertEquals(1, AppScopedBean.requestContextDestroyedEvent.size());
+        Assert.assertEquals(1, AppScopedBean.sessionContextDestroyedEvent.size());
+
+        Assert.assertEquals(1, AppScopedBean.appContextDestroyedEvent.size());
+    }
 }

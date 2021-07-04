@@ -422,13 +422,13 @@ public abstract class BaseSeContextsService extends AbstractContextsService
         }
 
 
-        if (shouldFireRequestLifecycleEvents())
+        final RequestContext ctx = BaseSeContextsService.requestContext.get();
+        if (ctx != null && shouldFireRequestLifecycleEvents())
         {
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                     new Object(), BeforeDestroyedLiteral.INSTANCE_REQUEST_SCOPED);
         }
 
-        final RequestContext ctx = BaseSeContextsService.requestContext.get();
         if (ctx != null)
         {
             ctx.destroy();
@@ -438,7 +438,7 @@ public abstract class BaseSeContextsService extends AbstractContextsService
         BaseSeContextsService.requestContext.remove();
         RequestScopedBeanInterceptorHandler.removeThreadLocals();
 
-        if (shouldFireRequestLifecycleEvents())
+        if (ctx != null && shouldFireRequestLifecycleEvents())
         {
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                     ctx, DestroyedLiteral.INSTANCE_REQUEST_SCOPED);
@@ -450,16 +450,20 @@ public abstract class BaseSeContextsService extends AbstractContextsService
     {
         webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                 new Object(), BeforeDestroyedLiteral.INSTANCE_SESSION_SCOPED);
-        if(sessionContext.get() != null)
+        SessionContext activeContext = sessionContext.get();
+        if(activeContext != null)
         {
-            sessionContext.get().destroy();   
+            activeContext.destroy();   
         }
 
         sessionContext.set(null);
         sessionContext.remove();
         SessionScopedBeanInterceptorHandler.removeThreadLocals();
-        webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
-            new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
+        if (activeContext != null)
+        {
+            webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
+                new Object(), DestroyedLiteral.INSTANCE_SESSION_SCOPED);
+        }
     }
 
     
