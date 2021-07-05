@@ -593,10 +593,22 @@ public class WebContextsService extends AbstractContextsService
         int maxInactiveInterval = session.getMaxInactiveInterval();
         if (maxInactiveInterval > 0)
         {
-            long inactiveSince = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - session.getLastAccessedTime());
-            if (inactiveSince >= maxInactiveInterval)
+            try 
             {
-                return true;
+                long inactiveSince = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - session.getLastAccessedTime());
+                if (inactiveSince >= maxInactiveInterval)
+                {
+                    return true;
+                }
+            }
+            catch (IllegalStateException e) 
+            {
+                // Jetty will throw an ISE if you attempt to query the last accessed time of a session that is being invalidated
+                if ("Session not valid".equals(e.getMessage()) 
+                {
+                    return true;
+                }
+                throw e;
             }
         }
         return false;
