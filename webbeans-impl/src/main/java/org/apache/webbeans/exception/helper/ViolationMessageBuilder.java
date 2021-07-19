@@ -22,8 +22,6 @@ public class ViolationMessageBuilder
 {
     private StringBuilder violationMessage;
 
-    private final String lineSeparator = System.getProperty("line.separator");
-
     public static ViolationMessageBuilder newViolation()
     {
         return new ViolationMessageBuilder();
@@ -59,7 +57,7 @@ public class ViolationMessageBuilder
         }
         else if(appendLineSeparator)
         {
-            violationMessage.append(lineSeparator);
+            violationMessage.append(System.lineSeparator());
         }
 
         for(String t : text)
