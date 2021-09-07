@@ -47,7 +47,7 @@ public class TomcatInstanceManager implements InstanceManager
     @Override
     public void destroyInstance(Object instance) throws IllegalAccessException, InvocationTargetException
     {
-        Object injectorInstance = this.objects.get(instance);
+        Object injectorInstance = this.objects.remove(instance);
         if (injectorInstance != null)
         {
             try
@@ -64,7 +64,6 @@ public class TomcatInstanceManager implements InstanceManager
             }
         }
         this.processor.destroyInstance(instance);
-        this.objects.remove(instance);
         if (log.isDebugEnabled())
         {
             log.debug("Number of 'objects' map entries after destroying instance: " + this.objects.size());
