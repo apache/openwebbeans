@@ -47,7 +47,7 @@ public class TomcatInstanceManager implements InstanceManager
     @Override
     public void destroyInstance(Object instance) throws IllegalAccessException, InvocationTargetException
     {
-        Object injectorInstance = objects.get(instance);
+        Object injectorInstance = this.objects.get(instance);
         if (injectorInstance != null)
         {
             try
@@ -60,10 +60,15 @@ public class TomcatInstanceManager implements InstanceManager
             }
             catch (Exception e)
             {
-                log.error("Erros is occured while destroying the OpenWebBeans injector instance", e);
+                log.error("Error is occured while destroying the OpenWebBeans injector instance", e);
             }
         }
         this.processor.destroyInstance(instance);
+        this.objects.remove(instance);
+        if (log.isDebugEnabled())
+        {
+            log.debug("Number of 'objects' map entries after destroying instance: " + this.objects.size());
+        }
     }
 
     @Override
@@ -122,7 +127,11 @@ public class TomcatInstanceManager implements InstanceManager
             Object injectorInstance = TomcatUtil.inject(object, loader);
             if (injectorInstance != null)
             {
-                objects.put(object, injectorInstance);
+                this.objects.put(object, injectorInstance);
+            }
+            if (log.isDebugEnabled())
+            {
+                log.debug("Number of 'objects' map entries after injecting instance: " + this.objects.size());
             }
         }
         catch (Exception e)
