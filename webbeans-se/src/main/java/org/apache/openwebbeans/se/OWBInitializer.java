@@ -60,7 +60,8 @@ public class OWBInitializer extends SeContainerInitializer
     public OWBInitializer()
     {
         scannerService.loader(loader);
-        if (Boolean.getBoolean("javax.enterprise.inject.scan.implicit")) {
+        if (Boolean.getBoolean("javax.enterprise.inject.scan.implicit"))
+        {
             addProperty("org.apache.webbeans.scanBeansXmlOnly", true);
         }
     }
