@@ -19,6 +19,7 @@
 package org.apache.webbeans.corespi.scanner;
 
 
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 import org.apache.webbeans.config.OWBLogConst;
@@ -201,7 +202,8 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
 
         try
         {
-            Set<URL> classPathUrls = ClassLoaders.findUrls(loader);
+            final Set<URL> classPathUrls = ClassLoaders.findUrls(loader);
+            final Map<File, URL> classpathFiles = toFiles(classPathUrls);
 
             // first step: get all META-INF/beans.xml marker files
             Enumeration<URL> beansXmlUrls = loader.getResources(META_INF_BEANS_XML);
@@ -210,19 +212,30 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                 URL beansXmlUrl = beansXmlUrls.nextElement();
                 addWebBeansXmlLocation(beansXmlUrl);
 
-                // second step: remove the corresponding classpath entry if we found an explicit beans.xml
-                String beansXml = beansXmlUrl.toExternalForm();
-                beansXml = stripProtocol(beansXml);
-
-                Iterator<URL> cpIt = classPathUrls.iterator(); // do not use Set<URL> remove as this would trigger hashCode -> DNS
-                while (cpIt.hasNext())
+                if (classpathFiles == null) // handle protocols out if [jar,file] set
                 {
-                    URL cpUrl = cpIt.next();
-                    if (beansXml.startsWith(stripProtocol(cpUrl.toExternalForm())))
+                    // second step: remove the corresponding classpath entry if we found an explicit beans.xml
+                    String beansXml = beansXmlUrl.toExternalForm();
+                    beansXml = stripProtocol(beansXml);
+
+                    Iterator<URL> cpIt = classPathUrls.iterator(); // do not use Set<URL> remove as this would trigger hashCode -> DNS
+                    while (cpIt.hasNext())
                     {
-                        cpIt.remove();
-                        addDeploymentUrl(beansXml, cpUrl);
-                        break;
+                        URL cpUrl = cpIt.next();
+                        if (beansXml.startsWith(stripProtocol(cpUrl.toExternalForm())))
+                        {
+                            cpIt.remove();
+                            addDeploymentUrl(beansXml, cpUrl);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    final URL url = classpathFiles.remove(Files.toFile(beansXmlUrl));
+                    if (url != null)
+                    {
+                        addDeploymentUrl(beansXmlUrl.toExternalForm(), url);
                     }
                 }
             }
@@ -234,7 +247,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                 filterExcludedJars(classPathUrls);
 
                 // forth step: add all 'implicit bean archives'
-                for (URL url : classPathUrls)
+                for (URL url : (classpathFiles == null ? classPathUrls : classpathFiles.values()))
                 {
                     if (isBdaUrlEnabled(url))
                     {
@@ -247,6 +260,24 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         catch (IOException e)
         {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected Map<File, URL> toFiles(final Set<URL> classPathUrls)
+    {
+        try
+        {
+            final Map<File, URL> collected = classPathUrls.stream()
+                    .collect(toMap(Files::toFile, identity(), (a, b) -> a));
+            if (collected.containsKey(null)) // not a known protocol
+            {
+                return null;
+            }
+            return collected;
+        }
+        catch (final RuntimeException re)
+        {
+            return null;
         }
     }
 
