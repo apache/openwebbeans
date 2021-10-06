@@ -59,6 +59,19 @@ public class ClassLoaderProxyService implements DefiningClassService
                 name, bytecode, proxiedClass.getPackage(), proxiedClass.getProtectionDomain());
     }
 
+    @Override
+    public <T> T newInstance(final Class<? extends T> proxyClass)
+    {
+        try
+        {
+            return proxyClass.getConstructor().newInstance();
+        }
+        catch (final Exception e)
+        {
+            throw new IllegalStateException("Failed to create a new Proxy instance of " + proxyClass.getName(), e);
+        }
+    }
+
     // for build tools - @Experimental
     public static class Spy extends ClassLoaderProxyService
     {
@@ -130,6 +143,19 @@ public class ClassLoaderProxyService implements DefiningClassService
             {
                 WebBeansLoggerFacade.getLogger(getClass()).warning(e.getMessage());
                 throw new WebBeansException(e);
+            }
+        }
+
+        @Override
+        public <T> T newInstance(final Class<? extends T> proxyClass)
+        {
+            try
+            {
+                return proxyClass.getConstructor().newInstance();
+            }
+            catch (final Exception e)
+            {
+                throw new IllegalStateException("Failed to create a new Proxy instance of " + proxyClass.getName(), e);
             }
         }
     }

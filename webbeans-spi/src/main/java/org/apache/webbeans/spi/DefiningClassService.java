@@ -40,4 +40,12 @@ public interface DefiningClassService
      * @return the proxy class
      */
     <T> Class<T> defineAndLoad(String name, byte[] bytecode, Class<T> proxiedClass);
+
+    /**
+     * Create a new instance for a given proxy class.
+     * @param proxyClass the proxy class
+     * @param <T> type of the class to proxy
+     * @return the proxy instance
+     */
+    <T> T newInstance(final Class<? extends T> proxyClass); // maybe a default method would make sense here
 }

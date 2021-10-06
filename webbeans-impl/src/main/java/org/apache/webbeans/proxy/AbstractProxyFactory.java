@@ -336,23 +336,13 @@ public abstract class AbstractProxyFactory
         return unsafe.defineAndLoadClass(classLoader, proxyClassName, proxyBytes, classToProxy);
     }
 
-    protected  <T> T newInstance(final Class<? extends T> proxyClass)
+    protected <T> T newInstance(final Class<? extends T> proxyClass)
     {
-        if (unsafe != null)
+        if (definingService != null)
         {
-            return unsafe.unsafeNewInstance(proxyClass);
+            return definingService.newInstance(proxyClass);
         }
-        else
-        {
-            try
-            {
-                return proxyClass.getConstructor().newInstance();
-            }
-            catch (final Exception e)
-            {
-                throw new IllegalStateException("Failed to allocateInstance of Proxy class " + proxyClass.getName(), e);
-            }
-        }
+        return unsafe.unsafeNewInstance(proxyClass);
     }
 
     private Method[] sortOutDuplicateMethods(Method[] methods)
