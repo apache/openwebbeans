@@ -28,8 +28,9 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.DefiningClassService;
+import org.apache.webbeans.spi.InstantiatingClassService;
 
-public class ClassLoaderProxyService implements DefiningClassService
+public class ClassLoaderProxyService implements DefiningClassService, InstantiatingClassService
 {
     private final ProxiesClassLoader loader;
 
@@ -124,7 +125,7 @@ public class ClassLoaderProxyService implements DefiningClassService
     }
 
     // strict load only impl, it changes LoadFirst by not creating a classloader at all (nice in graalvm) -@Experimental
-    public static class LoadOnly implements DefiningClassService
+    public static class LoadOnly implements DefiningClassService, InstantiatingClassService
     {
         @Override
         public ClassLoader getProxyClassLoader(final Class<?> forClass)

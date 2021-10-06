@@ -36,6 +36,7 @@ import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.hash.XxHash64;
 import org.apache.webbeans.spi.DefiningClassService;
+import org.apache.webbeans.spi.InstantiatingClassService;
 import org.apache.xbean.asm9.ClassReader;
 import org.apache.xbean.asm9.ClassWriter;
 import org.apache.xbean.asm9.MethodVisitor;
@@ -62,6 +63,7 @@ public abstract class AbstractProxyFactory
     protected final Unsafe unsafe;
 
     private final DefiningClassService definingService;
+    private final InstantiatingClassService instantiatingService;
 
     private final boolean useStaticNames;
     private final boolean useXXhash64;
@@ -84,11 +86,19 @@ public abstract class AbstractProxyFactory
         this.webBeansContext = webBeansContext;
         javaVersion = determineDefaultJavaVersion();
         definingService = webBeansContext.getService(DefiningClassService.class);
+
+        // if defining service implements both, we don't need to lookup the second service
+        instantiatingService = (definingService instanceof InstantiatingClassService)
+                               ? (InstantiatingClassService) definingService
+                               : webBeansContext.getService(InstantiatingClassService.class);
+
         useStaticNames = Boolean.parseBoolean(webBeansContext.getOpenWebBeansConfiguration()
                 .getProperty("org.apache.webbeans.proxy.useStaticNames"));
         useXXhash64 = Boolean.parseBoolean(webBeansContext.getOpenWebBeansConfiguration()
                 .getProperty("org.apache.webbeans.proxy.staticNames.useXxHash64"));
-        unsafe = definingService == null ? new Unsafe() : null;
+
+        // we have fallbacks bellow to try Unsafe anyways if we can't do otherwise
+        unsafe = definingService == null || instantiatingService == null ? new Unsafe() : null;
     }
 
     private int determineDefaultJavaVersion()
@@ -338,9 +348,9 @@ public abstract class AbstractProxyFactory
 
     protected <T> T newInstance(final Class<? extends T> proxyClass)
     {
-        if (definingService != null)
+        if (instantiatingService != null)
         {
-            return definingService.newInstance(proxyClass);
+            return instantiatingService.newInstance(proxyClass);
         }
         return unsafe.unsafeNewInstance(proxyClass);
     }

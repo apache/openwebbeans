@@ -44,29 +44,13 @@ public class ClassLoaderProxyServiceTest
         final ClassLoader proxyLoader = context.getService(DefiningClassService.class).getProxyClassLoader(proxyClass);
         assertEquals(proxyLoader, proxyClass.getClassLoader());
         proxyClass.getMethod("ok", String.class); // this line would fail if not here, no assert needed
-
-        // when using ClassLoaderProxyService, we don't use Unsafe to allocate the instance
-        // the regular reflection method newInstance is called and therefore the constructor gets called
-        // final Bean<MyBean> bean =
-        // final MyBean beanInstance = factory.createProxyInstance(proxyClass, factory.getInstanceProvider(proxyLoader, bean));
-        // assertTrue(beanInstance.isConstructorInvoked);
     }
 
     public static class MyBean
     {
-        private final boolean constructorInvoked;
-
-        public MyBean() {
-            this.constructorInvoked = true;
-        }
-
         public String ok(final String value)
         {
             return ">" + value + "<";
-        }
-
-        public boolean isConstructorInvoked() {
-            return constructorInvoked;
         }
     }
 }

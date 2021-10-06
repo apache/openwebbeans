@@ -19,25 +19,16 @@
 package org.apache.webbeans.spi;
 
 /**
- * SPI interface to implement the proxy defining logic.
- * It enables to switch from unsafe to classloader logic for instance for java >= 9.
+ * SPI interface to define the logic to allocate/instantiate proxy instances.
+ * We used to do that using Unsafe.allocateInstance, but better to give the choice
  */
-public interface DefiningClassService
+public interface InstantiatingClassService
 {
     /**
-     * Returns the classloader to use to define the given class.
-     * @param forClass the proxied class
-     * @return the classloader to use to define the class
-     */
-    ClassLoader getProxyClassLoader(Class<?> forClass);
-
-    /**
-     * Register the proxy class from its bytecode.
-     * @param name the proxy name
-     * @param bytecode the bytecode to "define"
-     * @param proxiedClass the original class
+     * Create a new instance for a given proxy class.
+     * @param proxyClass the proxy class
      * @param <T> type of the class to proxy
-     * @return the proxy class
+     * @return the proxy instance
      */
-    <T> Class<T> defineAndLoad(String name, byte[] bytecode, Class<T> proxiedClass);
+    <T> T newInstance(final Class<? extends T> proxyClass);
 }
