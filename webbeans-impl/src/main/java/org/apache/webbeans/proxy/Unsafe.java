@@ -70,7 +70,7 @@ public class Unsafe
             catch (Exception e)
             {
                 WebBeansLoggerFacade.getLogger(Unsafe.class)
-                        .info("Cannot get sun.misc.Unsafe - will use newInstance() instead!");
+                      .info("Cannot get sun.misc.Unsafe - will use newInstance() instead!");
                 return null;
             }
         });
@@ -81,8 +81,7 @@ public class Unsafe
                 theInternalUnsafe.setAccessible(true);
                 return theInternalUnsafe.get(null);
             }
-            catch (final Exception notJ11OrMore)
-            {
+            catch (final Exception notJ11OrMore) {
                 return unsafe;
             }
         });
@@ -102,39 +101,70 @@ public class Unsafe
                 }
             });
 
-            try // some j>8, since we have unsafe let's use it
-            {
+            try {
                 final Class<?> rootLoaderClass = Class.forName("java.lang.ClassLoader");
-                final Method objectFieldOffset = unsafe.getClass().getDeclaredMethod("objectFieldOffset", Field.class);
-                final Method putBoolean = unsafe.getClass().getDeclaredMethod("putBoolean", Object.class, long.class, boolean.class);
-                objectFieldOffset.setAccessible(true);
-                final long accOffset = Long.class.cast(objectFieldOffset.invoke(unsafe, AccessibleObject.class.getDeclaredField("override")));
-                putBoolean.invoke(unsafe, rootLoaderClass.getDeclaredMethod("defineClass",
-                        new Class[]{String.class, byte[].class, int.class, int.class}),
-                        accOffset, true);
-                putBoolean.invoke(unsafe, rootLoaderClass
-                                .getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class,
-                                        int.class, int.class, ProtectionDomain.class}),
-                        accOffset, true);
+                try {
+                    final Method getModule = Class.class.getMethod("getModule");
+                    final Object module = getModule.invoke(rootLoaderClass);
+                    if (module != null)
+                    {
+                        final Method isOpen = module.getClass().getMethod("isOpen", String.class);
+                        if (Boolean.class.cast(isOpen.invoke(module, "sun.misc")))
+                        {
+                            oldStyleSetAccessibleDefineClass(rootLoaderClass);
+                        }
+                        else
+                        {
+                            hackSetDefineClassAccessible();
+                        }
+                    } else
+                    { // very unlikely since we should fall into unamed module
+                        hackSetDefineClassAccessible();
+                    }
+                }
+                catch (final NoSuchMethodException nsme)
+                { // pre java 9
+                    oldStyleSetAccessibleDefineClass(rootLoaderClass);
+                }
             }
             catch (final Exception e)
             {
-                try
-                {
-                    final Class<?> rootLoaderClass = Class.forName("java.lang.ClassLoader");
-                    rootLoaderClass.getDeclaredMethod(
-                        "defineClass", new Class[] { String.class, byte[].class, int.class, int.class })
-                        .setAccessible(true);
-                    rootLoaderClass.getDeclaredMethod(
-                        "defineClass", new Class[] {
-                                String.class, byte[].class, int.class, int.class, ProtectionDomain.class })
-                        .setAccessible(true); // this produces warning from 11+ and fails on 17+
-                }
-                catch (final Exception ex)
-                {
-                    // no-op
-                }
+                hackSetDefineClassAccessible();
             }
+        }
+    }
+
+    private void oldStyleSetAccessibleDefineClass(final Class<?> rootLoaderClass) throws NoSuchMethodException
+    {
+        rootLoaderClass.getDeclaredMethod(
+            "defineClass", new Class[]{String.class, byte[].class, int.class, int.class})
+                       .setAccessible(true);
+        rootLoaderClass.getDeclaredMethod(
+            "defineClass", new Class[]{
+                String.class, byte[].class, int.class, int.class, ProtectionDomain.class})
+                       .setAccessible(true);
+    }
+
+    private void hackSetDefineClassAccessible()
+    {
+        try
+        {
+            final Class<?> rootLoaderClass = Class.forName("java.lang.ClassLoader");
+            final Method objectFieldOffset = unsafe.getClass().getDeclaredMethod("objectFieldOffset", Field.class);
+            final Method putBoolean = unsafe.getClass().getDeclaredMethod("putBoolean", Object.class, long.class, boolean.class);
+            objectFieldOffset.setAccessible(true);
+            final long accOffset = Long.class.cast(objectFieldOffset.invoke(unsafe, AccessibleObject.class.getDeclaredField("override")));
+            putBoolean.invoke(unsafe, rootLoaderClass.getDeclaredMethod("defineClass",
+                                                                        new Class[]{String.class, byte[].class, int.class, int.class}),
+                              accOffset, true);
+            putBoolean.invoke(unsafe, rootLoaderClass
+                                  .getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class,
+                                                                                int.class, int.class, ProtectionDomain.class}),
+                              accOffset, true);
+        }
+        catch (final Exception e)
+        {
+            // no-op
         }
     }
 
