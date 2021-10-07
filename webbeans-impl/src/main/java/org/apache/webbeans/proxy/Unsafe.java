@@ -102,33 +102,33 @@ public class Unsafe
                 }
             });
 
-            try
+            try // some j>8, since we have unsafe let's use it
             {
                 final Class<?> rootLoaderClass = Class.forName("java.lang.ClassLoader");
-                rootLoaderClass.getDeclaredMethod(
-                    "defineClass", new Class[] { String.class, byte[].class, int.class, int.class })
-                    .setAccessible(true);
-                rootLoaderClass.getDeclaredMethod(
-                    "defineClass", new Class[] {
-                            String.class, byte[].class, int.class, int.class, ProtectionDomain.class })
-                    .setAccessible(true);
+                final Method objectFieldOffset = unsafe.getClass().getDeclaredMethod("objectFieldOffset", Field.class);
+                final Method putBoolean = unsafe.getClass().getDeclaredMethod("putBoolean", Object.class, long.class, boolean.class);
+                objectFieldOffset.setAccessible(true);
+                final long accOffset = Long.class.cast(objectFieldOffset.invoke(unsafe, AccessibleObject.class.getDeclaredField("override")));
+                putBoolean.invoke(unsafe, rootLoaderClass.getDeclaredMethod("defineClass",
+                        new Class[]{String.class, byte[].class, int.class, int.class}),
+                        accOffset, true);
+                putBoolean.invoke(unsafe, rootLoaderClass
+                                .getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class,
+                                        int.class, int.class, ProtectionDomain.class}),
+                        accOffset, true);
             }
             catch (final Exception e)
             {
-                try // some j>8, since we have unsafe let's use it
+                try
                 {
                     final Class<?> rootLoaderClass = Class.forName("java.lang.ClassLoader");
-                    final Method objectFieldOffset = unsafe.getClass().getDeclaredMethod("objectFieldOffset", Field.class);
-                    final Method putBoolean = unsafe.getClass().getDeclaredMethod("putBoolean", Object.class, long.class, boolean.class);
-                    objectFieldOffset.setAccessible(true);
-                    final long accOffset = Long.class.cast(objectFieldOffset.invoke(unsafe, AccessibleObject.class.getDeclaredField("override")));
-                    putBoolean.invoke(unsafe, rootLoaderClass.getDeclaredMethod("defineClass",
-                            new Class[]{String.class, byte[].class, int.class, int.class}),
-                            accOffset, true);
-                    putBoolean.invoke(unsafe, rootLoaderClass
-                                    .getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class,
-                                            int.class, int.class, ProtectionDomain.class}),
-                            accOffset, true);
+                    rootLoaderClass.getDeclaredMethod(
+                        "defineClass", new Class[] { String.class, byte[].class, int.class, int.class })
+                        .setAccessible(true);
+                    rootLoaderClass.getDeclaredMethod(
+                        "defineClass", new Class[] {
+                                String.class, byte[].class, int.class, int.class, ProtectionDomain.class })
+                        .setAccessible(true); // this produces warning from 11+ and fails on 17+
                 }
                 catch (final Exception ex)
                 {
@@ -265,7 +265,7 @@ public class Unsafe
                     }
                     break;
                 default:
-                    throw new IllegalAccessError("Unknown defineclass impl: " + defineClassImpl);
+                    throw new IllegalAccessError("Unknown defineClass impl: " + defineClassImpl);
             }
 
             // CHECKSTYLE:ON
