@@ -70,10 +70,7 @@ public abstract class AbstractUnitTest
         };
         
         webBeansContext = WebBeansContext.getInstance();
-        for (Extension ext : extensions)
-        {
-            webBeansContext.getExtensionLoader().addExtension(ext);
-        }
+        webBeansContext.getExtensionLoader().addExtensions(extensions);
         
         //Deploy bean classes
         OpenWebBeansTestMetaDataDiscoveryService discoveryService = (OpenWebBeansTestMetaDataDiscoveryService)webBeansContext.getScannerService();

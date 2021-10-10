@@ -66,11 +66,28 @@ public class ObserverMethodsBuilder<T>
         this.annotatedType = annotatedType;
     }
 
+    public Set<ObserverMethod<?>> defineContainerLifecycleEventObserverMethods(AbstractOwbBean<T> ownerBean)
+    {
+        Set<ObserverMethod<?>> definedObservers = new HashSet<>();
+        for (AnnotatedMethod<?> annotatedMethod : webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
+        {
+            ObserverMethod<?> observerMethod = defineContainerLifecycleEventObserverMethod(ownerBean, annotatedMethod);
+            if (observerMethod != null)
+            {
+                definedObservers.add(observerMethod);
+            }
+        }
+
+        checkDefinedObservers(ownerBean, definedObservers);
+        
+        return definedObservers;
+    }
+
     /**
      * {@inheritDoc}
      */
     public Set<ObserverMethod<?>> defineObserverMethods(AbstractOwbBean<T> ownerBean)
-    {   
+    {
         Set<ObserverMethod<?>> definedObservers = new HashSet<>();
         for (AnnotatedMethod<?> annotatedMethod : webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
         {
@@ -81,19 +98,7 @@ public class ObserverMethodsBuilder<T>
             }
         }
 
-        if (!definedObservers.isEmpty())
-        {
-            for (InjectionPoint ip : ownerBean.getInjectionPoints())
-            {
-                Set<Annotation> qualifiers = ip.getQualifiers();
-                if (EventMetadata.class == ip.getType()
-                        && qualifiers != null && ip.getQualifiers().size() == 1
-                        && Default.class == qualifiers.iterator().next().annotationType())
-                {
-                    throw new WebBeansConfigurationException(ip + " is not an observer parameter");
-                }
-            }
-        }
+        checkDefinedObservers(ownerBean, definedObservers);
         
         return definedObservers;
     }
@@ -102,7 +107,47 @@ public class ObserverMethodsBuilder<T>
      * Check whether the given annotatedMethod is an ObserverMethod and verify it
      * @return the ObserverMethod or {@code null} if this method is not an observer.
      */
+    public ObserverMethod<?> defineContainerLifecycleEventObserverMethod(AbstractOwbBean<T> ownerBean, AnnotatedMethod<?> annotatedMethod)
+    {
+        AnnotatedParameter<?> observesParameter = findObservesParameter(annotatedMethod);
+
+        if (observesParameter != null)
+        {
+            checkObserverMethodConditions(ownerBean, observesParameter);
+
+            //Looking for ObserverMethod
+            ObserverMethod<?> definedObserver = webBeansContext.getNotificationManager().
+                    getContainerLifecycleEventObservableMethodForAnnotatedMethod(annotatedMethod, observesParameter, ownerBean);
+
+            return definedObserver;
+        }
+
+        return null;
+    }
+
+    /**
+     * Check whether the given annotatedMethod is an ObserverMethod and verify it
+     * @return the ObserverMethod or {@code null} if this method is not an observer.
+     */
     public ObserverMethod<?> defineObserverMethod(AbstractOwbBean<T> ownerBean, AnnotatedMethod<?> annotatedMethod)
+    {
+        AnnotatedParameter<?> observesParameter = findObservesParameter(annotatedMethod);
+
+        if (observesParameter != null)
+        {
+            checkObserverMethodConditions(ownerBean, observesParameter);
+
+            //Looking for ObserverMethod
+            ObserverMethod<?> definedObserver = webBeansContext.getNotificationManager().
+                    getObservableMethodForAnnotatedMethod(annotatedMethod, observesParameter, ownerBean);
+
+            return definedObserver;
+        }
+
+        return null;
+    }
+
+    private AnnotatedParameter<?> findObservesParameter(AnnotatedMethod<?> annotatedMethod)
     {
         List<AnnotatedParameter<?>> parameters = (List<AnnotatedParameter<?>>)(List<?>)annotatedMethod.getParameters();
         AnnotatedParameter<?> observesParameter = null;
@@ -119,19 +164,24 @@ public class ObserverMethodsBuilder<T>
                 observesParameter = parameter;
             }
         }
+        return observesParameter;
+    }
 
-        if (observesParameter != null)
+    private void checkDefinedObservers(AbstractOwbBean<T> ownerBean, Set<ObserverMethod<?>> definedObservers)
+    {
+        if (!definedObservers.isEmpty())
         {
-            checkObserverMethodConditions(ownerBean, observesParameter);
-
-            //Looking for ObserverMethod
-            ObserverMethod<?> definedObserver = webBeansContext.getNotificationManager().
-                    getObservableMethodForAnnotatedMethod(annotatedMethod, observesParameter, ownerBean);
-
-            return definedObserver;
+            for (InjectionPoint ip : ownerBean.getInjectionPoints())
+            {
+                Set<Annotation> qualifiers = ip.getQualifiers();
+                if (EventMetadata.class == ip.getType()
+                        && qualifiers != null && ip.getQualifiers().size() == 1
+                        && Default.class == qualifiers.iterator().next().annotationType())
+                {
+                    throw new WebBeansConfigurationException(ip + " is not an observer parameter");
+                }
+            }
         }
-
-        return null;
     }
 
     private void checkObserverMethodConditions(AbstractOwbBean<?> bean, AnnotatedParameter<?> annotatedParameter)

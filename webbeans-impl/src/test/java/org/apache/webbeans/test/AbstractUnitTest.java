@@ -182,10 +182,7 @@ public abstract class AbstractUnitTest
         };
         
         webBeansContext = WebBeansContext.getInstance();
-        for (Extension ext : extensions)
-        {
-            webBeansContext.getExtensionLoader().addExtension(ext);
-        }
+        webBeansContext.getExtensionLoader().addExtensions(extensions);
         
         for (Class interceptor : interceptors)
         {

@@ -19,22 +19,25 @@
 package org.apache.webbeans.component.creation;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
 
-public class ExtensionBeanBuilder<T>
+public class ExtensionBeanBuilder<T extends Extension>
 {
     protected final WebBeansContext webBeansContext;
     protected final AnnotatedType<T> annotatedType;
+    protected final T extension;
 
-    public ExtensionBeanBuilder(WebBeansContext webBeansContext, Class<T> type)
+    public ExtensionBeanBuilder(WebBeansContext webBeansContext, T extension)
     {
         Asserts.assertNotNull(webBeansContext, Asserts.PARAM_NAME_WEBBEANSCONTEXT);
-        Asserts.assertNotNull(type, "type");
+        Asserts.assertNotNull(extension, "extension");
         this.webBeansContext = webBeansContext;
-        annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
+        annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType((Class<T>)extension.getClass());
+        this.extension = extension;
     }
 
     public AnnotatedType<T> getAnnotatedType()
@@ -42,7 +45,12 @@ public class ExtensionBeanBuilder<T>
         return annotatedType;
     }
 
-    public ExtensionBean<T> getBean()
+    public T getExtension()
+    {
+        return extension;
+    }
+
+    public ExtensionBean<T> buildBean()
     {
         return new ExtensionBean<>(webBeansContext, annotatedType.getJavaClass());
     }

@@ -1150,6 +1150,27 @@ public class NotificationManager
     }
 
     /**
+     * Gets container lifecycle event observer method from given annotated method.
+     * @param <T> bean type info
+     * @param annotatedMethod annotated method for observer
+     * @param ownerBean bean instance
+     * @return ObserverMethod
+     */
+    public <T> ObserverMethod<?> getContainerLifecycleEventObservableMethodForAnnotatedMethod(
+        AnnotatedMethod<?> annotatedMethod, AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> ownerBean)
+    {
+        Asserts.assertNotNull(annotatedParameter, "annotatedParameter");
+
+        ObserverMethodImpl<T> observer = null;
+        if (isContainerEvent(annotatedParameter))
+        {
+            observer = new ContainerEventObserverMethodImpl(ownerBean, annotatedMethod, annotatedParameter);
+            addObserver(observer);
+        }
+        return observer;
+    }
+
+    /**
      * Gets observer method from given annotated method.
      * @param <T> bean type info
      * @param annotatedMethod annotated method for observer
@@ -1161,13 +1182,8 @@ public class NotificationManager
         Asserts.assertNotNull(annotatedParameter, "annotatedParameter");
 
         ObserverMethodImpl<T> observer = null;
-        // Observer creation from annotated method
-        if (isContainerEvent(annotatedParameter))
-        {
-            observer = new ContainerEventObserverMethodImpl(ownerBean, annotatedMethod, annotatedParameter);
-            addObserver(observer);
-        }
-        else
+        
+        if (!isContainerEvent(annotatedParameter))
         {
             observer = new ObserverMethodImpl(ownerBean, annotatedMethod, annotatedParameter);
 
@@ -1178,7 +1194,7 @@ public class NotificationManager
 
             webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
                 "observer methods. Look at logs for further details");
-
+            
             if (!event.isVetoed())
             {
                 //Adds this observer
@@ -1190,7 +1206,7 @@ public class NotificationManager
             }
             event.setStarted();
         }
-
+    
         return observer;
     }
 

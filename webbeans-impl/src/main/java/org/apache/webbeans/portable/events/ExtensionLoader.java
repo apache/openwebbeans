@@ -24,13 +24,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
@@ -43,7 +46,6 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
-import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.xbean.finder.archive.FileArchive;
@@ -95,43 +97,8 @@ public class ExtensionLoader
      */
     public void loadExtensionServices(ClassLoader classLoader)
     {
-        Set<String> ignoredExtensions = webBeansContext.getOpenWebBeansConfiguration().getIgnoredExtensions();
-        if (!ignoredExtensions.isEmpty())
-        {
-            WebBeansLoggerFacade.getLogger(ExtensionLoader.class)
-                    .info("Ignoring the following CDI Extensions. " +
-                            "See " + OpenWebBeansConfiguration.IGNORED_EXTENSIONS +
-                            " " + ignoredExtensions.toString());
-        }
-
         List<Extension> loader = webBeansContext.getLoaderService().load(Extension.class, classLoader);
-        for (Extension extension : loader)
-        {
-            if (ignoredExtensions.contains(extension.getClass().getName()))
-            {
-                WebBeansLoggerFacade.getLogger(ExtensionLoader.class)
-                        .info("Skipping CDI Extension due to exclusion: " + extension.getClass().getName());
-                continue;
-            }
-
-            if (!extensionClasses.contains(extension.getClass()))
-            {
-                extensionClasses.add(extension.getClass());
-                try
-                {
-                    addExtension(extension);
-                }
-                catch (Exception e)
-                {
-                    if (e instanceof DefinitionException || e instanceof DeploymentException)
-                    {
-                        ExceptionUtil.throwAsRuntimeException(e);
-                    }
-
-                    throw new WebBeansException("Error occurred while reading Extension service list", e);
-                }
-            }
-        }
+        addExtensions(loader);
 
         if (!webBeansContext.getOpenWebBeansConfiguration().getScanExtensionJars())
         {
@@ -198,26 +165,79 @@ public class ExtensionLoader
         return (T) extensions.get(extensionClass);
     }
 
+    /**
+     * Add the CDI Extensions to our internal list.
+     * @param extensions Extensions to add
+     */
+    public void addExtensions(List<Extension> extensions)
+    {
+        Set<String> ignoredExtensions = webBeansContext.getOpenWebBeansConfiguration().getIgnoredExtensions();
+        if (!ignoredExtensions.isEmpty())
+        {
+            WebBeansLoggerFacade.getLogger(ExtensionLoader.class)
+                    .info("Ignoring the following CDI Extensions. " +
+                            "See " + OpenWebBeansConfiguration.IGNORED_EXTENSIONS +
+                            " " + ignoredExtensions.toString());
+        }
+
+        Map<ExtensionBean<Extension>, AnnotatedType> extensionBeans = new HashMap<>(extensions.size());
+        for (Extension extension : extensions)
+        {
+            if (ignoredExtensions.contains(extension.getClass().getName()))
+            {
+                WebBeansLoggerFacade.getLogger(ExtensionLoader.class)
+                        .info("Skipping CDI Extension due to exclusion: " + extension.getClass().getName());
+                continue;
+            }
+
+            if (!extensionClasses.contains(extension.getClass()))
+            {
+                extensionClasses.add(extension.getClass());
+                try
+                {
+                    final ExtensionBeanBuilder<Extension> extensionBeanBuilder =
+                            new ExtensionBeanBuilder<>(webBeansContext, extension);
+
+                    ExtensionBean<Extension> bean = createExtensionBean(extensionBeanBuilder);
+                    extensionBeans.put(bean, extensionBeanBuilder.getAnnotatedType());
+                    // since an extension can fire a ProcessInjectionPoint event when observing something else than a lifecycle event
+                    // and at the same time observe it, we must ensure to build the observers only once the bean is available
+                    new ObserverMethodsBuilder<>(webBeansContext, extensionBeanBuilder.getAnnotatedType())
+                            .defineContainerLifecycleEventObserverMethods(bean);
+                }
+                catch (Exception e)
+                {
+                    if (e instanceof DefinitionException || e instanceof DeploymentException)
+                    {
+                        ExceptionUtil.throwAsRuntimeException(e);
+                    }
+
+                    throw new WebBeansException("Error occurred while reading Extension service list", e);
+                }
+            }
+        }
+        // now register observers for non container lifecycle events
+        for (Entry<ExtensionBean<Extension>, AnnotatedType> extensionEntry : extensionBeans.entrySet())
+        {
+            new ObserverMethodsBuilder<>(webBeansContext, extensionEntry.getValue())
+                .defineObserverMethods(extensionEntry.getKey());
+        }
+    }
 
     /**
      * Add a CDI Extension to our internal list.
      * @param ext Extension to add
      */
-    public void addExtension(final Extension ext)
+    public ExtensionBean<Extension> createExtensionBean(ExtensionBeanBuilder<Extension> extensionBeanBuilder)
     {
-        final Class<Extension> extensionClass = (Class<Extension>) ext.getClass();
-        Asserts.nullCheckForClass(extensionClass);
-        extensions.put(extensionClass, ext);
+        Extension extension = extensionBeanBuilder.getExtension();
+        final Class<Extension> extensionClass = (Class<Extension>) extension.getClass();
+        extensions.put(extensionClass, extension);
 
-        final ExtensionBeanBuilder<Extension> extensionBeanBuilder =
-                new ExtensionBeanBuilder<>(webBeansContext, extensionClass);
-        final ExtensionBean<Extension> bean = extensionBeanBuilder.getBean();
+        final ExtensionBean<Extension> bean = extensionBeanBuilder.buildBean();
         manager.addBean(bean);
 
-        // since an extension can fire a ProcessInjectionPoint event when observing something else than a lifecycle event
-        // and at the same time observe it, we must ensure to build the observers only once the bean is available
-        new ObserverMethodsBuilder<>(webBeansContext, extensionBeanBuilder.getAnnotatedType())
-                .defineObserverMethods(bean);
+        return bean;
     }
 
     /**
