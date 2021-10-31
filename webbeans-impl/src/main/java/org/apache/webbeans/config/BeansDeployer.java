@@ -1352,32 +1352,32 @@ public class BeansDeployer
             boolean hasPATObserver = webBeansContext.getNotificationManager().hasProcessAnnotatedTypeObservers();
             for (Class<?> implClass : classIndex)
             {
-                if (foundClasses.contains(implClass) || implClass.isAnonymousClass() ||
-                        Modifier.isPrivate(implClass.getModifiers() /* likely inner class */))
-                {
-                    // skip this class
-                    continue;
-                }
-
-                foundClasses.add(implClass);
-
-                if (isVetoed(implClass))
-                {
-                    if (isEEComponent(implClass))
-                    {
-                        // fire injection point events and forget
-                        AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(implClass);
-                        InjectionTarget<?> it = webBeansContext.getBeanManagerImpl().createInjectionTarget(annotatedType);
-                        for (InjectionPoint ip : it.getInjectionPoints())
-                        {
-                            webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(ip);
-                        }
-                    }
-                    continue;
-                }
-
                 try
                 {
+                    if (foundClasses.contains(implClass) || implClass.isAnonymousClass() ||
+                            Modifier.isPrivate(implClass.getModifiers() /* likely inner class */))
+                    {
+                        // skip this class
+                        continue;
+                    }
+
+                    foundClasses.add(implClass);
+
+                    if (isVetoed(implClass))
+                    {
+                        if (isEEComponent(implClass))
+                        {
+                            // fire injection point events and forget
+                            AnnotatedType<?> annotatedType = annotatedElementFactory.newAnnotatedType(implClass);
+                            InjectionTarget<?> it = webBeansContext.getBeanManagerImpl().createInjectionTarget(annotatedType);
+                            for (InjectionPoint ip : it.getInjectionPoints())
+                            {
+                                webBeansContext.getWebBeansUtil().fireProcessInjectionPointEvent(ip);
+                            }
+                        }
+                        continue;
+                    }
+
                     //Define annotation type
                     AnnotatedType<?> annotatedType = annotatedElementFactory.getAnnotatedType(implClass);
                     if (annotatedType == null) // mean no annotation created it (normal case)
