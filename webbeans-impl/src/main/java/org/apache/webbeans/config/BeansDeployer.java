@@ -518,11 +518,11 @@ public class BeansDeployer
                 }
                 catch (NoClassDefFoundError ncdfe)
                 {
-                    logger.info("Skipping deployment of Class " + beanClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                    logger.info("Skipping deployment of Class " + beanClass + " due to a NoClassDefFoundError: " + ncdfe.getMessage());
                 }
                 catch (UnsatisfiedLinkError ule)
                 {
-                    logger.info("Skipping deployment of Class " + beanClass + "due to a UnsatisfiedLinkError: " + ule.getMessage());
+                    logger.info("Skipping deployment of Class " + beanClass + " due to a UnsatisfiedLinkError: " + ule.getMessage());
                 }
             }
 
@@ -1416,11 +1416,11 @@ public class BeansDeployer
                 }
                 catch (NoClassDefFoundError ncdfe)
                 {
-                    logger.info("Skipping deployment of Class " + implClass + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                    logger.info("Skipping deployment of Class " + implClass + " due to a NoClassDefFoundError: " + ncdfe.getMessage());
                 }
                 catch (UnsatisfiedLinkError ule)
                 {
-                    logger.info("Skipping deployment of Class " + implClass + "due to a UnsatisfiedLinkError: " + ule.getMessage());
+                    logger.info("Skipping deployment of Class " + implClass + " due to a UnsatisfiedLinkError: " + ule.getMessage());
                 }
             }
         }
@@ -1590,11 +1590,11 @@ public class BeansDeployer
                 }
                 catch (NoClassDefFoundError ncdfe)
                 {
-                    logger.info("Skipping deployment of Class " + key.getJavaClass() + "due to a NoClassDefFoundError: " + ncdfe.getMessage());
+                    logger.info("Skipping deployment of Class " + key.getJavaClass() + " due to a NoClassDefFoundError: " + ncdfe.getMessage());
                 }
                 catch (UnsatisfiedLinkError ule)
                 {
-                    logger.info("Skipping deployment of Class " + key.getJavaClass() + "due to a UnsatisfiedLinkError: " + ule.getMessage());
+                    logger.info("Skipping deployment of Class " + key.getJavaClass() + " due to a UnsatisfiedLinkError: " + ule.getMessage());
                 }
 
                 // if the implClass already gets processed as part of the
@@ -1643,7 +1643,7 @@ public class BeansDeployer
             }
             catch (UnsatisfiedLinkError ule)
             {
-                logger.info("Skipping deployment of Class " + beanClass + "due to a UnsatisfiedLinkError: " + ule.getMessage());
+                logger.info("Skipping deployment of Class " + beanClass + " due to a UnsatisfiedLinkError: " + ule.getMessage());
             }
         }
     }
