@@ -1200,7 +1200,7 @@ public final class WebBeansUtil
         ManagedBean<T> managedBean = managedBeanCreator.getBean();
         new ProducerMethodBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerMethods(
                 managedBean, new ProducerFieldBeansBuilder(managedBean.getWebBeansContext(), managedBean.getAnnotatedType()).defineProducerFields(managedBean));
-        new ObserverMethodsBuilder<>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean);
+        new ObserverMethodsBuilder<>(webBeansContext, managedBean.getAnnotatedType()).defineObserverMethods(managedBean, false);
 
         if (managedBean.getProducer() instanceof AbstractProducer)
         {

@@ -66,32 +66,15 @@ public class ObserverMethodsBuilder<T>
         this.annotatedType = annotatedType;
     }
 
-    public Set<ObserverMethod<?>> defineContainerLifecycleEventObserverMethods(AbstractOwbBean<T> ownerBean)
-    {
-        Set<ObserverMethod<?>> definedObservers = new HashSet<>();
-        for (AnnotatedMethod<?> annotatedMethod : webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
-        {
-            ObserverMethod<?> observerMethod = defineContainerLifecycleEventObserverMethod(ownerBean, annotatedMethod);
-            if (observerMethod != null)
-            {
-                definedObservers.add(observerMethod);
-            }
-        }
-
-        checkDefinedObservers(ownerBean, definedObservers);
-        
-        return definedObservers;
-    }
-
     /**
      * {@inheritDoc}
      */
-    public Set<ObserverMethod<?>> defineObserverMethods(AbstractOwbBean<T> ownerBean)
+    public Set<ObserverMethod<?>> defineObserverMethods(AbstractOwbBean<T> ownerBean, boolean checkContainerEvents)
     {
         Set<ObserverMethod<?>> definedObservers = new HashSet<>();
         for (AnnotatedMethod<?> annotatedMethod : webBeansContext.getAnnotatedElementFactory().getFilteredAnnotatedMethods(annotatedType))
         {
-            ObserverMethod<?> observerMethod = defineObserverMethod(ownerBean, annotatedMethod);
+            ObserverMethod<?> observerMethod = defineObserverMethod(ownerBean, annotatedMethod, checkContainerEvents);
             if (observerMethod != null)
             {
                 definedObservers.add(observerMethod);
@@ -107,7 +90,8 @@ public class ObserverMethodsBuilder<T>
      * Check whether the given annotatedMethod is an ObserverMethod and verify it
      * @return the ObserverMethod or {@code null} if this method is not an observer.
      */
-    public ObserverMethod<?> defineContainerLifecycleEventObserverMethod(AbstractOwbBean<T> ownerBean, AnnotatedMethod<?> annotatedMethod)
+    public ObserverMethod<?> defineObserverMethod(AbstractOwbBean<T> ownerBean, AnnotatedMethod<?> annotatedMethod,
+                                                  boolean checkContainerEvents)
     {
         AnnotatedParameter<?> observesParameter = findObservesParameter(annotatedMethod);
 
@@ -117,29 +101,7 @@ public class ObserverMethodsBuilder<T>
 
             //Looking for ObserverMethod
             ObserverMethod<?> definedObserver = webBeansContext.getNotificationManager().
-                    getContainerLifecycleEventObservableMethodForAnnotatedMethod(annotatedMethod, observesParameter, ownerBean);
-
-            return definedObserver;
-        }
-
-        return null;
-    }
-
-    /**
-     * Check whether the given annotatedMethod is an ObserverMethod and verify it
-     * @return the ObserverMethod or {@code null} if this method is not an observer.
-     */
-    public ObserverMethod<?> defineObserverMethod(AbstractOwbBean<T> ownerBean, AnnotatedMethod<?> annotatedMethod)
-    {
-        AnnotatedParameter<?> observesParameter = findObservesParameter(annotatedMethod);
-
-        if (observesParameter != null)
-        {
-            checkObserverMethodConditions(ownerBean, observesParameter);
-
-            //Looking for ObserverMethod
-            ObserverMethod<?> definedObserver = webBeansContext.getNotificationManager().
-                    getObservableMethodForAnnotatedMethod(annotatedMethod, observesParameter, ownerBean);
+                    getObservableMethodForAnnotatedMethod(annotatedMethod, observesParameter, ownerBean, checkContainerEvents);
 
             return definedObserver;
         }

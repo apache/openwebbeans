@@ -1150,63 +1150,38 @@ public class NotificationManager
     }
 
     /**
-     * Gets container lifecycle event observer method from given annotated method.
-     * @param <T> bean type info
-     * @param annotatedMethod annotated method for observer
-     * @param ownerBean bean instance
-     * @return ObserverMethod
-     */
-    public <T> ObserverMethod<?> getContainerLifecycleEventObservableMethodForAnnotatedMethod(
-        AnnotatedMethod<?> annotatedMethod, AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> ownerBean)
-    {
-        Asserts.assertNotNull(annotatedParameter, "annotatedParameter");
-
-        ObserverMethodImpl<T> observer = null;
-        if (isContainerEvent(annotatedParameter))
-        {
-            observer = new ContainerEventObserverMethodImpl(ownerBean, annotatedMethod, annotatedParameter);
-            addObserver(observer);
-        }
-        return observer;
-    }
-
-    /**
      * Gets observer method from given annotated method.
      * @param <T> bean type info
      * @param annotatedMethod annotated method for observer
      * @param ownerBean bean instance
+     * @param checkContainerEvents hint to know if container event test is needed or can be bypassed
      * @return ObserverMethod
      */
-    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(AnnotatedMethod<?> annotatedMethod, AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> ownerBean)
+    public <T> ObserverMethod<?> getObservableMethodForAnnotatedMethod(
+            AnnotatedMethod<?> annotatedMethod, AnnotatedParameter<?> annotatedParameter, AbstractOwbBean<T> ownerBean,
+            boolean checkContainerEvents)
     {
         Asserts.assertNotNull(annotatedParameter, "annotatedParameter");
 
-        ObserverMethodImpl<T> observer = null;
-        
-        if (!isContainerEvent(annotatedParameter))
+        if (checkContainerEvents && isContainerEvent(annotatedParameter))
         {
-            observer = new ObserverMethodImpl(ownerBean, annotatedMethod, annotatedParameter);
-
-            GProcessObserverMethod event = new GProcessObserverMethod(webBeansContext, annotatedMethod, observer);
-
-            //Fires ProcessObserverMethod
-            webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
-
-            webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
-                "observer methods. Look at logs for further details");
-            
-            if (!event.isVetoed())
-            {
-                //Adds this observer
-                addObserver(event.getObserverMethod());
-            }
-            else
-            {
-                observer = null;
-            }
-            event.setStarted();
+            ObserverMethodImpl<T> observer = new ContainerEventObserverMethodImpl(ownerBean, annotatedMethod, annotatedParameter);
+            addObserver(observer);
+            return observer;
         }
-    
+
+        ObserverMethodImpl<T> observer = new ObserverMethodImpl(ownerBean, annotatedMethod, annotatedParameter);
+        GProcessObserverMethod event = new GProcessObserverMethod(webBeansContext, annotatedMethod, observer);
+        webBeansContext.getBeanManagerImpl().fireEvent(event, true, AnnotationUtil.EMPTY_ANNOTATION_ARRAY);
+        webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessObserverMethod event observers for " +
+                "observer methods. Look at logs for further details");
+        if (event.isVetoed())
+        {
+            event.setStarted();
+            return null;
+        }
+        addObserver(event.getObserverMethod());
+        event.setStarted();
         return observer;
     }
 

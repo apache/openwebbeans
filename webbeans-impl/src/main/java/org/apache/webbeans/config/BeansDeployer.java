@@ -2062,7 +2062,7 @@ public class BeansDeployer
                 AnnotatedType<T> beanAnnotatedType = bean.getAnnotatedType();
                 if(bean.isEnabled())
                 {
-                    observerMethods = new ObserverMethodsBuilder<>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean);
+                    observerMethods = new ObserverMethodsBuilder<>(webBeansContext, beanAnnotatedType).defineObserverMethods(bean, false);
                 }
                 else
                 {

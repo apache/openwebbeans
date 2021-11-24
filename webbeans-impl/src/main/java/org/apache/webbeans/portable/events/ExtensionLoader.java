@@ -200,10 +200,6 @@ public class ExtensionLoader
 
                     ExtensionBean<Extension> bean = createExtensionBean(extensionBeanBuilder);
                     extensionBeans.put(bean, extensionBeanBuilder.getAnnotatedType());
-                    // since an extension can fire a ProcessInjectionPoint event when observing something else than a lifecycle event
-                    // and at the same time observe it, we must ensure to build the observers only once the bean is available
-                    new ObserverMethodsBuilder<>(webBeansContext, extensionBeanBuilder.getAnnotatedType())
-                            .defineContainerLifecycleEventObserverMethods(bean);
                 }
                 catch (Exception e)
                 {
@@ -219,14 +215,16 @@ public class ExtensionLoader
         // now register observers for non container lifecycle events
         for (Entry<ExtensionBean<Extension>, AnnotatedType> extensionEntry : extensionBeans.entrySet())
         {
+            // since an extension can fire a ProcessInjectionPoint event when observing something else than a lifecycle event
+            // and at the same time observe it, we must ensure to build the observers only once the bean is available
             new ObserverMethodsBuilder<>(webBeansContext, extensionEntry.getValue())
-                .defineObserverMethods(extensionEntry.getKey());
+                .defineObserverMethods(extensionEntry.getKey(), true);
         }
     }
 
     /**
      * Add a CDI Extension to our internal list.
-     * @param ext Extension to add
+     * @param extensionBeanBuilder Extension builder to create the bean for
      */
     public ExtensionBean<Extension> createExtensionBean(ExtensionBeanBuilder<Extension> extensionBeanBuilder)
     {
