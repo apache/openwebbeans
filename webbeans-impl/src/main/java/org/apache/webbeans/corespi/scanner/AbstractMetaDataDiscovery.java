@@ -232,7 +232,16 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                 }
                 else
                 {
-                    final URL url = classpathFiles.remove(Files.toFile(beansXmlUrl));
+                    File key = Files.toFile(beansXmlUrl);
+                    URL url = classpathFiles.remove(key);
+                    if (url == null &&
+                            "beans.xml".equals(key.getName()) &&
+                            key.getParentFile() != null &&
+                            "META-INF".equals(key.getParentFile().getName()))
+                    {
+                        key = key.getParentFile().getParentFile();
+                        url = classpathFiles.remove(key);
+                    }
                     if (url != null)
                     {
                         addDeploymentUrl(beansXmlUrl.toExternalForm(), url);
