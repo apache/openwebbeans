@@ -23,9 +23,9 @@
     
     <body>
         <breadcrumbs>
-            <item name="Apache" href="http://www.apache.org"/>
-            <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
-            <item name="atinject TCK" href="http://openwebbeans.apache.org/${project.version}/atinject-tck"/>
+            <item name="Apache" href="https://www.apache.org"/>
+            <item name="OpenWebBeans" href="https://openwebbeans.apache.org"/>
+            <item name="atinject TCK" href="https://openwebbeans.apache.org/${project.version}/atinject-tck"/>
         </breadcrumbs>
 
         <menu name="Overview">

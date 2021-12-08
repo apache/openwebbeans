@@ -14,7 +14,7 @@ What is Apache  OpenWebBeans?
 OpenWebBeans is an ASL 2.0-licensed implementation of the JSR-299, Contexts and Dependency Injection for the Java EE platform.
 
 Project's web page can be found at: 
-"http://openwebbeans.apache.org"
+"https://openwebbeans.apache.org"
 
 --------------------------------
 OpenWebBeans M4 Release Features
@@ -650,7 +650,7 @@ Blog : http://blogs.apache.org/owb
 OpenWebBeans Web Page
 ----------------------------------------
 You can reach the OpenWebBeans web page at
-http://openwebbeans.apache.org
+https://openwebbeans.apache.org
 ---------------------------------------
 
 OpenWebBeans Team

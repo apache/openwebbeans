@@ -22,9 +22,9 @@
     <body>
         <breadcrumbs>
         <item name="Apache" href="http://apache.org"/>
-        <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
-        <item name="Samples" href="http://openwebbeans.apache.org/${project.version}/samples"/>
-        <item name="Samples" href="http://openwebbeans.apache.org/${project.version}/samples/guess"/>
+        <item name="OpenWebBeans" href="https://openwebbeans.apache.org"/>
+        <item name="Samples" href="https://openwebbeans.apache.org/${project.version}/samples"/>
+        <item name="Samples" href="https://openwebbeans.apache.org/${project.version}/samples/guess"/>
         </breadcrumbs>
 
         <menu name="Overview">

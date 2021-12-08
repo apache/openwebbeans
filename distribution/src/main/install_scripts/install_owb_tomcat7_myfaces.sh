@@ -25,7 +25,7 @@
 #
 # usage example:
 # Download the openwebbeans binary distribution from
-#  http://openwebbeans.apache.org/download.html
+#  https://openwebbeans.apache.org/download.html
 # Also download the Apache MyFaces binary distribution from
 #  http://myfaces.apache.org/download.html
 #

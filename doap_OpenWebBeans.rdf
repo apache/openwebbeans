@@ -21,17 +21,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-  <Project rdf:about="http://openwebbeans.apache.org">
+  <Project rdf:about="https://openwebbeans.apache.org">
     <created>2011-03-06</created>
     <license rdf:resource="http://usefulinc.com/doap/licenses/asl20" />
     <name>Apache OpenWebBeans</name>
-    <homepage rdf:resource="http://openwebbeans.apache.org" />
-    <asfext:pmc rdf:resource="http://openwebbeans.apache.org" />
+    <homepage rdf:resource="https://openwebbeans.apache.org" />
+    <asfext:pmc rdf:resource="https://openwebbeans.apache.org" />
     <shortdesc>Dependency Injection Platform.</shortdesc>
     <description>OpenWebBeans is an ALv2-licensed implementation of the "Contexts and Dependency Injection for the Java EE platform" specification which is defined as JSR-299.</description>
     <bug-database rdf:resource="http://issues.apache.org/jira/browse/OWB" />
-    <mailing-list rdf:resource="http://openwebbeans.apache.org/community.html" />
-    <download-page rdf:resource="http://www.apache.org/dyn/closer.cgi/openwebbeans/" />
+    <mailing-list rdf:resource="https://openwebbeans.apache.org/community.html" />
+    <download-page rdf:resource="https://www.apache.org/dyn/closer.cgi/openwebbeans/" />
     <programming-language>Java</programming-language>
     <category rdf:resource="http://projects.apache.org/category/javaee" />
     <release>

@@ -20,7 +20,7 @@ incorporated CDI-1.1 features are mostly parts which are not well
 defined in the CDI-1.0 specification, like Serialisation checks, etc.
 
 Our project's web page can be found at:
-http://openwebbeans.apache.org
+https://openwebbeans.apache.org
 
 The projects WIKI page can be found at:
 https://cwiki.apache.org/confluence/display/OWB/Index
@@ -1265,7 +1265,7 @@ Blog : http://blogs.apache.org/owb
 OpenWebBeans Web Page
 ----------------------------------------
 You can reach the OpenWebBeans web page at
-http://openwebbeans.apache.org
+https://openwebbeans.apache.org
 ---------------------------------------
 
 Your Apache OpenWebBeans Team

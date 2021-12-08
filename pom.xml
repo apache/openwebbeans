@@ -23,6 +23,7 @@
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
         <version>23</version>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.openwebbeans</groupId>
@@ -40,7 +41,7 @@
 
     <organization>
         <name>The Apache Software Foundation</name>
-        <url>http://apache.org</url>
+        <url>https://apache.org</url>
     </organization>
 
     <inceptionYear>2008</inceptionYear>
@@ -54,7 +55,7 @@
 
     <issueManagement>
         <system>jira</system>
-        <url>http://issues.apache.org/jira/browse/OWB</url>
+        <url>https://issues.apache.org/jira/browse/OWB</url>
     </issueManagement>
 
     <properties>
@@ -92,21 +93,21 @@
             <subscribe>dev-subscribe@openwebbeans.apache.org</subscribe>
             <unsubscribe>dev-unsubscribe@openwebbeans.apache.org</unsubscribe>
             <post>dev@openwebbeans.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/openwebbeans-dev/</archive>
+            <archive>https://mail-archives.apache.org/mod_mbox/openwebbeans-dev/</archive>
         </mailingList>
         <mailingList>
             <name>OpenWebBeans User List</name>
             <subscribe>user-subscribe@openwebbeans.apache.org</subscribe>
             <unsubscribe>user-unsubscribe@openwebbeans.apache.org</unsubscribe>
             <post>user@openwebbeans.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/openwebbeans-user/</archive>
+            <archive>https://mail-archives.apache.org/mod_mbox/openwebbeans-user/</archive>
         </mailingList>
         <mailingList>
             <name>OpenWebBeans Commits List</name>
             <subscribe>commits-subscribe@openwebbeans.apache.org</subscribe>
             <unsubscribe>commits-unsubscribe@openwebbeans.apache.org</unsubscribe>
             <post>commits@openwebbeans.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/openwebbeans-commits/</archive>
+            <archive>https://mail-archives.apache.org/mod_mbox/openwebbeans-commits/</archive>
         </mailingList>
         <mailingList>
             <name>OpenWebBeans Private List</name>

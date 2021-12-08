@@ -1845,7 +1845,7 @@ Blog : http://blogs.apache.org/owb
 OpenWebBeans Web Page
 ----------------------------------------
 You can reach the OpenWebBeans web page at
-http://openwebbeans.apache.org
+https://openwebbeans.apache.org
 ---------------------------------------
 
 Enjoy!

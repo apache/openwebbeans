@@ -21,14 +21,14 @@
 <project name="OpenWebBeans">
     <bannerLeft>
         <name>Apache OpenWebBeans</name>
-        <src>http://openwebbeans.apache.org/owb/images/logos/openwebbeans_hor.png</src>
-        <href>http://openwebbeans.apache.org</href>
+        <src>https://openwebbeans.apache.org/owb/images/logos/openwebbeans_hor.png</src>
+        <href>https://openwebbeans.apache.org</href>
     </bannerLeft>
     
     <bannerRight>
         <name>Apache Banner</name>
-        <src>http://www.apache.org/images/asf-logo.gif</src>
-        <href>http://www.apache.org</href>
+        <src>https://www.apache.org/images/asf-logo.gif</src>
+        <href>https://www.apache.org</href>
     </bannerRight>
     
     <publishDate format="dd MMM yyyy" />
@@ -36,9 +36,9 @@
     
     <body>
         <breadcrumbs>
-            <item name="Apache" href="http://www.apache.org"/>
-            <item name="OpenWebBeans" href="http://openwebbeans.apache.org"/>
-            <item name="OWB-OSGi" href="http://openwebbeans.apache.org/${project.version}/openwebbeans-osgi"/>
+            <item name="Apache" href="https://www.apache.org"/>
+            <item name="OpenWebBeans" href="https://openwebbeans.apache.org"/>
+            <item name="OWB-OSGi" href="https://openwebbeans.apache.org/${project.version}/openwebbeans-osgi"/>
         </breadcrumbs>
 
         <menu ref="reports"/>
