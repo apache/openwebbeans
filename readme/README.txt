@@ -66,6 +66,42 @@ for the whole Application.
 
 
 -------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.25
+-------------------------------------------
+Bug
+
+    [OWB-1393] - OWB stops firing ProcessObserverMethods event, when Extension with non system event observer exists
+    [OWB-1395] - Jar not scanned after 2.0.24 upgrade
+Task
+    [OWB-1396] - upgrade to log4j2 2.15.0
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.24
+-------------------------------------------
+Bug
+    [OWB-1298] - WebsocketUserManager ambigious resolution Jakarta Faces
+    [OWB-1387] - @Destroyed(ApplicationScoped.class) not thrown when @Destroyed(RequestScoped.class) exists
+
+Improvement
+    [OWB-1389] - Remove destroyed instance from memory
+    [OWB-1392] - Fully abstract defining class service
+
+Task
+    [OWB-1390] - support javax.enterprise.inject.scan.implicit property
+    [OWB-1391] - AbstractMetaDataDiscovery ignores classpath entries starting with a common path
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 2.0.23
+-------------------------------------------
+Improvement
+    [OWB-1382] - Class javax.enterprise.inject.spi.BeanManager not cached on start
+    [OWB-1384] - BaseSeContextsService does not honor supportsConversation flag
+    [OWB-1385] - Request controller is not thread safe
+
+
+-------------------------------------------
 Release Notes - OpenWebBeans - Version 2.0.22
 -------------------------------------------
 Bug
