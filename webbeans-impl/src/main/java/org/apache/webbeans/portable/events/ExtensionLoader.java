@@ -219,6 +219,9 @@ public class ExtensionLoader
             // and at the same time observe it, we must ensure to build the observers only once the bean is available
             new ObserverMethodsBuilder<>(webBeansContext, extensionEntry.getValue())
                 .defineObserverMethods(extensionEntry.getKey(), true);
+
+            // avoid not picking up freshly added obsevers.
+            webBeansContext.getNotificationManager().clearCaches();
         }
     }
 

@@ -148,22 +148,6 @@ public class NotificationManager
         this.defaultNotificationOptions = NotificationOptions.ofExecutor(getDefaultExecutor());
     }
 
-    public void afterStart()
-    {
-        processAnnotatedTypeObservers = null;
-        processBeanAttributesObservers = null;
-        processInjectionTargetObservers = null;
-        processManagedBeanObservers = null;
-        processBeanObservers = null;
-        processInjectionPointObservers = null;
-        processObserverMethodObservers = null;
-        processProducerObservers = null;
-        processProducerFieldObservers = null;
-        processProducerMethodObservers = null;
-        processSyntheticBeanObservers = null;
-        processSyntheticObserverMethodObservers = null;
-    }
-
     private Executor getDefaultExecutor()
     {
         // here it would be nice to support to use a produced bean like @Named("openwebbeansCdiExecutor")
@@ -183,6 +167,19 @@ public class NotificationManager
     {
         observersByRawType.clear();
         hasContextLifecycleEventObservers.clear();
+
+        processAnnotatedTypeObservers = null;
+        processBeanAttributesObservers = null;
+        processInjectionTargetObservers = null;
+        processManagedBeanObservers = null;
+        processBeanObservers = null;
+        processInjectionPointObservers = null;
+        processObserverMethodObservers = null;
+        processProducerObservers = null;
+        processProducerFieldObservers = null;
+        processProducerMethodObservers = null;
+        processSyntheticBeanObservers = null;
+        processSyntheticObserverMethodObservers = null;
     }
 
     /**

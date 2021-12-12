@@ -316,9 +316,6 @@ public class BeansDeployer
                 // activate InjectionResolver cache now
                 webBeansContext.getBeanManagerImpl().getInjectionResolver().setStartup(false);
 
-                // drop no more needed memory data
-                webBeansContext.getNotificationManager().afterStart();
-
                 if (!skipValidations)
                 {
                     validateAlternatives(beanAttributesPerBda);
