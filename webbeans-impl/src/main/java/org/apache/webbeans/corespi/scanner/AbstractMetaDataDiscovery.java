@@ -60,9 +60,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-
 
 public abstract class AbstractMetaDataDiscovery implements BdaScannerService
 {
@@ -261,7 +258,12 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             {
                 // third step: remove all jars we know they do not contain any CDI beans
                 filterExcludedJars(classPathUrls);
-                classpathFiles = filterExcludedJars(classpathFiles);
+                if (classpathFiles != null)
+                {
+                    classpathFiles = classpathFiles.entrySet().stream()
+                            .filter(e -> classPathUrls.contains(e.getValue()))
+                            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+                }
 
                 // forth step: add all 'implicit bean archives'
                 for (URL url : (classpathFiles == null ? classPathUrls : classpathFiles.values()))
@@ -311,17 +313,6 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         }
 
         return urlPath;
-    }
-
-    protected Map<File, URL> filterExcludedJars(Map<File, URL> classpathFiles)
-    {
-        if (classpathFiles == null)
-        {
-            return null;
-        }
-        return classpathFiles.entrySet().stream()
-                .filter(e -> !isExcludedJar(e.getValue()))
-                .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
     }
 
     protected void filterExcludedJars(Set<URL> classPathUrls)
