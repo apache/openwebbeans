@@ -60,6 +60,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 
 
@@ -209,7 +210,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         try
         {
             final Set<URL> classPathUrls = ClassLoaders.findUrls(loader);
-            final Map<File, URL> classpathFiles = toFiles(classPathUrls);
+            Map<File, URL> classpathFiles = toFiles(classPathUrls);
 
             // first step: get all META-INF/beans.xml marker files
             Enumeration<URL> beansXmlUrls = loader.getResources(META_INF_BEANS_XML);
@@ -260,6 +261,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             {
                 // third step: remove all jars we know they do not contain any CDI beans
                 filterExcludedJars(classPathUrls);
+                classpathFiles = filterExcludedJars(classpathFiles);
 
                 // forth step: add all 'implicit bean archives'
                 for (URL url : (classpathFiles == null ? classPathUrls : classpathFiles.values()))
@@ -311,43 +313,52 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         return urlPath;
     }
 
+    protected Map<File, URL> filterExcludedJars(Map<File, URL> classpathFiles)
+    {
+        return classpathFiles.entrySet().stream()
+                .filter(e -> !isExcludedJar(e.getValue()))
+                .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+    }
+
     protected void filterExcludedJars(Set<URL> classPathUrls)
     {
-        Iterator<URL> it = classPathUrls.iterator();
-        while (it.hasNext())
+        classPathUrls.removeIf(i -> isExcludedJar(i));
+    }
+    
+    protected boolean isExcludedJar(URL url)
+    {
+        String path = url.toExternalForm();   
+        // TODO: should extract file path and test file.getName(), not the whole path
+        // + should be configurable
+        int knownJarIdx = getKnownJarIdx(path);
+        // -Prun-its openwebbeans-tomcat7 in path but WEB-INF/classes
+        if (knownJarIdx > 0 && knownJarIdx < path.indexOf(".jar"))
         {
-            URL url = it.next();
-            String path = url.toExternalForm();
-            // TODO: should extract file path and test file.getName(), not the whole path
-            // + should be configurable
-            int knownJarIdx = isExcludedJar(path);
-            // -Prun-its openwebbeans-tomcat7 in path but WEB-INF/classes
-            if (knownJarIdx > 0 && knownJarIdx < path.indexOf(".jar"))
+            //X TODO this should be much more actually
+            //X TODO we might need to configure it via files
+            return true;
+        }
+        else
+        {
+            if (path.contains("geronimo-"))
             {
-                //X TODO this should be much more actually
-                //X TODO we might need to configure it via files
-                it.remove();
-            }
-            else
-            {
-                if (path.contains("geronimo-"))
+                // we could check for META-INF/maven/org.apache.geronimo.specs presence there but this is faster
+                final File file = Files.toFile(url);
+                if (file != null)
                 {
-                    // we could check for META-INF/maven/org.apache.geronimo.specs presence there but this is faster
-                    final File file = Files.toFile(url);
-                    if (file != null)
+                    final String filename = file.getName();
+                    if (filename.startsWith("geronimo-") && filename.contains("_spec"))
                     {
-                        final String filename = file.getName();
-                        if (filename.startsWith("geronimo-") && filename.contains("_spec"))
-                        {
-                            it.remove();
-                        }
+                        return true;
                     }
                 }
             }
         }
+        
+        return false;
     }
 
-    protected int isExcludedJar(String path)
+    protected int getKnownJarIdx(String path)
     {
         // lazy init - required when using DS CdiTestRunner
         initScanningExcludes();
