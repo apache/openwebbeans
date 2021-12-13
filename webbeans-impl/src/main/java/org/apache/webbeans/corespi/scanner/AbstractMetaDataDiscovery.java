@@ -43,6 +43,7 @@ import org.apache.xbean.finder.filter.Filter;
 import org.apache.xbean.finder.util.Files;
 
 import javax.decorator.Decorator;
+import javax.enterprise.context.Dependent;
 import javax.interceptor.Interceptor;
 
 import java.io.File;
@@ -67,6 +68,11 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
     protected static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractMetaDataDiscovery.class);
 
     public static final String META_INF_BEANS_XML = "META-INF/beans.xml";
+
+    // via constant to also adopt to shading.
+    private static final String DEPENDENT_CLASS = Dependent.class.getName();
+
+    private Map<String, Boolean> annotationCache = new HashMap<>();
 
     private BeanArchiveService beanArchiveService;
 
@@ -364,6 +370,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         finder = null;
         archive = null;
         loader = null;
+        annotationCache.clear();
     }
 
 
@@ -568,16 +575,22 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
     {
         String annotationName = annotationInfo.getName();
 
-        // TODO add caches
+        Boolean isBeanAnnotation = annotationCache.get(annotationName);
+        if (isBeanAnnotation != null)
+        {
+            return isBeanAnnotation;
+        }
 
         try
         {
             Class<? extends Annotation> annotationType = (Class<? extends Annotation>) WebBeansUtil.getCurrentClassLoader().loadClass(annotationName);
-            boolean isBeanAnnotation = webBeansContext().getBeanManagerImpl().isScope(annotationType);
+
+            isBeanAnnotation = DEPENDENT_CLASS.equals(annotationName) || webBeansContext().getBeanManagerImpl().isNormalScope(annotationType);
             if (!isBeanAnnotation)
             {
                 isBeanAnnotation = webBeansContext().getBeanManagerImpl().isStereotype(annotationType);
             }
+            annotationCache.put(annotationName, isBeanAnnotation);
 
             return isBeanAnnotation;
         }
