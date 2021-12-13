@@ -315,6 +315,10 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
 
     protected Map<File, URL> filterExcludedJars(Map<File, URL> classpathFiles)
     {
+        if (classpathFiles == null)
+        {
+            return null;
+        }
         return classpathFiles.entrySet().stream()
                 .filter(e -> !isExcludedJar(e.getValue()))
                 .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
