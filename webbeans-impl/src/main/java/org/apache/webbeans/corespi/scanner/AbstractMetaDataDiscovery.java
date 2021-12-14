@@ -325,7 +325,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         String path = url.toExternalForm();   
         // TODO: should extract file path and test file.getName(), not the whole path
         // + should be configurable
-        int knownJarIdx = getKnownJarIdx(path);
+        int knownJarIdx = isExcludedJar(path);
         // -Prun-its openwebbeans-tomcat7 in path but WEB-INF/classes
         if (knownJarIdx > 0 && knownJarIdx < path.indexOf(".jar"))
         {
@@ -353,7 +353,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         return false;
     }
 
-    protected int getKnownJarIdx(String path)
+    protected int isExcludedJar(String path)
     {
         // lazy init - required when using DS CdiTestRunner
         initScanningExcludes();
