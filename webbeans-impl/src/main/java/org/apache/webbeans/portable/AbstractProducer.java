@@ -42,6 +42,8 @@ import org.apache.webbeans.intercept.InterceptorResolutionService.BeanIntercepto
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 
+import static java.util.Comparator.comparing;
+
 public abstract class AbstractProducer<T> implements Producer<T>
 {
 
@@ -99,8 +101,12 @@ public abstract class AbstractProducer<T> implements Producer<T>
 
             ClassLoader classLoader = webBeansContext.getApplicationBoundaryService().getBoundaryClassLoader(annotatedType.getJavaClass());
 
-            Method[] businessMethods = methodInterceptors.keySet().toArray(new Method[methodInterceptors.size()]);
-            Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().toArray(new Method[interceptorInfo.getNonInterceptedMethods().size()]);
+            Method[] businessMethods = methodInterceptors.keySet().stream()
+                    .sorted(comparing(Method::getName).thenComparing(Method::getParameterCount).thenComparing(Method::toGenericString))
+                    .toArray(Method[]::new);
+            Method[] nonInterceptedMethods = interceptorInfo.getNonInterceptedMethods().stream()
+                    .sorted(comparing(Method::getName).thenComparing(Method::getParameterCount).thenComparing(Method::toGenericString))
+                    .toArray(Method[]::new);
 
             proxyClass = (Class<? extends T>) pf.createProxyClass(bean, classLoader, annotatedType.getJavaClass(), businessMethods, nonInterceptedMethods);
 
