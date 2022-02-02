@@ -32,9 +32,11 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
@@ -42,6 +44,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Provider;
 
+import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
@@ -178,14 +181,16 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
      * {@inheritDoc}
      */
     @Override
-    public Instance<T> select(Annotation... qualifiers)
+    public Instance<T> select(final Annotation... qualifiers)
     {
         if (strictValidation)
         {
             webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
         }
 
-        Annotation[] newQualifiersArray = qualifiers;
+        final Annotation[] newQualifiersArray = qualifiers.length == 0?
+                qualifierAnnotations.toArray(new Annotation[0]) :
+                concatenateQualifiers(qualifiers);
         return new InstanceImpl<>(
             injectionClazz, injectionPoint == null ? null : new InstanceInjectionPoint(injectionPoint, newQualifiersArray),
             webBeansContext, newQualifiersArray);
@@ -203,19 +208,14 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         }
 
         Type sub = subtype;
-        
         if(sub == null)
         {
             sub = injectionClazz;
         }
-        if (qualifiers== null || qualifiers.length == 0)
-        {
 
-        }
-        Annotation[] effectiveQualifiers = qualifiers != null && qualifiers.length > 0
-            ? qualifiers
-            : qualifierAnnotations.toArray(new Annotation[qualifierAnnotations.size()]);
-
+        final Annotation[] effectiveQualifiers = qualifiers != null && qualifiers.length > 0
+            ? concatenateQualifiers(qualifiers)
+            : qualifierAnnotations.toArray(new Annotation[0]);
         return new InstanceImpl<>(sub, injectionPoint, webBeansContext, effectiveQualifiers);
     }
 
@@ -248,6 +248,18 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
                 return create(beans.next());
             }
         };
+    }
+
+    private Annotation[] concatenateQualifiers(final Annotation[] additionalQualifiers)
+    {
+        return Stream.concat(
+                        qualifierAnnotations.stream()
+                                .filter(it -> it.annotationType() != Any.class) // no more relevant if there is another one
+                                // see org.apache.webbeans.portable.InstanceProducer.produce
+                                // NOT equals() to respect user request but ==
+                                .filter(it -> it != DefaultLiteral.INSTANCE),
+                        Stream.of(additionalQualifiers))
+                .toArray(Annotation[]::new);
     }
 
     public void destroy(T instance)

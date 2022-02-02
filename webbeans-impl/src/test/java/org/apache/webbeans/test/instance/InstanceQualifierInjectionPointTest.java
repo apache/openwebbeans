@@ -64,7 +64,7 @@ public class InstanceQualifierInjectionPointTest extends AbstractUnitTest
             Factory.class), Collections.<String>emptyList(), true);
 
         assertNotNull(instance1.select(new AnnotationLiteral<Qualifier1>() {}).get());
-        assertEquals(1, holder.getQualifiers().size());
+        assertEquals(holder.getQualifiers().toString(), 1, holder.getQualifiers().size());
         assertEquals(Qualifier1.class, holder.getQualifiers().iterator().next().annotationType());
 
         assertNotNull(instance2.select(AnyLiteral.INSTANCE).get());
