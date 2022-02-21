@@ -378,7 +378,7 @@
                                     <pattern>javax.annotation</pattern>
                                     <shadedPattern>jakarta.annotation</shadedPattern>
                                     <excludes>
-                                        <exclude>javax.annotation.process.**</exclude>
+                                        <exclude>javax.annotation.processing.**</exclude>
                                     </excludes>
                                 </relocation>
                                 <relocation>
