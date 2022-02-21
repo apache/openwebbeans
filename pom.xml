@@ -377,6 +377,9 @@
                                 <relocation>
                                     <pattern>javax.annotation</pattern>
                                     <shadedPattern>jakarta.annotation</shadedPattern>
+                                    <excludes>
+                                        <exclude>javax.annotation.process.**</exclude>
+                                    </excludes>
                                 </relocation>
                                 <relocation>
                                     <pattern>javax.el</pattern>
@@ -385,6 +388,9 @@
                                 <relocation>
                                     <pattern>javax.enterprise</pattern>
                                     <shadedPattern>jakarta.enterprise</shadedPattern>
+                                    <excludes>
+                                        <exclude>javax.enterprise.deploy.**</exclude>
+                                    </excludes>
                                 </relocation>
                                 <relocation>
                                     <pattern>javax.decorator</pattern>
@@ -405,6 +411,9 @@
                                 <relocation>
                                     <pattern>javax.transaction</pattern>
                                     <shadedPattern>jakarta.transaction</shadedPattern>
+                                    <excludes>
+                                        <exclude>javax.transaction.xa.**</exclude>
+                                    </excludes>
                                 </relocation>
                                 <relocation>
                                     <pattern>javax.validation</pattern>
@@ -426,9 +435,6 @@
                                     <pattern>javax.jms</pattern>
                                     <shadedPattern>jakarta.jms</shadedPattern>
                                 </relocation>
-                                <!--
-                                todo: javax.transaction, it is in the JVM so can have issue repackaging
-                                -->
                             </relocations>
                         </configuration>
                     </execution>
