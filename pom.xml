@@ -51,7 +51,23 @@
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/openwebbeans.git</developerConnection>
         <url>https://github.com/apache/openwebbeans</url>
       <tag>openwebbeans-2.0.25</tag>
-  </scm>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Maven Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <issueManagement>
         <system>jira</system>
@@ -77,7 +93,7 @@
         <myfaces.version>2.3.6</myfaces.version>
         <xbean.version>4.18</xbean.version>
         <arquillian.version>1.1.13.Final</arquillian.version>
-        <cdi.tck.version>2.0.3.Final</cdi.tck.version>
+        <cdi.tck.version>2.0.5.Final</cdi.tck.version>
         <httpclient.version>4.5.13</httpclient.version>
 
         <osgi.servlet.range>2.4</osgi.servlet.range>
@@ -85,6 +101,9 @@
         <osgi.faces.range>2.0</osgi.faces.range>
 
         <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
+
+        <!-- tck artifacts use a http:// repo we should disable to build with mvn 3.8<jboss-public-repository>false</jboss-public-repository> -->
+        <jboss-public-repository>false</jboss-public-repository>
     </properties>
     
     <mailingLists>
