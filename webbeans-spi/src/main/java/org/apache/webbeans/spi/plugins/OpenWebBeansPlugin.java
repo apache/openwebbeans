@@ -29,11 +29,11 @@ package org.apache.webbeans.spi.plugins;
  *    plugin lifecycle like {@code #startUp()} and {@code #shutDown()}
  *  </li>
  *  <li>
- *    injection execution will be called every time a been get's
+ *    injection execution will be called every time a been gets
  *    injected like {@code #injectResource(Type, Annotation[])}
  *  </li>
  * </ol> 
- * @see PluginLoader for documentation of the whole mechanism
+ * see org.apache.webbeans.plugins.PluginLoader for documentation of the whole mechanism
  */
 public interface OpenWebBeansPlugin
 {
@@ -47,7 +47,6 @@ public interface OpenWebBeansPlugin
      * At shutdown, the plugin must release all locked resources.
      * This is called once before the very plugin gets destroyed.
      * This is usually the case when the WebApplication gets stopped.
-     * @throws WebBeansConfigurationException
      */
     void shutDown();
     
@@ -56,7 +55,6 @@ public interface OpenWebBeansPlugin
      * Make sure that the given class is ok for simple web bean conditions, 
      * otherwise throw a {@code WebBeansConfigurationException}
      * @param clazz the class to check
-     * @throws WebBeansConfigurationException if the given clazz cannot be used as simple web bean.
      */
     void isManagedBean(Class<?> clazz);
     

@@ -58,7 +58,7 @@ public interface ResourceInjectionService
      * For example;
      * <p>
      * <code>
-     * {@link @Produces} &#064;MyPersistenceContext PersistenceContext EntityManager manager;
+     * @javax.enterprise.inject.Produces &#064;MyPersistenceContext PersistenceContext EntityManager manager;
      * </code>
      * </p>
      * <p>

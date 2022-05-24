@@ -20,7 +20,7 @@ package org.apache.webbeans.spi;
 
 /**
  * SPI interface to implement the proxy defining logic.
- * It enables to switch from unsafe to classloader logic for instance for java >= 9.
+ * It enables to switch from unsafe to classloader logic for instance for java @gt;= 9.
  */
 public interface DefiningClassService
 {

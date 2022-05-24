@@ -598,10 +598,12 @@
                 <configuration>
                     <quiet>true</quiet>
                     <additionalparam>-Xdoclint:none</additionalparam>
+                    <source>8</source>
                     <links>
                         <link>http://download.oracle.com/javaee/7/api/</link>
                         <link>http://download.oracle.com/javase/8/docs/api/</link>
                         <link>http://myfaces.apache.org/core22/myfaces-api/apidocs/</link>
+                        <link>http://docs.oracle.com/javase/8/docs/api/</link>
                     </links>
                 </configuration>
             </plugin>
@@ -636,10 +638,12 @@
                 <configuration>
                     <quiet>true</quiet>
                     <additionalparam>-Xdoclint:none</additionalparam>
+                    <source>8</source>
                     <links>
                         <link>http://download.oracle.com/javaee/7/api/</link>
                         <link>http://download.oracle.com/javase/8/docs/api/</link>
                         <link>http://myfaces.apache.org/core22/myfaces-api/apidocs/</link>
+                        <link>http://docs.oracle.com/javase/8/docs/api/</link>
                     </links>
                 </configuration>
                 <reportSets>
