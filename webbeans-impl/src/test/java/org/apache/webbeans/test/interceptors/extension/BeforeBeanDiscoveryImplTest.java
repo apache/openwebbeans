@@ -25,12 +25,15 @@ import org.junit.Test;
 
 import javax.annotation.Priority;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
@@ -73,6 +76,81 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
         final OwbBean instance = getInstance(OwbBean.class);
         assertEquals("ok", instance.method());
         assertEquals(0, instance.getCounter());
+    }
+
+    @Test
+    public void addAnnotatedTypeInterceptorBinding() {
+        addExtension(new AnnotatedTypeAddInterceptorBindingExtension());
+        addInterceptor(OwbMethodInterceptor.class);
+        startContainer(OwbBean.class);
+
+        final OwbBean instance = getInstance(OwbBean.class);
+        assertEquals("ok", instance.method());
+        assertEquals(0, instance.getCounter());
+    }
+
+    @Test
+    public void addAnnotationToClassInterceptorBinding() {
+        addExtension(new AddAnnotationToClassInterceptorBindingExtension());
+        addInterceptor(OwbMethodInterceptor.class);
+        startContainer(OwbBean.class);
+
+        final OwbBean instance = getInstance(OwbBean.class);
+        assertEquals("ok", instance.method());
+        assertEquals(0, instance.getCounter());
+    }
+
+    public static class OwbMethodBindingInterceptorBindingAnnotatedType<T extends Annotation> implements AnnotatedType<T> {
+
+        public OwbMethodBindingInterceptorBindingAnnotatedType(AnnotatedType<T> delegate) {
+            this.delegate = delegate;
+            annotations = new HashSet<>(delegate.getAnnotations());
+            annotations.add(ApplyOwbMethodBinding.Literal.INSTANCE);
+        }
+
+        public Class<T> getJavaClass() {
+            return delegate.getJavaClass();
+        }
+
+        public Set<AnnotatedConstructor<T>> getConstructors() {
+            return delegate.getConstructors();
+        }
+
+        public Set<AnnotatedMethod<? super T>> getMethods() {
+            return delegate.getMethods();
+        }
+
+        public Set<AnnotatedField<? super T>> getFields() {
+            return delegate.getFields();
+        }
+
+        public Type getBaseType() {
+            return delegate.getBaseType();
+        }
+
+        public Set<Type> getTypeClosure() {
+            return delegate.getTypeClosure();
+        }
+
+        @SuppressWarnings("unchecked")
+        public <S extends Annotation> S getAnnotation(Class<S> annotationType) {
+            if (ApplyOwbMethodBinding.class.equals(annotationType)) {
+                return (S) ApplyOwbMethodBinding.Literal.INSTANCE;
+            }
+            return delegate.getAnnotation(annotationType);
+        }
+
+        public Set<Annotation> getAnnotations() {
+            return annotations;
+        }
+
+        public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
+            return ApplyOwbMethodBinding.class.equals(annotationType) || delegate.isAnnotationPresent(annotationType);
+        }
+
+        private AnnotatedType<T> delegate;
+
+        private Set<Annotation> annotations;
     }
 
     @OwbClassBinding
@@ -128,9 +206,23 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
     static @interface OwbMethodBinding {
     }
 
+    @InterceptorBinding
+    @Target({ ElementType.TYPE, ElementType.METHOD })
+    @Retention(RetentionPolicy.RUNTIME)
+    static @interface ApplyOwbMethodBinding {
+
+        class Literal extends AnnotationLiteral<ApplyOwbMethodBinding> implements ApplyOwbMethodBinding {
+
+            public static final ApplyOwbMethodBinding INSTANCE = new Literal();
+
+            private static final long serialVersionUID = 5707717912530822656L;
+        }
+    }
+
     @OwbMethodBinding
     @Interceptor
     @Priority(1000 + 10)
+    // @ApplyOwbMethodBinding
     static class OwbMethodInterceptor {
         @AroundConstruct
         private Object constructor(InvocationContext context) throws Exception {
@@ -278,6 +370,23 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
         public String noInterceptor()
         {
             return "bean";
+        }
+    }
+
+    private class AnnotatedTypeAddInterceptorBindingExtension implements Extension {
+        void registerInterceptorBindings(@Observes BeforeBeanDiscovery bbd, BeanManager bm) {
+            bbd.addInterceptorBinding(new OwbMethodBindingInterceptorBindingAnnotatedType<>(bm.createAnnotatedType(ApplyOwbMethodBinding.class)));
+
+            bbd.addAnnotatedType(bm.createAnnotatedType(OwbMethodInterceptor.class), OwbMethodInterceptor.class.getName());
+        }
+    }
+
+    private class AddAnnotationToClassInterceptorBindingExtension implements Extension {
+        void registerInterceptorBindings(@Observes BeforeBeanDiscovery bbd, BeanManager bm) {
+
+            bbd.addInterceptorBinding(OwbMethodBinding.class, OwbMethodInterceptor.class.getAnnotation(ApplyOwbMethodBinding.class));
+
+            bbd.addAnnotatedType(bm.createAnnotatedType(OwbMethodInterceptor.class), OwbMethodInterceptor.class.getName());
         }
     }
 }
