@@ -67,8 +67,8 @@
 
   <repositories>
     <repository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com</url>
+      <id>gradle-m2</id>
+      <url>https://plugins.gradle.org/m2/</url>
     </repository>
   </repositories>
 </project>
