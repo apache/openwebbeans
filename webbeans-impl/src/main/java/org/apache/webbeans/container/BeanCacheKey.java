@@ -294,9 +294,19 @@ public final class BeanCacheKey
 
             Method[] member1 = type1.getDeclaredMethods();
             Method[] member2 = type2.getDeclaredMethods();
-
+            
             // TBD: the order of the list of members seems to be deterministic
-
+            Comparator<Method> methodComparator = new Comparator<Method>() 
+            {
+                @Override
+                public int compare(Method o1, Method o2) 
+                {
+                    return o1.toString().compareTo(o2.toString());
+                }
+            };
+            Arrays.sort(member1, methodComparator);
+            Arrays.sort(member2, methodComparator);
+       
             int i = 0;
             int j = 0;
             int length1 = member1.length;
