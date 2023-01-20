@@ -571,23 +571,29 @@ public class InjectionResolver
 
     private void findNewBean(Set<Bean<?>> resolvedComponents, Type injectionPointType, Annotation[] qualifiers)
     {
-        if (qualifiers.length == 1 && New.class.equals(qualifiers[0].annotationType()))
+        try
         {
-            // happen in TCKs, shouldn't be the case in real apps
-            New newQualifier = (New)qualifiers[0];
-            Class<?> beanClass;
-            if (newQualifier.value() != New.class)
+            if (qualifiers.length == 1 && New.class.equals(qualifiers[0].annotationType()))
             {
-                beanClass = newQualifier.value();
-            }
-            else
-            {
-                beanClass = GenericsUtil.getRawType(injectionPointType);
-            }
+                // happen in TCKs, shouldn't be the case in real apps
+                New newQualifier = (New) qualifiers[0];
+                Class<?> beanClass;
+                if (newQualifier.value() != New.class)
+                {
+                    beanClass = newQualifier.value();
+                }
+                else
+                {
+                    beanClass = GenericsUtil.getRawType(injectionPointType);
+                }
 
-            resolvedComponents.add(webBeansContext.getWebBeansUtil().createNewComponent(beanClass));
+                resolvedComponents.add(webBeansContext.getWebBeansUtil().createNewComponent(beanClass));
+            }
         }
-
+        catch (NoClassDefFoundError e)
+        {
+            logger.log(Level.FINE, "DEBUG_NEW_ANNOTATION_MISSING", e);
+        }
     }
 
     private Set<Bean<?>> findByBeanType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)
