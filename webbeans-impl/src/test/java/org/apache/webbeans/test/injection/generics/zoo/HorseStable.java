@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.generics.zoo;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 /**
  * A stable for horses, pigs, etc

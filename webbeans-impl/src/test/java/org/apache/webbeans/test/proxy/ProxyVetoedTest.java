@@ -23,7 +23,7 @@ import org.apache.webbeans.test.proxy.beans.ApplicationBean;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.inject.Vetoed;
+import jakarta.enterprise.inject.Vetoed;
 import java.util.ArrayList;
 import java.util.Collection;
 

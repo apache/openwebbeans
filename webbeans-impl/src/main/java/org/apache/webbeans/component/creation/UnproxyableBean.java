@@ -22,10 +22,10 @@ import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.UnproxyableResolutionException;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.UnproxyableResolutionException;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanAttributes;
 
 class UnproxyableBean<T> extends ManagedBean<T>
 {

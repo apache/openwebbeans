@@ -24,8 +24,8 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.ContainerLifecycle;
 import org.apache.webbeans.util.WebBeansUtil;
 
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.ConversationScoped;
+import jakarta.enterprise.context.SessionScoped;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import java.util.logging.Level;

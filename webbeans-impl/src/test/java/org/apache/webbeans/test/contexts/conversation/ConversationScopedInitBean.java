@@ -18,9 +18,9 @@
 */
 package org.apache.webbeans.test.contexts.conversation;
 
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.context.ConversationScoped;
+import jakarta.enterprise.context.Initialized;
+import jakarta.enterprise.event.Observes;
 import java.io.Serializable;
 
 /**

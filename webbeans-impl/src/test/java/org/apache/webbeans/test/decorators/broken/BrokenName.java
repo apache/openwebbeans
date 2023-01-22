@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.decorators.broken;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Decorator
 @Named

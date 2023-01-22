@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 /**
  * {@link Dependent} literal annotation.

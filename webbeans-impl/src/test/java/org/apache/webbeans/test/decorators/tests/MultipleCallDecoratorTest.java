@@ -25,9 +25,9 @@ import org.apache.webbeans.test.decorators.multiple.OutputProvider;
 import org.apache.webbeans.test.decorators.multiple.RequestStringBuilder;
 import org.junit.Test;
 
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
 import java.util.Collection;
 

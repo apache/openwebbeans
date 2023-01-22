@@ -88,7 +88,7 @@ Improvement
     [OWB-1392] - Fully abstract defining class service
 
 Task
-    [OWB-1390] - support javax.enterprise.inject.scan.implicit property
+    [OWB-1390] - support jakarta.enterprise.inject.scan.implicit property
     [OWB-1391] - AbstractMetaDataDiscovery ignores classpath entries starting with a common path
 
 
@@ -96,7 +96,7 @@ Task
 Release Notes - OpenWebBeans - Version 2.0.23
 -------------------------------------------
 Improvement
-    [OWB-1382] - Class javax.enterprise.inject.spi.BeanManager not cached on start
+    [OWB-1382] - Class jakarta.enterprise.inject.spi.BeanManager not cached on start
     [OWB-1384] - BaseSeContextsService does not honor supportsConversation flag
     [OWB-1385] - Request controller is not thread safe
 
@@ -376,7 +376,7 @@ Bug
     [OWB-1136] - Can't access SessionScoped beans inside @Observers @Initialized(SessionScoped)
     [OWB-1138] - PassivationCapable bean id is not unique: PRODUCERMETHOD#class
     [OWB-1139] - JSP misses CDI ELResolver
-    [OWB-1140] - Caused by: javax.enterprise.inject.UnsatisfiedResolutionException: Api type [xxx] is not found with the qualifiers
+    [OWB-1140] - Caused by: jakarta.enterprise.inject.UnsatisfiedResolutionException: Api type [xxx] is not found with the qualifiers
     [OWB-1149] - ContextsService doesn't re-attach mocked sessions correctly
 
 Dependency upgrade
@@ -486,7 +486,7 @@ Bug
     [OWB-989] - Clean info issue on Sonar
     [OWB-1035] - WebBeansELResolver broken in case of multiple beans
     [OWB-1040] - Lifecycle events fired during bean discovery do not follow specification sequence
-    [OWB-1047] - Guess sample currently not working due to missing javax.annotation.Priority
+    [OWB-1047] - Guess sample currently not working due to missing jakarta.annotation.Priority
     [OWB-1056] - interceptor and annotations spec jars missing in distribution
     [OWB-1059] - empty beans.xml file should result in BeanDiscoveryMode.ALL
     [OWB-1061] - Surplus and missing @Initialized and @Destroyed events
@@ -955,7 +955,7 @@ Bug
     * [OWB-677] - improve getBeans cache key algorithm
     * [OWB-680] - drop unused getInstance() methods from our services
     * [OWB-681] - remove deprecated methods from BeanManagerImpl
-    * [OWB-682] - get rid of OWB InterceptorType and usejavax.enterprise.inject.spi.InterceptionType instead
+    * [OWB-682] - get rid of OWB InterceptorType and usejakarta.enterprise.inject.spi.InterceptionType instead
     * [OWB-683] - remove obsolete Methods from our Bean implementations and handlers
     * [OWB-685] - OwbApplicationFactory doesn't set Application
     * [OWB-686] - OWBApplicationFactory wrappedApp should be consistent between getter and setter and volatile
@@ -1052,7 +1052,7 @@ Bug
     * [OWB-589] - " ... requires a passivation capable dependency ..." for producer method with return type String and non serializable injected dependency
     * [OWB-597] - StackOverFlow when injecting product in same bean where @Produces is placed
     * [OWB-615] - remove @Overrides for interfaces to be java5 compatible
-    * [OWB-616] - javax.el.ExpressionFactory has final methods! CDI doesn't allow that. - Test on final **PRIVATE** methods too?
+    * [OWB-616] - jakarta.el.ExpressionFactory has final methods! CDI doesn't allow that. - Test on final **PRIVATE** methods too?
     * [OWB-618] - we sometimes invoke a dispose method without having created the bean upfront
     * [OWB-619] - @New beans must only exist if there is at least one injection point for them
     * [OWB-620] - any disabled bean of passivating scope will wrongly be detected as 'not passivatable'

@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.decorators.common;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.enterprise.context.Conversation;
-import javax.inject.Inject;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.enterprise.context.Conversation;
+import jakarta.inject.Inject;
 
 @Decorator
 public class ConversationDecorator implements Conversation

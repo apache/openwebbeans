@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.lifecycle.inheritance;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class SubClassInheritedBean extends SubClassBean

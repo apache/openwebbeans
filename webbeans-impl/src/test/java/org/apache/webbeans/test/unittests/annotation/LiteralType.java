@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.annotation;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 import org.apache.webbeans.test.annotation.binding.AnnotationWithBindingMember;
 

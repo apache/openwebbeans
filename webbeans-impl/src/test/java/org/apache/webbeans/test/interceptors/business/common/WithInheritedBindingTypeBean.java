@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.interceptors.business.common;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 

@@ -21,15 +21,15 @@ package org.apache.webbeans.el;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
 
 /**
  * The ELContextStore serves two different purposes
  *
  * <ol>
  *  <li>
- *   Store {@link javax.enterprise.context.Dependent} objects of the same
+ *   Store {@link jakarta.enterprise.context.Dependent} objects of the same
  *   invocation. See spec section 6.4.3. <i>Dependent pseudo-scope and Unified EL</i>.
  *   This gets cleaned up with {@link #destroyDependents()} after the whole Expression
  *   got scanned.

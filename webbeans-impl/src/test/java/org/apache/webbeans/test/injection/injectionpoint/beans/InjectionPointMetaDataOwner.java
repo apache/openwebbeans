@@ -20,10 +20,10 @@ package org.apache.webbeans.test.injection.injectionpoint.beans;
 
 import java.util.logging.Logger;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.test.injection.injectionpoint.common.LoggerQualifier;
 

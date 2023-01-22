@@ -22,11 +22,11 @@ package org.apache.webbeans.proxy;
 import java.io.Serializable;
 
 /**
- * <p>Interface for all OpenWebBeans {@link javax.enterprise.context.NormalScope} Proxies.
+ * <p>Interface for all OpenWebBeans {@link jakarta.enterprise.context.NormalScope} Proxies.
  * A normalscoping proxy just resolves the underlying Contextual Instance
  * and directly invokes the target method onto it.</p>
  *
- * <p>Each <code>OwbNormalScopeProxy</code> contains a {@link javax.inject.Provider}
+ * <p>Each <code>OwbNormalScopeProxy</code> contains a {@link jakarta.inject.Provider}
  * which returns the current Contextual Instance.</p>
  *
  * <p>This interface extends Serializable because every NormalScoped bean proxy must

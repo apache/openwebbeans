@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.tck.test.beandiscovery.scoped;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 
 import java.util.Set;
 

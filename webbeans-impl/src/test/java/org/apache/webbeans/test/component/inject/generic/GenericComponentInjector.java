@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.inject.generic;
 
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.component.inject.parametrized.Persistent;
 import org.apache.webbeans.test.component.inject.parametrized.PersistentSuper;

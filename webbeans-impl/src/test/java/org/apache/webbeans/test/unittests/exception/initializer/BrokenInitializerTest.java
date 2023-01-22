@@ -26,7 +26,7 @@ import org.apache.webbeans.test.component.exception.initializer.BrokenInitialize
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 public class BrokenInitializerTest extends AbstractUnitTest
 {

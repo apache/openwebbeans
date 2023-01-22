@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.specalization;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class Pen implements IPen {
 

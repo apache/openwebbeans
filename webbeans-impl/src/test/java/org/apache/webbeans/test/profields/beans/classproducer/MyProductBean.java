@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.profields.beans.classproducer;
 
-import javax.enterprise.inject.Typed;
+import jakarta.enterprise.inject.Typed;
 
 @Typed()
 public class MyProductBean {

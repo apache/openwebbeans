@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.inject;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 /**
  * Injects dependencies of the given Java EE component
@@ -53,7 +53,7 @@ public final class OWBInjector
         }
 
         AnnotatedType annotatedType = beanManager.createAnnotatedType(instanceUnderInjection.getClass());
-        beanManager.createInjectionTarget(annotatedType).inject(instanceUnderInjection, creationalContext);
+        beanManager.getInjectionTargetFactory(annotatedType).createInjectionTarget(null).inject(instanceUnderInjection, creationalContext);
     }
 
 

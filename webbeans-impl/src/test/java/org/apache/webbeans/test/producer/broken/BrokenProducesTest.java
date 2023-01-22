@@ -17,7 +17,7 @@
  * under the License.
  */package org.apache.webbeans.test.producer.broken;
 
-import javax.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;

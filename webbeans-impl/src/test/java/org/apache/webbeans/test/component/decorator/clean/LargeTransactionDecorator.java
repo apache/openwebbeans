@@ -20,9 +20,9 @@ package org.apache.webbeans.test.component.decorator.clean;
 
 import java.math.BigDecimal;
 
-import javax.decorator.Delegate;
-import javax.decorator.Decorator;
-import javax.inject.Inject;
+import jakarta.decorator.Delegate;
+import jakarta.decorator.Decorator;
+import jakarta.inject.Inject;
 
 @Decorator
 public class LargeTransactionDecorator implements Account

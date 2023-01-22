@@ -22,9 +22,9 @@ import java.lang.reflect.AccessibleObject;
 import java.util.List;
 import java.util.Map;
 
-import javax.enterprise.inject.spi.InterceptionType;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.inject.Provider;
+import jakarta.enterprise.inject.spi.InterceptionType;
+import jakarta.enterprise.inject.spi.Interceptor;
+import jakarta.inject.Provider;
 
 /**
  * InvocationContext for business method interceptors

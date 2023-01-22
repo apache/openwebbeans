@@ -29,7 +29,7 @@ import org.apache.webbeans.test.definition.proxyable.beans.SubClassWithNormalSco
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.inject.UnproxyableResolutionException;
+import jakarta.enterprise.inject.UnproxyableResolutionException;
 import java.util.ArrayList;
 import java.util.Collection;
 

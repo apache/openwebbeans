@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.factory.beans;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public abstract class PartialBeanClass extends PartialBeanClassSuperClass implements PartialBeanClassSuperInterface

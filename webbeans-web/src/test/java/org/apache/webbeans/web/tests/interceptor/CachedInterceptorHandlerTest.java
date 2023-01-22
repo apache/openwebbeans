@@ -29,9 +29,9 @@ import org.apache.webbeans.web.lifecycle.test.MockServletContext;
 import org.apache.webbeans.web.tests.MockServletRequest;
 import org.junit.Test;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
 import javax.servlet.ServletRequestEvent;
 import java.util.ArrayList;
 import java.util.Collection;

@@ -20,7 +20,7 @@ package org.apache.webbeans.decorator;
 
 import java.util.Comparator;
 
-import javax.enterprise.inject.spi.Decorator;
+import jakarta.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.config.WebBeansContext;
 

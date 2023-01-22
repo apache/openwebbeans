@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.se.StandaloneContextsService;

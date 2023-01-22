@@ -29,10 +29,10 @@ import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.web.tomcat7.ContextLifecycleListener;
 import org.junit.Test;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.CDI;
 import javax.servlet.ServletRequestEvent;
 import java.io.File;
 import java.io.FileOutputStream;

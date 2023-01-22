@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.test.portable.events.extensions;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 import org.apache.webbeans.test.portable.alternative.HalfEgg;
 import org.apache.webbeans.test.portable.alternative.WoodEgg;

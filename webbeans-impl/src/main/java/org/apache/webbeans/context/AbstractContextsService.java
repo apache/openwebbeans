@@ -22,9 +22,9 @@ import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.enterprise.context.ContextException;
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.Context;
+import jakarta.enterprise.context.ContextException;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.spi.Context;
 
 import org.apache.webbeans.annotation.BeforeDestroyedLiteral;
 import org.apache.webbeans.annotation.DestroyedLiteral;

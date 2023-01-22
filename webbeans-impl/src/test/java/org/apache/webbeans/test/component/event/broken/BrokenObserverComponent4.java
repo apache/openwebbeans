@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.event.broken;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.component.CurrentBindingComponent;
 import org.apache.webbeans.test.event.LoggedInEvent;

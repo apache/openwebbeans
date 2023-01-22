@@ -36,9 +36,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.Extension;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -356,7 +356,7 @@ public abstract class AbstractUnitTest
     /**
      * Add a CDI Extension which should get used in the test case.
      * Use this function instead of defining test Extensions via the usual
-     * META-INF/services/javax.enterprise.inject.spi.Extension file!
+     * META-INF/services/jakarta.enterprise.inject.spi.Extension file!
      * 
      * @param ext the {@link Extension} which should get loaded
      */

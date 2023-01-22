@@ -18,13 +18,13 @@
  */
 package org.apache.webbeans.intercept;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 import java.util.HashMap;
 
 
 /**
- * <p>This is a {@link javax.inject.Provider} especially
+ * <p>This is a {@link jakarta.inject.Provider} especially
  * made for &#064;SessionScoped beans used in web applications.</p>
  * 
  * <p>Since there is only one single contextual instance of an &#064;SessionScoped bean per thread,

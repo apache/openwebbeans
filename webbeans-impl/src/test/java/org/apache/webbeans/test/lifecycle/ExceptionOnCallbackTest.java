@@ -20,9 +20,9 @@ package org.apache.webbeans.test.lifecycle;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;

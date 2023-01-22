@@ -18,7 +18,7 @@
  */
  package org.apache.webbeans.test.contexts.serialize;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class AppScopedBean {

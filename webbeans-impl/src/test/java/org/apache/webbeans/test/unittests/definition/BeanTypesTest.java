@@ -21,7 +21,7 @@ package org.apache.webbeans.test.unittests.definition;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.junit.Assert;
 

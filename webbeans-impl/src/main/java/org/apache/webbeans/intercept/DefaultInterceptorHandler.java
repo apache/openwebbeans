@@ -27,12 +27,12 @@ import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.InterceptionType;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.inject.Provider;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.inject.spi.InterceptionType;
+import jakarta.enterprise.inject.spi.Interceptor;
+import jakarta.inject.Provider;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.NotSerializableException;
@@ -66,7 +66,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
 
     /**
      * The passivation if in case this is a
-     * {@link javax.enterprise.inject.spi.PassivationCapable} bean.
+     * {@link jakarta.enterprise.inject.spi.PassivationCapable} bean.
      * we just keep this field for serializing it away
      */
     private String beanPassivationId;
@@ -82,7 +82,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
      * @param delegate the outermost Decorator or the intercepted instance
      * @param interceptors Map with all active interceptors for each method.
      * @param instances the Interceptor instances
-     * @param beanPassivationId passivationId if a Bean is {@link javax.enterprise.inject.spi.PassivationCapable}
+     * @param beanPassivationId passivationId if a Bean is {@link jakarta.enterprise.inject.spi.PassivationCapable}
      */
     public DefaultInterceptorHandler(T target,
                                      T delegate,

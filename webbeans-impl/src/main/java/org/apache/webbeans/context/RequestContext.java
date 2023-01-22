@@ -20,8 +20,8 @@ package org.apache.webbeans.context;
 
 import java.util.HashMap;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
 
@@ -63,8 +63,8 @@ public class RequestContext extends AbstractContext
      * For a synthetic 'request' this is null. For a real http ServletRequest
      * this is the HttpServletRequest.
      * This is what gets used as payload for various
-     * {@link javax.enterprise.context.Initialized} and
-     * {@link javax.enterprise.context.Destroyed} events.
+     * {@link jakarta.enterprise.context.Initialized} and
+     * {@link jakarta.enterprise.context.Destroyed} events.
      *
      * This can be overloaded in web requests.
      * @return the ServletRequest or {@code null} for other kind of requests‚

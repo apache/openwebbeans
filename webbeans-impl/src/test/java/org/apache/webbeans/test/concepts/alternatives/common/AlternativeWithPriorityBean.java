@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.concepts.alternatives.common;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
 
 @Alternative
 @Priority(5)

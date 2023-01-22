@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.xml.strict;
 
-import javax.interceptor.Interceptor;
+import jakarta.interceptor.Interceptor;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 

@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 
-import javax.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.Annotated;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;

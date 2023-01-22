@@ -21,10 +21,10 @@ package org.apache.webbeans.test.unittests.typedliteral;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.TypeLiteral;
 
 import org.junit.Assert;
 

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.profields.innerClass;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 public class InnerClassInjectStringProducer
 {

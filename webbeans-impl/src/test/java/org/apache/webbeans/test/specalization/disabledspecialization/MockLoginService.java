@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.specalization.disabledspecialization;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Specializes;
 
 /**
  * And this version always logs in.

@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.configurator;
 
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.configurator.BeanAttributesConfigurator;
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.configurator.BeanAttributesConfigurator;
+import jakarta.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;

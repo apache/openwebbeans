@@ -23,8 +23,8 @@ import org.apache.webbeans.util.GenericsUtil;
 
 import java.lang.reflect.Field;
 
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.AnnotatedType;
 
 /**
  * Implementation of {@link AnnotatedField} interface.

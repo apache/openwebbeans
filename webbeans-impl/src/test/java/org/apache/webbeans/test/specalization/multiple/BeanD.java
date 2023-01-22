@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.specalization.multiple;
 
-import javax.enterprise.inject.Specializes;
-import javax.inject.Named;
+import jakarta.enterprise.inject.Specializes;
+import jakarta.inject.Named;
 
 @Named
 @Specializes

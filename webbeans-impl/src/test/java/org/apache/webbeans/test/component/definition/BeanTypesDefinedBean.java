@@ -20,9 +20,9 @@ package org.apache.webbeans.test.component.definition;
 
 import java.io.Serializable;
 
-import javax.enterprise.inject.Typed;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.inject.Typed;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 

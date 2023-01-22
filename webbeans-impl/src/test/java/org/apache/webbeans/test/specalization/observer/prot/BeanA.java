@@ -20,8 +20,8 @@ package org.apache.webbeans.test.specalization.observer.prot;
 
 import org.apache.webbeans.test.specalization.observer.TestEvent;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import java.io.Serializable;
 
 @ApplicationScoped

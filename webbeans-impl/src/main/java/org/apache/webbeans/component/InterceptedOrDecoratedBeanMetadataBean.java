@@ -21,13 +21,13 @@ package org.apache.webbeans.component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.TypeLiteral;
 
-import javax.enterprise.inject.Decorated;
-import javax.enterprise.inject.Intercepted;
+import jakarta.enterprise.inject.Decorated;
+import jakarta.enterprise.inject.Intercepted;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.BeanMetadataProducer;
 import org.apache.webbeans.util.CollectionUtil;

@@ -20,9 +20,9 @@ package org.apache.webbeans.jsf2;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.context.ConversationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 @ConversationScoped
 public class ConversationData implements Serializable

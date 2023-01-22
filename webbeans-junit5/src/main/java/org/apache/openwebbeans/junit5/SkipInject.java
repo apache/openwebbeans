@@ -18,7 +18,7 @@
  */
 package org.apache.openwebbeans.junit5;
 
-import javax.inject.Qualifier;
+import jakarta.inject.Qualifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

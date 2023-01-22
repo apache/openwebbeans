@@ -20,11 +20,11 @@ package org.apache.webbeans.test.component.literals;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.util.TypeLiteral;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Named("literalBean")
 @Dependent

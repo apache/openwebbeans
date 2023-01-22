@@ -19,7 +19,7 @@
 package org.apache.webbeans.test.proxy.beans;
 
 
-import javax.enterprise.context.ConversationScoped;
+import jakarta.enterprise.context.ConversationScoped;
 import java.io.Serializable;
 
 /**

@@ -23,10 +23,10 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.InjectionTarget;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -35,10 +35,10 @@ public class InjectNonContextualTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public <T> void doInject(T instance)
     {
-        BeanManager mgr = WebBeansContext.getInstance().getBeanManagerImpl();
-        AnnotatedType<T> annotatedType = mgr.createAnnotatedType((Class<T>) instance.getClass());
-        InjectionTarget<T> injectionTarget = mgr.createInjectionTarget(annotatedType);
-        CreationalContext<T> context = mgr.createCreationalContext(null);
+        BeanManager beanManager = WebBeansContext.getInstance().getBeanManagerImpl();
+        AnnotatedType<T> annotatedType = beanManager.createAnnotatedType((Class<T>) instance.getClass());
+        InjectionTarget<T> injectionTarget = beanManager.getInjectionTargetFactory(annotatedType).createInjectionTarget(null);
+        CreationalContext<T> context = beanManager.createCreationalContext(null);
         injectionTarget.inject(instance, context);
     }
 

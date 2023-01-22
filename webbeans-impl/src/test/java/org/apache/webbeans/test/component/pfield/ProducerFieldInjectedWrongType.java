@@ -20,7 +20,7 @@ package org.apache.webbeans.test.component.pfield;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class ProducerFieldInjectedWrongType
 {

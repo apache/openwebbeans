@@ -18,19 +18,19 @@
  */
 package org.apache.webbeans.intercept;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 
 /**
- * <p>This is a {@link javax.inject.Provider} especially
+ * <p>This is a {@link jakarta.inject.Provider} especially
  * made for &#064;ApplicationScoped beans.</p>
  * 
  * <p>Since there is only one single contextual instance of an &#064;ApplicationScoped bean,
  * we can simply cache this instance inside our bean. We only need to reload this instance
  * if it is null. This happens at the first usage and after the MethodHandler got deserialized</p>
  *
- * <p>Also if the application uses the {@link javax.enterprise.context.spi.AlterableContext#destroy(javax.enterprise.context.spi.Contextual)}
+ * <p>Also if the application uses the {@link jakarta.enterprise.context.spi.AlterableContext#destroy(jakarta.enterprise.context.spi.Contextual)}
  * method on any ApplicationScoped bean, then the standard NormalScopedBeanInterceptorHandler must be configured to prevent any caching.
  * Be careful as this might slow down your application!</p>
  */

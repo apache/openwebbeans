@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.interceptors.lifecycle.inheritance;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.RequestScoped;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class SubClassBean extends SuperClassBean

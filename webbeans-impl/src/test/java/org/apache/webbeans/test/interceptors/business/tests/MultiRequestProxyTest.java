@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.business.tests;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 import java.util.ArrayList;
 import java.util.Collection;
 

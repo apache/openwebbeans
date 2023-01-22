@@ -20,9 +20,9 @@ package org.apache.openwebbeans.se;
 
 import org.junit.Test;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.se.SeContainer;
-import javax.enterprise.inject.se.SeContainerInitializer;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.se.SeContainer;
+import jakarta.enterprise.inject.se.SeContainerInitializer;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

@@ -20,9 +20,9 @@ package org.apache.webbeans.jsf;
 
 import java.util.List;
 import java.util.Map;
-import javax.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.ContextNotActiveException;
 
-import javax.enterprise.context.Conversation;
+import jakarta.enterprise.context.Conversation;
 import javax.faces.application.ViewHandler;
 import javax.faces.application.ViewHandlerWrapper;
 import javax.faces.context.FacesContext;

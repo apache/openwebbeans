@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.portable.events.generics;
 
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedParameter;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.AnnotatedParameter;
 
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.portable.events.ProcessProducerFieldImpl;

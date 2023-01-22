@@ -19,7 +19,7 @@
 package org.apache.webbeans.test.unittests.exception;
 
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 import java.util.Set;
 
@@ -122,33 +122,6 @@ public class ExceptionComponentTest extends AbstractUnitTest
         shutDownContainer();
     }
 
-    @Test
-    public void testNewInterface()
-    {
-        Assert.assertTrue(true); //No more exist
-    }
-
-    @Test
-    public void testNewBinding()
-    {
-        try
-        {
-            startContainer(NewComponentBindingComponent.class);
-        }
-        catch (WebBeansConfigurationException e)
-        {
-            System.out.println("got expected exception: " + e.getMessage());
-            return; // all ok!
-        }
-        Assert.fail("expecting an exception!");
-        shutDownContainer();
-    }
-
-    @Test
-    public void testNewMethod()
-    {
-        Assert.assertTrue(true); //No more test in spec
-    }
 
     @Test
     public void testMoreThanOnePostConstruct()

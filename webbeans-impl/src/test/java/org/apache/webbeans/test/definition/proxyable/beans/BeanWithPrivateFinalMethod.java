@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.definition.proxyable.beans;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 /**
  * This bean has a private final method.

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.portable.scopeextension;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import java.io.Serializable;
 
 @ExternalTestScoped

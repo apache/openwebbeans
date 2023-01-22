@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.intercept;
 
-import javax.enterprise.context.RequestScoped;
-import javax.interceptor.Interceptors;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.interceptor.Interceptors;
 
 
 @RequestScoped

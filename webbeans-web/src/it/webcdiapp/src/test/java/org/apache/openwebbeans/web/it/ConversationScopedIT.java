@@ -18,7 +18,7 @@
  */
 package org.apache.openwebbeans.web.it;
 
-import javax.enterprise.context.NonexistentConversationException;
+import jakarta.enterprise.context.NonexistentConversationException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.impl.client.DefaultHttpClient;

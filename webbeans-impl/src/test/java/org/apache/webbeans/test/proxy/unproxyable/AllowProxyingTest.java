@@ -16,11 +16,11 @@
  */
 package org.apache.webbeans.test.proxy.unproxyable;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.UnproxyableResolutionException;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.UnproxyableResolutionException;
+import jakarta.inject.Inject;
 import java.util.HashMap;
 
 import org.junit.Assert;

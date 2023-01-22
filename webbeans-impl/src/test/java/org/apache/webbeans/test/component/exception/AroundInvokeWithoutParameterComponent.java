@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.interceptor.AroundInvoke;
+import jakarta.interceptor.AroundInvoke;
 
 
 public class AroundInvokeWithoutParameterComponent

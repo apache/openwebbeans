@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.concepts.alternatives.tests;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;

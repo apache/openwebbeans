@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.profields.beans.stringproducer;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 public class GetterStringProducerBean
 {

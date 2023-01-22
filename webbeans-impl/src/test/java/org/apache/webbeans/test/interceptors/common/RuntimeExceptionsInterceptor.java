@@ -20,9 +20,9 @@ package org.apache.webbeans.test.interceptors.common;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.RuntimeExceptions;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 
 /**
  * This test interceptor catches all Exceptions and

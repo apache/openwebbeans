@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionTarget;
 
 import org.junit.Assert;
 
@@ -91,7 +91,7 @@ public class MethodProducer1Test extends AbstractUnitTest
         startContainer(beanClasses, beanXmls);  
         
         AnnotatedType<ProducerBean> at = getBeanManager().createAnnotatedType(ProducerBean.class);
-        InjectionTarget<ProducerBean> it = getBeanManager().createInjectionTarget(at);
+        InjectionTarget<ProducerBean> it = getBeanManager().getInjectionTargetFactory(at).createInjectionTarget(null);
         
         Assert.assertNotNull(it);
         

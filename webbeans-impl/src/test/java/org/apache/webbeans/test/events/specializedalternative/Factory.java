@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.events.specializedalternative;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 public class Factory {
 

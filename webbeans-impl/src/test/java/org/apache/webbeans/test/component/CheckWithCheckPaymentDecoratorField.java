@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.test.annotation.binding.Check;
 

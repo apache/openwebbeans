@@ -24,11 +24,11 @@ import org.apache.webbeans.portable.AnnotatedFieldImpl;
 import org.apache.webbeans.portable.AnnotatedMethodImpl;
 import org.apache.webbeans.portable.AnnotatedTypeImpl;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator;
-import javax.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator;
-import javax.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator;
-import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedMethodConfigurator;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Predicate;

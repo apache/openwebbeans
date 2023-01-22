@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.event.component;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 import org.junit.Assert;
 
@@ -52,14 +52,14 @@ public class ObserversComponentTest extends AbstractUnitTest
         startContainer(ComponentWithObserves1.class);
 
         LoggedInEvent event = new LoggedInEvent("Gurkan");
-        getBeanManager().fireEvent(event, AnyLiteral.INSTANCE);
+        getBeanManager().getEvent().select(AnyLiteral.INSTANCE).fire(event);
 
         ComponentWithObserves1 instance = getInstance(ComponentWithObserves1.class);
 
         Assert.assertEquals("Gurkan", instance.getUserName());
 
         event = new LoggedInEvent("Mark");
-        getBeanManager().fireEvent(event, AnyLiteral.INSTANCE);
+        getBeanManager().getEvent().select(AnyLiteral.INSTANCE).fire(event);
         Assert.assertEquals("Mark", instance.getUserName());
     }
 
@@ -86,11 +86,11 @@ public class ObserversComponentTest extends AbstractUnitTest
         Annotation notAnyQualifier = new AnnotationLiteral<NotAny>(){};
 
         LoggedInEvent event = new LoggedInEvent("Gurkan");
-        getBeanManager().fireEvent(event, notAnyQualifier);
+        getBeanManager().getEvent().select(notAnyQualifier).fire(event);
         Assert.assertNull(instanceIE.getUserName());
 
         // do it again, Sam
-        getBeanManager().fireEvent(event, notAnyQualifier);
+        getBeanManager().getEvent().select(notAnyQualifier).fire(event);
         Assert.assertEquals("Gurkan", instanceIE.getUserName());
     }
 
@@ -109,7 +109,7 @@ public class ObserversComponentTest extends AbstractUnitTest
                 return "CHECK";
             }
         }
-        getBeanManager().fireEvent(event, new CheckLiteral());
+        getBeanManager().getEvent().select(new CheckLiteral()).fire(event);
 
         ComponentWithObserves1 instance = getInstance(ComponentWithObserves1.class);
 
@@ -123,7 +123,7 @@ public class ObserversComponentTest extends AbstractUnitTest
         startContainer(ComponentWithObserves1.class);
 
         LoggedInEvent event = new LoggedInEvent("Mark");
-        getBeanManager().fireEvent(event, AnyLiteral.INSTANCE);
+        getBeanManager().getEvent().select(AnyLiteral.INSTANCE).fire(event);
 
         ComponentWithObserves1 instance = getInstance(ComponentWithObserves1.class);
 
@@ -159,7 +159,7 @@ public class ObserversComponentTest extends AbstractUnitTest
 
         ComponentWithObserves2.hasBeenIntercepted = false;
         
-        getBeanManager().fireEvent(event, new RoleUser());
+        getBeanManager().getEvent().select(new RoleUser()).fire(event);
         ComponentWithObserves2 instance = getInstance(ComponentWithObserves2.class);
 
         Assert.assertFalse(ComponentWithObserves2.hasBeenIntercepted);
@@ -168,7 +168,7 @@ public class ObserversComponentTest extends AbstractUnitTest
         Assert.assertEquals("USER", instance.getUser());
 
         event = new LoggedInEvent("ADMIN");
-        getBeanManager().fireEvent(event, new RoleAdmin());
+        getBeanManager().getEvent().select(new RoleAdmin()).fire(event);
 
         Assert.assertTrue(ComponentWithObserves2.hasBeenIntercepted);
         Assert.assertNotNull(instance.getPayment());
@@ -176,7 +176,7 @@ public class ObserversComponentTest extends AbstractUnitTest
 
         // lessons learned: do it again sam! ;)
         ComponentWithObserves2.hasBeenIntercepted = false;
-        getBeanManager().fireEvent(event, new RoleAdmin());
+        getBeanManager().getEvent().select(new RoleAdmin()).fire(event);
 
         Assert.assertTrue(ComponentWithObserves2.hasBeenIntercepted);
         Assert.assertNotNull(instance.getPayment());

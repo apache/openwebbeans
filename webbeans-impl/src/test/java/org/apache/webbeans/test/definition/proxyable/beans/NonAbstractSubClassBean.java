@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.definition.proxyable.beans;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  */

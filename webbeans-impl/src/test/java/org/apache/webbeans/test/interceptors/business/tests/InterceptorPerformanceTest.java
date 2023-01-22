@@ -29,9 +29,9 @@ import org.apache.webbeans.test.interceptors.beans.RequestScopedBean;
 import org.apache.webbeans.test.interceptors.common.TransactionInterceptor;
 import org.junit.Test;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;

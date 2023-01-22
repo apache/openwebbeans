@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.plugins;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.jms.JMSModel;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;

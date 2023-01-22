@@ -18,20 +18,20 @@
  */
 package org.apache.webbeans.configurator;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.PassivationCapable;
-import javax.enterprise.inject.spi.Producer;
-import javax.enterprise.inject.spi.configurator.BeanConfigurator;
-import javax.enterprise.util.TypeLiteral;
-import javax.inject.Named;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.PassivationCapable;
+import jakarta.enterprise.inject.spi.Producer;
+import jakarta.enterprise.inject.spi.configurator.BeanConfigurator;
+import jakarta.enterprise.util.TypeLiteral;
+import jakarta.inject.Named;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -69,6 +69,9 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
     private String name;
     private boolean alternative;
 
+    //X TODO implement!
+    private Integer priority;
+
     private Set<Type> typeClosures = new LinkedHashSet<>();
     private Set<InjectionPoint> injectionPoints = new HashSet<>();
     private Set<Annotation> qualifiers = new HashSet<>();
@@ -89,6 +92,13 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
     public BeanConfigurator<T> beanClass(Class<?> beanClass)
     {
         this.beanClass = beanClass;
+        return this;
+    }
+
+    @Override
+    public BeanConfigurator<T> priority(int priority)
+    {
+        this.priority = priority;
         return this;
     }
 
@@ -511,12 +521,6 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         public boolean isAlternative()
         {
             return alternative;
-        }
-
-        @Override
-        public boolean isNullable()
-        {
-            return false;
         }
 
         @Override

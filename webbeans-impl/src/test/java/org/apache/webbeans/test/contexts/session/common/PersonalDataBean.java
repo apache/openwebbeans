@@ -20,10 +20,10 @@ package org.apache.webbeans.test.contexts.session.common;
 
 import java.io.Serializable;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.injection.circular.beans.CircularDependentScopedBean;
 import org.apache.webbeans.test.component.event.normal.Transactional;

@@ -18,13 +18,15 @@
  */
 package org.apache.webbeans.test.interceptors.lifecycle;
 
-import javax.enterprise.inject.New;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @LifecycleBinding
 public class LifecycleBean
 {
-    public static String CONSTRUCTOR_INJECTED = null; 
+    public static final String FOO = "fooManYou";
+    public static String CONSTRUCTOR_INJECTED = null;
     
     public LifecycleBean()
     {
@@ -32,11 +34,21 @@ public class LifecycleBean
     }
     
     @Inject
-    public LifecycleBean(@New String string)
+    public LifecycleBean(@Named("Foo") String string)
     {
         CONSTRUCTOR_INJECTED = string;
     }
 
     
     public void touch(){}
+
+    public static class FooProducer
+    {
+        @Produces
+        @Named("Foo")
+        public String beMyFoo()
+        {
+            return FOO;
+        }
+    }
 }

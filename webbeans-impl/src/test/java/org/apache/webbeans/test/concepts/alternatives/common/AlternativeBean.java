@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.concepts.alternatives.common;
 
-import javax.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Alternative;
 
 @Alternative
 public class AlternativeBean implements SimpleInterface

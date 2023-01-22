@@ -18,8 +18,8 @@ specific language governing permissions and limitations
 under the License.
 -->
 <beans>
-	<alternatives>
-		<class>org.apache.webbeans.test.specalization.AdvancedPenProducer</class>
-		<class>org.apache.webbeans.test.specalization.PremiumPenProducer</class>
-	</alternatives>
+    <alternatives>
+        <class>org.apache.webbeans.test.specalization.AdvancedPenProducer</class>
+        <class>org.apache.webbeans.test.specalization.PremiumPenProducer</class>
+    </alternatives>
 </beans>

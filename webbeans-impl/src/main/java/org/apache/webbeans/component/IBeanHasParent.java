@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.spi.CreationalContext;
 
 public interface IBeanHasParent<T>
 {

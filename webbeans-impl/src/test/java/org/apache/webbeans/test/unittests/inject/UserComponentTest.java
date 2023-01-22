@@ -21,7 +21,7 @@ package org.apache.webbeans.test.unittests.inject;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import org.junit.Assert;
 

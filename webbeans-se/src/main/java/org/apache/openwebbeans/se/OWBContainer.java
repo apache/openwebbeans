@@ -27,10 +27,10 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.inject.instance.InstanceImpl;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.se.SeContainer;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.se.SeContainer;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -26,10 +26,10 @@ import org.apache.webbeans.spi.api.ResourceReference;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.Interceptor;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.Interceptor;
 
 public class ResourceProducer<T, P> extends ProducerFieldProducer<T, P>
 {

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.spi.adaptor;
 
-import javax.el.ELResolver;
-import javax.el.ExpressionFactory;
+import jakarta.el.ELResolver;
+import jakarta.el.ExpressionFactory;
 
 /**
  * This SPI allows to separate ExpressionLanguage dependencies from OWB core.

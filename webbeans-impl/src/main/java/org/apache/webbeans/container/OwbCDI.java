@@ -25,10 +25,10 @@ import org.apache.webbeans.corespi.DefaultSingletonService;
 import org.apache.webbeans.inject.instance.InstanceImpl;
 import org.apache.webbeans.spi.SingletonService;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
 
@@ -83,6 +83,20 @@ public class OwbCDI extends CDI<Object>
     public void destroy(Object instance)
     {
         InstanceImpl.class.cast(instance).destroy(instance);
+    }
+
+    @Override
+    public Handle<Object> getHandle()
+    {
+        //X TODO implement!
+        return null;
+    }
+
+    @Override
+    public Iterable<? extends Handle<Object>> handles()
+    {
+        //X TODO implement!
+        return null;
     }
 
     @Override

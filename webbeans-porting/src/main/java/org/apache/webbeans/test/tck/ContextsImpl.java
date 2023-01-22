@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.tck;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.AbstractContext;

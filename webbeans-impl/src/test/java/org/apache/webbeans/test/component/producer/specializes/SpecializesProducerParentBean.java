@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.producer.specializes;
 
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.inject.Specializes;
 
 import org.apache.webbeans.test.component.producer.specializes.superclazz.SpecializesProducer1SuperClazz;
 

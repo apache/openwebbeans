@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.portable.alternative;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Alternative;
 
 /**
  * An alternative which is not specified in beans.xml.

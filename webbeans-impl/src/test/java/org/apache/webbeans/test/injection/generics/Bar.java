@@ -20,9 +20,9 @@ package org.apache.webbeans.test.injection.generics;
 
 import java.util.List;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Typed;
+import jakarta.inject.Inject;
 
 @Typed
 public class Bar<A, B> {

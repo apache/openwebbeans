@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.promethods.beans;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.test.promethods.common.Person;
 

@@ -22,10 +22,10 @@ import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Vetoed;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Vetoed;
 
 import static org.junit.Assert.assertTrue;
 

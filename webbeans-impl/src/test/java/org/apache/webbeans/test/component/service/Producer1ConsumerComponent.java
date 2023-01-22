@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.component.service;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.test.annotation.binding.ProducerBinding1;
 

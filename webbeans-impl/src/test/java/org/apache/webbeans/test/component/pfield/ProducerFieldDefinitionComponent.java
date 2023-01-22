@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.component.pfield;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Synchronous;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;

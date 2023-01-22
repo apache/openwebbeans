@@ -28,15 +28,15 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InjectionTarget;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.test.AbstractUnitTest;
@@ -168,7 +168,8 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
     {
         startContainer(FieldInjectionPointOwner.class);
         AnnotatedType<UnmanagedClassWithInjectionPoints> at = getBeanManager().createAnnotatedType(UnmanagedClassWithInjectionPoints.class);
-        InjectionTarget<UnmanagedClassWithInjectionPoints> injectionTarget = getBeanManager().createInjectionTarget(at);
+        InjectionTarget<UnmanagedClassWithInjectionPoints> injectionTarget
+            = getBeanManager().getInjectionTargetFactory(at).createInjectionTarget(null);
 
         UnmanagedClassWithInjectionPoints instance = new UnmanagedClassWithInjectionPoints();
         Assert.assertNull(instance.getSomeField());

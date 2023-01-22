@@ -21,7 +21,7 @@ package org.apache.webbeans.test.events.observer;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class BeanB extends Superclass implements Serializable

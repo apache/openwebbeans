@@ -18,15 +18,15 @@
  */
 package org.apache.webbeans.test.interceptors.lifecycle;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.interceptor.InvocationContext;
 import java.io.Serializable;
 
 /**
  * this class has no &#064;LifecycleBinding nor &#064;Interceptor.
  * Those will get added later via
- * an Extension on {@link javax.enterprise.inject.spi.ProcessAnnotatedType}.
+ * an Extension on {@link jakarta.enterprise.inject.spi.ProcessAnnotatedType}.
  */
 public class LifecycleInterceptorPat implements Serializable
 {

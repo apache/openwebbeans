@@ -25,8 +25,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Provider;
-import javax.interceptor.InvocationContext;
+import jakarta.inject.Provider;
+import jakarta.interceptor.InvocationContext;
 
 import org.apache.webbeans.util.ExceptionUtil;
 

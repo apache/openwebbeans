@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.event;
 
-import javax.enterprise.inject.spi.EventContext;
-import javax.enterprise.inject.spi.EventMetadata;
+import jakarta.enterprise.inject.spi.EventContext;
+import jakarta.enterprise.inject.spi.EventMetadata;
 
 public class EventContextImpl<T> implements EventContext<T>
 {

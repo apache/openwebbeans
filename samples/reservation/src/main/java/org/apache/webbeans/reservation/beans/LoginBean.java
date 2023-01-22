@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.reservation.beans;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Any;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.Any;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.commons.validator.GenericValidator;
 import org.apache.webbeans.reservation.bindings.DatabaseLogin;

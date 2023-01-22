@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.inject;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 import org.junit.Assert;
 

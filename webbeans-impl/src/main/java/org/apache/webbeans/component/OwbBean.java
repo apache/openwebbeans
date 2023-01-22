@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Producer;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.config.WebBeansContext;
 

@@ -25,7 +25,7 @@ import org.apache.webbeans.test.component.specializes.SpecializesServiceInjector
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 public class SpecializationComponentTest extends AbstractUnitTest
 {

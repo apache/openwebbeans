@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Assert;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
-import javax.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.test.AbstractUnitTest;

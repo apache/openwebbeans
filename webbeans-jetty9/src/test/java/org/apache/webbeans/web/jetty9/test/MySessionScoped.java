@@ -20,7 +20,7 @@ package org.apache.webbeans.web.jetty9.test;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.SessionScoped;
 
 @SessionScoped
 public class MySessionScoped implements Serializable

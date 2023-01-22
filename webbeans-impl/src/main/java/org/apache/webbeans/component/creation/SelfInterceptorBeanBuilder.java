@@ -22,8 +22,8 @@ package org.apache.webbeans.component.creation;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InterceptionType;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.InterceptionType;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.component.SelfInterceptorBean;

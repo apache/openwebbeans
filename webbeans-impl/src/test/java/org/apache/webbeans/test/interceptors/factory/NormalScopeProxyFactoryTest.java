@@ -32,13 +32,13 @@ import org.apache.webbeans.test.util.Serializations;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.Producer;
-import javax.inject.Provider;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.Producer;
+import jakarta.inject.Provider;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
@@ -84,11 +84,6 @@ public class NormalScopeProxyFactoryTest extends AbstractUnitTest
             @Override
             public String getName() {
                 return null;
-            }
-
-            @Override
-            public boolean isNullable() {
-                return false;
             }
 
             @Override

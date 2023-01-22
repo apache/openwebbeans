@@ -21,10 +21,10 @@ package org.apache.webbeans.reservation.beans.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import javax.faces.component.html.HtmlDataTable;
 
 import org.apache.webbeans.reservation.controller.user.UserController;

@@ -19,7 +19,7 @@
 package org.apache.webbeans.test.unittests.xml.strict;
 
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.test.xml.strict.Alternative3;
 import org.apache.webbeans.test.xml.strict.AlternativeStereotype;

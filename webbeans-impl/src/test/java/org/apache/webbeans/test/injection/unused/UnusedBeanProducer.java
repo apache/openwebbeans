@@ -20,9 +20,9 @@ package org.apache.webbeans.test.injection.unused;
 
 import org.junit.Assert;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
 
 /**
  * producer of our unused bean

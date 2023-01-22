@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.disposes.beans.broken;
 
-import javax.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Disposes;
 
 /**
  * This class is a standard CDI bean but has a method annotated with

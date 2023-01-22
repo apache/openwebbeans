@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.enterprise.context.ConversationScoped;
+import jakarta.enterprise.context.ConversationScoped;
 
 import org.apache.webbeans.context.ConversationContext;
 import org.apache.webbeans.spi.ContextsService;

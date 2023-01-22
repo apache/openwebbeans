@@ -21,13 +21,13 @@ package org.apache.webbeans.portable.events;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.configurator.InjectionPointConfiguratorImpl;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ProcessInjectionPoint;
-import javax.enterprise.inject.spi.configurator.InjectionPointConfigurator;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.ProcessInjectionPoint;
+import jakarta.enterprise.inject.spi.configurator.InjectionPointConfigurator;
 
 /**
  * Fired for every {@link InjectionPoint} of every Java EE component class supporting injection,
- * including every {@link javax.annotation.ManagedBean}, EJB session or message-driven bean, bean, interceptor or decorator.
+ * including every {@link jakarta.annotation.ManagedBean}, EJB session or message-driven bean, bean, interceptor or decorator.
  *
  * @param <T> bean class
  * @param <X> declared type

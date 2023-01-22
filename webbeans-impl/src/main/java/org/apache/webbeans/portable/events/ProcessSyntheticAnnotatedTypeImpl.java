@@ -18,14 +18,14 @@
  */
 package org.apache.webbeans.portable.events;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
 import org.apache.webbeans.config.WebBeansContext;
 
 
 /**
- * Default implementation of the {@link javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType}.
+ * Default implementation of the {@link jakarta.enterprise.inject.spi.ProcessSyntheticAnnotatedType}.
  *
  * @param <X> bean class info
  */

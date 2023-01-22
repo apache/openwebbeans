@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.inject.UnproxyableResolutionException;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.UnproxyableResolutionException;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanAttributes;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -30,7 +30,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 /**
  * Bean builder for <i>Managed Beans</i>. A <i>ManagedBean</i> is a class
- * which gets scanned and picked up as {@link javax.enterprise.inject.spi.Bean}.
+ * which gets scanned and picked up as {@link jakarta.enterprise.inject.spi.Bean}.
  * 
  * @version $Rev$ $Date$
  *

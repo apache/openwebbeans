@@ -29,10 +29,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.AnnotatedConstructor;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedType;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
@@ -41,7 +41,7 @@ import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
 /**
- * Factory for {@link javax.enterprise.inject.spi.Annotated} elements.
+ * Factory for {@link jakarta.enterprise.inject.spi.Annotated} elements.
  *
  * @version $Rev$ $Date$
  */
@@ -123,7 +123,7 @@ public final class AnnotatedElementFactory
     /**
      * This method will get used to manually add AnnoatedTypes to our storage.
      * Those AnnotatedTypes are coming from Extensions and get registered e.g. via
-     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addAnnotatedType(AnnotatedType)}
+     * {@link jakarta.enterprise.inject.spi.BeforeBeanDiscovery#addAnnotatedType(AnnotatedType)}
      *
      * Sets the annotatedType and replace the given one.
      * @param annotatedType

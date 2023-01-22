@@ -19,10 +19,10 @@
 package org.apache.webbeans.test.producer.broken;
 
 
-import javax.enterprise.inject.Produces;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.enterprise.inject.Produces;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 import java.io.Serializable;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.unittests.config;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 
 /**
  * Test WebBean for the {@link WebBeansScannerTest}

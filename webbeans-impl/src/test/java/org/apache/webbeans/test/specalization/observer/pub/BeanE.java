@@ -19,8 +19,8 @@
 package org.apache.webbeans.test.specalization.observer.pub;
 
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Specializes;
 
 @Specializes
 @ApplicationScoped

@@ -19,7 +19,7 @@
 package org.apache.webbeans.web.tests.initialization;
 
 import java.io.Serializable;
-import javax.enterprise.inject.Vetoed;
+import jakarta.enterprise.inject.Vetoed;
 
 @Vetoed
 public class MySession implements Serializable

@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.test.interceptors.resolution;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.inject.Provider;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Interceptor;
+import jakarta.inject.Provider;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;

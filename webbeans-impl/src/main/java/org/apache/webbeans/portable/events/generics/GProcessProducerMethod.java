@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.portable.events.generics;
 
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedParameter;
 
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.portable.events.ProcessProducerMethodImpl;

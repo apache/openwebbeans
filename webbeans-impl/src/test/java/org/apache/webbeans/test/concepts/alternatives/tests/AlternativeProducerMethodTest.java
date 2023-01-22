@@ -21,7 +21,7 @@ package org.apache.webbeans.test.concepts.alternatives.tests;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 import org.junit.Assert;
 

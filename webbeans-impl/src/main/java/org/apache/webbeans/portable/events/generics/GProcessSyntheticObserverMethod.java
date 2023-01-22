@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.portable.events.generics;
 
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.ProcessSyntheticObserverMethod;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.ObserverMethod;
+import jakarta.enterprise.inject.spi.ProcessSyntheticObserverMethod;
 
 import org.apache.webbeans.config.WebBeansContext;
 

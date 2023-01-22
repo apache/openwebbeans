@@ -18,11 +18,9 @@
  */
 package org.apache.webbeans.container;
 
-import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
-import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
@@ -40,13 +38,12 @@ import org.apache.webbeans.util.InjectionExceptionUtil;
 import org.apache.webbeans.util.SingleItemSet;
 import org.apache.webbeans.util.WebBeansUtil;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.UnproxyableResolutionException;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.UnproxyableResolutionException;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -226,14 +223,6 @@ public class InjectionResolver
 
             Set<Bean<?>> beanSet = implResolveByType(injectionPoint.isDelegate(), type, injectionPointClass, qualifiers);
 
-            if (beanSet.isEmpty())
-            {
-                if (qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
-                {
-                    createNewBean(injectionPoint, type, qualifiers, beanSet);
-                }
-            }
-
             Bean<?> bean = resolve(beanSet, injectionPoint);
 
             if (bean == null)
@@ -284,55 +273,11 @@ public class InjectionResolver
 
         if (beanSet.isEmpty())
         {
-            if (qualifiers.length == 1 && qualifiers[0].annotationType().equals(New.class))
-            {
-                createNewBean(injectionPoint, type, qualifiers, beanSet);
-            }
-            else
-            {
-                InjectionExceptionUtil.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
-            }
+            InjectionExceptionUtil.throwUnsatisfiedResolutionException(clazz, injectionPoint, qualifiers);
         }
 
         return resolve(beanSet, injectionPoint);
     }
-
-    private void createNewBean(InjectionPoint injectionPoint, Type type, Annotation[] qualifiers, Set<Bean<?>> beanSet)
-    {
-        New newQualifier = (New) qualifiers[0];
-        Class<?> newType;
-        if (newQualifier.value() == New.class)
-        {
-            newType = ClassUtil.getClass(type);
-        }
-        else
-        {
-            newType = newQualifier.value();
-        }
-        Set<Bean<?>> beans = implResolveByType(injectionPoint.isDelegate(), newType, injectionPoint.getBean().getBeanClass(), AnyLiteral.INSTANCE);
-        if (beans.isEmpty())
-        {
-            beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent(newType));
-        }
-        else
-        {
-            // we just need the bean for the injection points. So when we find an InjectionTargetBean, we can just take it.
-            for (Bean<?> bean: beans)
-            {
-                if (bean instanceof InjectionTargetBean)
-                {
-                    beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent((OwbBean)bean, (Class)newType));
-                    break;
-                }
-            }
-            if (beanSet.isEmpty())
-            {
-                //Hmm, no InjectionTargetBean available, then we have to create the injection points on our own
-                beanSet.add(webBeansContext.getWebBeansUtil().createNewComponent((Class)newType));
-            }
-        }
-    }
-
 
     private Bean<?> getInstanceOrEventInjectionBean(Type type)
     {
@@ -410,7 +355,7 @@ public class InjectionResolver
     /**
      * Resolution by type.
      *
-     * @param isDelegate whether the InjectionPoint is for a {@link javax.decorator.Delegate}
+     * @param isDelegate whether the InjectionPoint is for a {@link jakarta.decorator.Delegate}
      * @param injectionPointType injection point api type
      * @param qualifiers         qualifiers of the injection point
      * @return set of resolved beans
@@ -435,7 +380,7 @@ public class InjectionResolver
     /**
      * Resolution by type.
      *
-     * @param isDelegate whether the InjectionPoint is for a {@link javax.decorator.Delegate}
+     * @param isDelegate whether the InjectionPoint is for a {@link jakarta.decorator.Delegate}
      * @param injectionPointType injection point api type
      * @param qualifiers         qualifiers of the injection point
      * @return set of resolved beans
@@ -551,11 +496,6 @@ public class InjectionResolver
             }
         }
 
-        if (resolvedComponents.isEmpty())
-        {
-            findNewBean(resolvedComponents, injectionPointType, qualifiers);
-        }
-
         if (!startup && !resolvedComponents.isEmpty())
         {
             resolvedBeansByType.put(cacheKey, resolvedComponents);
@@ -567,33 +507,6 @@ public class InjectionResolver
         }
 
         return resolvedComponents;
-    }
-
-    private void findNewBean(Set<Bean<?>> resolvedComponents, Type injectionPointType, Annotation[] qualifiers)
-    {
-        try
-        {
-            if (qualifiers.length == 1 && New.class.equals(qualifiers[0].annotationType()))
-            {
-                // happen in TCKs, shouldn't be the case in real apps
-                New newQualifier = (New) qualifiers[0];
-                Class<?> beanClass;
-                if (newQualifier.value() != New.class)
-                {
-                    beanClass = newQualifier.value();
-                }
-                else
-                {
-                    beanClass = GenericsUtil.getRawType(injectionPointType);
-                }
-
-                resolvedComponents.add(webBeansContext.getWebBeansUtil().createNewComponent(beanClass));
-            }
-        }
-        catch (NoClassDefFoundError e)
-        {
-            logger.log(Level.FINE, "DEBUG_NEW_ANNOTATION_MISSING", e);
-        }
     }
 
     private Set<Bean<?>> findByBeanType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)
@@ -745,7 +658,7 @@ public class InjectionResolver
      * @param injectionPoint only used for logging. Can be null.
      * @param <X>
      * @return the single resolved bean, null if none is activated
-     * @throws javax.enterprise.inject.AmbiguousResolutionException if more than 1 bean is active
+     * @throws jakarta.enterprise.inject.AmbiguousResolutionException if more than 1 bean is active
      */
     public <X> Bean<? extends X> resolve(Set<Bean<? extends X>> beans, InjectionPoint injectionPoint)
     {

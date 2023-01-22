@@ -26,11 +26,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.Typed;
-import javax.inject.Named;
-import javax.inject.Scope;
+import jakarta.enterprise.context.NormalScope;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.Typed;
+import jakarta.inject.Named;
+import jakarta.inject.Scope;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.config.OWBLogConst;

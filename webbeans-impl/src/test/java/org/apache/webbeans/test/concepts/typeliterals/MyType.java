@@ -20,7 +20,7 @@ package org.apache.webbeans.test.concepts.typeliterals;
 
 import java.lang.reflect.Type;
 
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.util.TypeLiteral;
 
 public class MyType<F extends Cow>
 {

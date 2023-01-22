@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.web.tomcat7.test;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 /**
  * Test bean which gets used in the TestServlet.

@@ -19,7 +19,7 @@
 package org.apache.webbeans.test.interceptors.factory.beans;
 
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.service.IService;
 

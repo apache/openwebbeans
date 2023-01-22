@@ -16,12 +16,12 @@
  */
 package org.apache.webbeans.test.concepts.alternatives.tests;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AfterTypeDiscovery;
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.AfterTypeDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.concepts.alternatives.alternativebean.CustomAlternativeBean;

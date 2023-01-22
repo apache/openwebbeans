@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.jsf;
 
-import javax.el.ExpressionFactory;
+import jakarta.el.ExpressionFactory;
 import javax.faces.application.Application;
 import javax.faces.application.ApplicationWrapper;
 

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.performance;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;

@@ -22,8 +22,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.control.RequestContextController;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.control.RequestContextController;
 
 import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.test.AbstractUnitTest;

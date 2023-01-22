@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.sample.dependent;
 
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 
 @Dependent

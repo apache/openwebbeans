@@ -17,7 +17,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 <%@ page import="java.util.Date" %>
-<%@ page import="javax.enterprise.inject.spi.CDI" %>
+<%@ page import="jakarta.enterprise.inject.spi.CDI" %>
 <%@ page import="org.superbiz.beans.RequestScopedBean" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%

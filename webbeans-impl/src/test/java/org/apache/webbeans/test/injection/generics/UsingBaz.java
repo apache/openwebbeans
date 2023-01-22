@@ -19,7 +19,7 @@
 package org.apache.webbeans.test.injection.generics;
 
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class UsingBaz {
     @Inject

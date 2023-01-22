@@ -21,7 +21,7 @@ package org.apache.webbeans.test.component.producer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Produces;
 
 import org.apache.webbeans.test.annotation.binding.Users;
 

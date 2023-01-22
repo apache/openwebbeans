@@ -20,7 +20,7 @@ package org.apache.webbeans.se.sample.beans;
 
 import java.util.logging.Logger;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import org.apache.webbeans.se.sample.LoggerFactory;
 import org.apache.webbeans.se.sample.bindings.JavaLogger;

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.intercept;
 
-import javax.interceptor.Interceptors;
+import jakarta.interceptor.Interceptors;
 
 
 @Interceptors(value = { NoArgConstructorInterceptor.class })

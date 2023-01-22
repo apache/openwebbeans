@@ -28,12 +28,12 @@ import org.apache.webbeans.xml.DefaultBeanArchiveInformation;
 import org.apache.xbean.finder.AnnotationFinder;
 import org.junit.Test;
 
-import javax.annotation.Priority;
-import javax.enterprise.context.ApplicationScoped;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InterceptorBinding;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InterceptorBinding;
+import jakarta.interceptor.InvocationContext;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

@@ -19,7 +19,7 @@
 package org.apache.webbeans.test.xml;
 
 
-import javax.enterprise.inject.spi.DeploymentException;
+import jakarta.enterprise.inject.spi.DeploymentException;
 import java.io.File;
 import java.net.URL;
 

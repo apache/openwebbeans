@@ -22,17 +22,16 @@ import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -65,7 +64,6 @@ public class GetInjectionPointFromCustomBeanCreateTest extends AbstractUnitTest
         {
             final AnnotatedType<ManuelBean> annotatedType = beanManager.createAnnotatedType(ManuelBean.class);
 
-            final InjectionTarget<ManuelBean> injectionTarget = beanManager.createInjectionTarget(annotatedType);
             final Bean<ManuelBean> newBean = new Bean<ManuelBean>()
             {
                 @Override
@@ -90,12 +88,6 @@ public class GetInjectionPointFromCustomBeanCreateTest extends AbstractUnitTest
                 public String getName()
                 {
                     return null;
-                }
-
-                @Override
-                public boolean isNullable()
-                {
-                    return false;
                 }
 
                 @Override

@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.test.component.event.normal;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
-import javax.inject.Inject;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.Reception;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.NotAny;
 import org.apache.webbeans.test.annotation.binding.TestingIfExists;

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.binding;
 
-import javax.enterprise.inject.Any;
+import jakarta.enterprise.inject.Any;
 
 import org.apache.webbeans.test.annotation.binding.ParameterBinding1;
 

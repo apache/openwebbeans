@@ -20,7 +20,7 @@ package org.apache.webbeans.test.unittests.producer;
 
 import java.util.List;
 
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.util.TypeLiteral;
 
 import org.junit.Assert;
 

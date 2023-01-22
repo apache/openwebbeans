@@ -20,7 +20,7 @@ package org.apache.webbeans.test.interceptors.business.common;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.RuntimeExceptions;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 
 @RequestScoped

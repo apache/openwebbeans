@@ -32,9 +32,9 @@ import org.apache.webbeans.spi.ContextsService;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.el.ELContext;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
+import jakarta.el.ELContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
 
 public class ELPerformanceTest extends AbstractUnitTest
 {

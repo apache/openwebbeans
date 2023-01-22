@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.annotation.binding;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 public class NotAnyLiteral extends AnnotationLiteral<NotAny> implements NotAny
 {

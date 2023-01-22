@@ -26,8 +26,8 @@ import org.apache.webbeans.test.component.library.BookShop;
 import org.apache.webbeans.test.component.library.Shop;
 import org.junit.Test;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 public class LibraryComponentTest extends AbstractUnitTest
 {

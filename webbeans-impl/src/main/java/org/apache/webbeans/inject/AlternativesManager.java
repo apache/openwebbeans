@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Prioritized;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Prioritized;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -48,7 +48,7 @@ import org.apache.webbeans.util.PriorityClasses;
  * After that the AnnotatedType scanning is performed and all &#064;Alternatives with
  * &#064;Priority get added as well. We will also add classes which have an Alternative stereotype.
  *
- * After the AnnotatedTypes got scanned we have to fire the {@link javax.enterprise.inject.spi.AfterTypeDiscovery}
+ * After the AnnotatedTypes got scanned we have to fire the {@link jakarta.enterprise.inject.spi.AfterTypeDiscovery}
  * event with the collected <i>effective</i> alternative classes sorted by their priority.
  * Any extension can re-order the alternatives which then form the base of the resolve() handling
  * at runtime.

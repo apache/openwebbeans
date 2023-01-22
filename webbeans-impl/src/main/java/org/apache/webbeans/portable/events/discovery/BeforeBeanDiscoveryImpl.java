@@ -25,10 +25,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
@@ -57,16 +57,6 @@ public class BeforeBeanDiscoveryImpl extends EventBase implements BeforeBeanDisc
     {
         this.webBeansContext = webBeansContext;
         beanManager = this.webBeansContext.getBeanManagerImpl();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addAnnotatedType(AnnotatedType<?> type)
-    {
-        checkState();
-        beanManager.addAdditionalAnnotatedType(extension, type);
     }
 
     /**

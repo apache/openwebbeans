@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.portable.injectiontarget;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 public class PersonModel
 {

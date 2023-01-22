@@ -21,11 +21,11 @@ package org.apache.webbeans.util;
 import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import static org.apache.webbeans.exception.helper.ViolationMessageBuilder.newViolation;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.UnsatisfiedResolutionException;
-import javax.enterprise.inject.UnproxyableResolutionException;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.UnsatisfiedResolutionException;
+import jakarta.enterprise.inject.UnproxyableResolutionException;
 import java.util.Set;
 import java.lang.annotation.Annotation;
 

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.dependent.circular;
 
-import javax.enterprise.inject.Default;
+import jakarta.enterprise.inject.Default;
 
 public class DependentB
 {

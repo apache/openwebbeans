@@ -35,24 +35,24 @@ import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.UnproxyableResolutionException;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedCallable;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.InterceptionType;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.inject.Inject;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.ExcludeClassInterceptors;
-import javax.interceptor.Interceptors;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.UnproxyableResolutionException;
+import jakarta.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.AnnotatedCallable;
+import jakarta.enterprise.inject.spi.AnnotatedConstructor;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedParameter;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Decorator;
+import jakarta.enterprise.inject.spi.InterceptionType;
+import jakarta.enterprise.inject.spi.Interceptor;
+import jakarta.inject.Inject;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.ExcludeClassInterceptors;
+import jakarta.interceptor.Interceptors;
+import jakarta.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -253,8 +253,8 @@ public class InterceptorResolutionService
     }
 
     /**
-     * Lifycycle methods like {@link javax.annotation.PostConstruct} and
-     * {@link javax.annotation.PreDestroy} must not define a checked Exception
+     * Lifycycle methods like {@link jakarta.annotation.PostConstruct} and
+     * {@link jakarta.annotation.PreDestroy} must not define a checked Exception
      * regarding to the spec. But this is often unnecessary restrictive so we
      * allow to disable this check application wide.
      *
@@ -1011,7 +1011,7 @@ public class InterceptorResolutionService
         }
 
         /**
-         * The (sorted) EJB-style ({@link javax.interceptor.Interceptors})
+         * The (sorted) EJB-style ({@link jakarta.interceptor.Interceptors})
          * Interceptor Beans for a specific method or <code>null</code>
          * if no Interceptor exists for this method.
          * They must be called <i>before</i> the {@link #cdiInterceptors}!

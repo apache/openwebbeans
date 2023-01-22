@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.test.interceptors.resolution.interceptors;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.interceptor.AroundTimeout;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import jakarta.interceptor.AroundTimeout;
+import jakarta.interceptor.InvocationContext;
 
 import org.apache.webbeans.test.interceptors.resolution.beans.UtilitySampleBean;
 import org.apache.webbeans.util.ExceptionUtil;

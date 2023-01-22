@@ -18,12 +18,12 @@
  */
 package org.apache.webbeans.context;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
 
 /**
- * Defines the component {@link javax.enterprise.context.Dependent} context.
+ * Defines the component {@link jakarta.enterprise.context.Dependent} context.
  * <p>
  * Each web beans component has a dependent context, that saves its dependent
  * objects. Dependent context is destroyed at the end of the component

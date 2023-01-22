@@ -26,7 +26,7 @@ import org.apache.webbeans.portable.ProviderBasedProducer;
 import org.apache.webbeans.web.context.ServletRequestContext;
 import org.apache.webbeans.web.context.WebContextsService;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
 class ServletRequestBean extends BuiltInOwbBean<HttpServletRequest>

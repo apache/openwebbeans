@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.ee.beans;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import javax.validation.Validator;
 
 import org.apache.webbeans.config.WebBeansContext;

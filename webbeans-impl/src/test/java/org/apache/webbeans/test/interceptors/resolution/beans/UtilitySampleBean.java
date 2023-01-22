@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.resolution.beans;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 /**
  * Some trivial sample bean which can get injected into various places

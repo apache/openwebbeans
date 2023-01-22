@@ -18,7 +18,7 @@
  */
 package org.superbiz.beans;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class RequestScopedBean

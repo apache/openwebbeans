@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.constructor.beans;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class BeanWithSingleParamInjectConstructor
 {

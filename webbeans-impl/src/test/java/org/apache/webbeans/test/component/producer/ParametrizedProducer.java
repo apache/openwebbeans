@@ -20,8 +20,8 @@ package org.apache.webbeans.test.component.producer;
 
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Produces;
 
 
 @RequestScoped

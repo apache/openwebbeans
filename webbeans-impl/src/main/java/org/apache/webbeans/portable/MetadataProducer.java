@@ -20,8 +20,8 @@ package org.apache.webbeans.portable;
 
 import java.util.Map;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.Interceptor;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 

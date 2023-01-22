@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.component;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.interceptor.Interceptors;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.interceptor.Interceptors;
 
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.component.intercept.PostConstructInterceptor;

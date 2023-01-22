@@ -20,7 +20,7 @@ package org.apache.webbeans.component;
 
 import java.lang.reflect.Type;
 
-import javax.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.InjectionPointProducer;

@@ -23,8 +23,8 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.portable.AbstractProducer;
 
-import javax.enterprise.context.control.RequestContextController;
-import javax.enterprise.inject.spi.Interceptor;
+import jakarta.enterprise.context.control.RequestContextController;
+import jakarta.enterprise.inject.spi.Interceptor;
 import java.util.Map;
 
 public class RequestContextControllerProducer extends AbstractProducer<RequestContextController>

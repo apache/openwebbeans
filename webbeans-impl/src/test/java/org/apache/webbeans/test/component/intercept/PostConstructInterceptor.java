@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.intercept;
 
-import javax.annotation.PostConstruct;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.interceptor.InvocationContext;
 
 public class PostConstructInterceptor
 {

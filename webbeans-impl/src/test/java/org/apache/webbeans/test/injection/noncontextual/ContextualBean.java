@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.noncontextual;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ContextualBean

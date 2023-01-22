@@ -20,10 +20,10 @@ package org.apache.webbeans.component;
 
 import java.lang.reflect.Field;
 
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.spi.CreationalContext;
 
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.ProducerFactory;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.ProducerFactory;
 
 /**
  * Defines the producer field component implementation.

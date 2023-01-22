@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.Decorator;
+import jakarta.enterprise.inject.spi.Decorator;
 
 import org.junit.Assert;
 

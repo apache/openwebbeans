@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.decorators.multiple;
 
-import javax.enterprise.inject.Model;
+import jakarta.enterprise.inject.Model;
 
 @Model
 public class RequestStringBuilder

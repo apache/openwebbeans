@@ -30,7 +30,7 @@ import org.apache.webbeans.test.component.binding.NonAnyBindingComponent;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 public class AnyBindingTest extends AbstractUnitTest {
 

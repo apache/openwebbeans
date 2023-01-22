@@ -23,7 +23,7 @@ import org.apache.webbeans.test.concepts.vetoes.vetoedpackage.subpackage.VetoedB
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 public class VetoedPackageTest  extends AbstractUnitTest
 {

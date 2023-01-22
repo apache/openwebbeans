@@ -20,7 +20,7 @@ package org.apache.webbeans.annotation;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.inject.Any;
+import jakarta.enterprise.inject.Any;
 
 public class AnyLiteral extends EmptyAnnotationLiteral<Any> implements Any
 {

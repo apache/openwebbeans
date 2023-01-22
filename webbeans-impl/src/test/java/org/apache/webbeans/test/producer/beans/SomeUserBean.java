@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.producer.beans;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 /**
  * Just a dummy user bean which gets injected in to the producermethod owner bean.

@@ -25,7 +25,7 @@ import org.apache.webbeans.test.component.inject.broken.InstanceInjectedBrokenCo
 import org.apache.webbeans.test.component.inject.broken.InstanceInjectedBrokenComponent4;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 public class InjectedInstanceBrokenComponentTest extends AbstractUnitTest
 {

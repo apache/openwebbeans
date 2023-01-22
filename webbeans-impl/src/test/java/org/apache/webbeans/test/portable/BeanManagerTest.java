@@ -22,7 +22,7 @@ import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeanManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

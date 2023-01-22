@@ -20,8 +20,8 @@ package org.apache.webbeans.context;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler;
 

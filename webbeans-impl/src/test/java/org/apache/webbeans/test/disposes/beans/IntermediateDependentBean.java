@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.disposes.beans;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.disposes.common.DependentModel;
 import org.apache.webbeans.test.disposes.common.HttpHeader;

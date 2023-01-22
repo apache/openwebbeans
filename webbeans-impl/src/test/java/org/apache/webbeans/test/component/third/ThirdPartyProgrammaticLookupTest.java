@@ -21,7 +21,7 @@ package org.apache.webbeans.test.component.third;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.spi.CDI;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

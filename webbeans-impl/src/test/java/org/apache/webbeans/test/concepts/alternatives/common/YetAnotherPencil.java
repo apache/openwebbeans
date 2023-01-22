@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.concepts.alternatives.common;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 @Pen
 @RequestScoped

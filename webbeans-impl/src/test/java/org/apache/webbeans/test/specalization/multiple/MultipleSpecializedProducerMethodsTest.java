@@ -16,9 +16,9 @@
  */
 package org.apache.webbeans.test.specalization.multiple;
 
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.DeploymentException;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Specializes;
+import jakarta.enterprise.inject.spi.DeploymentException;
 
 import org.junit.Assert;
 import org.apache.webbeans.exception.WebBeansConfigurationException;

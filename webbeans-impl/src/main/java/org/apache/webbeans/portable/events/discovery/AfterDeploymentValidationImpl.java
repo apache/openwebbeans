@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.portable.events.discovery;
 
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import jakarta.enterprise.inject.spi.AfterDeploymentValidation;
 
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.portable.events.EventBase;

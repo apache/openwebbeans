@@ -82,7 +82,9 @@ public interface ScannerService
      * custom property is set to true.
      * @return T - BDABeansXmlScanner is available and enabled;
      * F - No BDABeansXmlScanner is available or it is disabled
+     * @deprecated not supported anymore. Just here to
      */
+    @Deprecated
     boolean isBDABeansXmlScanningEnabled();
     
     /**

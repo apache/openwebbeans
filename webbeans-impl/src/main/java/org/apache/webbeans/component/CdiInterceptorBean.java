@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.InterceptionType;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.InterceptionType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -31,10 +31,10 @@ import org.apache.webbeans.config.WebBeansContext;
 
 
 /**
- * <p>{@link javax.enterprise.inject.spi.Interceptor}
+ * <p>{@link jakarta.enterprise.inject.spi.Interceptor}
  * Bean implementation for CDI-style Beans.
  * This is Interceptors which got defined using
- * &#064;{@link javax.interceptor.InterceptorBinding}.</p>
+ * &#064;{@link jakarta.interceptor.InterceptorBinding}.</p>
  */
 public class CdiInterceptorBean<T> extends InterceptorBean<T>
 {

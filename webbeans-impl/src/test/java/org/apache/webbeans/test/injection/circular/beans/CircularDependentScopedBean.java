@@ -20,9 +20,9 @@ package org.apache.webbeans.test.injection.circular.beans;
 
 import java.io.Serializable;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.component.event.normal.Transactional;
 

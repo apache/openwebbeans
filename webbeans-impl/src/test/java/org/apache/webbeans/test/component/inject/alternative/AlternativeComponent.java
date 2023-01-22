@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.inject.alternative;
 
-import javax.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Alternative;
 
 @Alternative
 public class AlternativeComponent implements IAlternative

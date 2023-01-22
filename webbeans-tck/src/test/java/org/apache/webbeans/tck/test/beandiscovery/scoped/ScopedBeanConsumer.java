@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.tck.test.beandiscovery.scoped;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Sample class which injects all the valid other beans

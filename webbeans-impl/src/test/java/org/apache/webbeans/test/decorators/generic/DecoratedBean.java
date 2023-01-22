@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.decorators.generic;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Scope;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Scope;
 
 @ApplicationScoped
 public class DecoratedBean implements GenericInterface<Scope>

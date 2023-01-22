@@ -25,8 +25,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;

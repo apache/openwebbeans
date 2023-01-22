@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.concepts.alternatives.common;
 
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Produces;
 
 @Alternative
 public class PencilProducerBean

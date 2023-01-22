@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.interceptors.lifecycle.inheritance;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 public class SuperClassBean
 {

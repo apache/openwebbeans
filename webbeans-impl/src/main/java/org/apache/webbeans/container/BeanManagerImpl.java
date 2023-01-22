@@ -34,26 +34,26 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.el.ELResolver;
-import javax.el.ExpressionFactory;
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.NormalScope;
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.InjectionException;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.*;
-import javax.inject.Scope;
-import javax.interceptor.InterceptorBinding;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.el.ELResolver;
+import jakarta.el.ExpressionFactory;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.NormalScope;
+import jakarta.enterprise.context.spi.AlterableContext;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.InjectionException;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.Stereotype;
+import jakarta.enterprise.inject.Vetoed;
+import jakarta.enterprise.inject.spi.*;
+import jakarta.inject.Scope;
+import jakarta.interceptor.InterceptorBinding;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
@@ -69,7 +69,6 @@ import org.apache.webbeans.component.EnterpriseBeanMarker;
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.JmsBeanMarker;
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.NewBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.ProducerAwareInjectionTargetBean;
 import org.apache.webbeans.component.WebBeansType;
@@ -153,7 +152,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     /**
      * This list contains additional qualifiers which got set via the
-     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
+     * {@link jakarta.enterprise.inject.spi.BeforeBeanDiscovery#addQualifier(Class)}
      * event function.
      */
     private List<Class<? extends Annotation>> additionalQualifiers = new ArrayList<>();
@@ -161,7 +160,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     /**
      * This list contains additional scopes which got set via the
-     * {@link javax.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
+     * {@link jakarta.enterprise.inject.spi.BeforeBeanDiscovery#addScope(Class, boolean, boolean)} event function.
      */
     private List<ExternalScope> additionalScopes = new ArrayList<>();
 
@@ -177,7 +176,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     private ErrorStack errorStack = new ErrorStack();
 
     /**
-     * This map stores all beans along with their unique {@link javax.enterprise.inject.spi.PassivationCapable} id.
+     * This map stores all beans along with their unique {@link jakarta.enterprise.inject.spi.PassivationCapable} id.
      * This is used as a reference for serialization.
      */
     private ConcurrentMap<String, Bean<?>> passivationBeans = new ConcurrentHashMap<>();
@@ -199,13 +198,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     /**
      * This flag will get set to handle lifecyle around
-     * {@link javax.enterprise.inject.spi.AfterBeanDiscovery}
+     * {@link jakarta.enterprise.inject.spi.AfterBeanDiscovery}
      */
     private LifecycleState beanDiscoveryState = LifecycleState.BEFORE_DISCOVERY;
 
     /**
      * This flag will get set to {@code true} after the
-     * {@link javax.enterprise.inject.spi.AfterDeploymentValidation} gets fired
+     * {@link jakarta.enterprise.inject.spi.AfterDeploymentValidation} gets fired
      */
     private boolean afterDeploymentValidationFired;
 
@@ -445,9 +444,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
 
     /**
-     * {@inheritDoc}
+     * @deprecated  This method got deprecated in CDI-2.0.
+     *      Users should use {@link #getEvent()} instead.
      */
-    @Override
+    @Deprecated
     public void fireEvent(Object event, Annotation... bindings)
     {
         fireEvent(event, false, bindings);
@@ -537,7 +537,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return deploymentBeans;
     }
 
-    private void addContext(Class<? extends Annotation> scopeType, javax.enterprise.context.spi.Context context)
+    private void addContext(Class<? extends Annotation> scopeType, jakarta.enterprise.context.spi.Context context)
     {
         Asserts.assertNotNull(scopeType, "scopeType");
         Asserts.assertNotNull(context, "context");
@@ -754,7 +754,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         {
             boolean isProducer = AbstractProducerBean.class.isInstance(bean);
             if(!isProducer && // we have different rules for producers
-               !isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, bean instanceof NewBean, isProducer) &&
+               !isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, isProducer) &&
                !GenericsUtil.satisfiesDependency(false, isProducer, beanType, bean.getBeanClass(), new HashMap<>()) &&
                !GenericsUtil.satisfiesDependencyRaw(false, isProducer, beanType, bean.getBeanClass(), new HashMap<>()))
             {
@@ -930,25 +930,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
 
-    private boolean isBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean newBean, boolean producer)
+    private boolean isBeanTypeAssignableToGivenType(Set<Type> beanTypes, Type givenType, boolean producer)
     {
         for (Type beanApiType : beanTypes)
         {
             if (GenericsUtil.satisfiesDependency(false, producer, givenType, beanApiType, new HashMap<>()))
             {
                 return true;
-            }
-            else
-            {
-                //Check for @New
-                if (newBean && ClassUtil.isParametrizedType(givenType))
-                {
-                    Class<?> requiredType = ClassUtil.getClass(givenType);
-                    if (ClassUtil.isClassAssignableFrom(requiredType, ClassUtil.getClass(beanApiType)))
-                    {
-                        return true;
-                    }
-                }
             }
         }
 
@@ -1233,9 +1221,10 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     }
 
     /**
-     * {@inheritDoc}
+     * @deprecated  This method got deprecated in CDI-1.1 and removed in CDI-4.0.
+     *      Use {@link #getInjectionTargetFactory(AnnotatedType)} instead.
      */
-    @Override
+    @Deprecated
     public <T> InjectionTarget<T> createInjectionTarget(AnnotatedType<T> type)
     {
         InjectionTargetFactoryImpl<T> factory = new InjectionTargetFactoryImpl<>(type, webBeansContext);
@@ -1317,8 +1306,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         if (id == null)
         {
-            addAdditionalAnnotatedType(extension, inAnnotatedType);
-            return;
+            id = AnnotatedElementFactory.OWB_DEFAULT_KEY;
         }
 
         AnnotatedType<T> annotatedType = new AnnotatedTypeWrapper<>(Extension.class.cast(extension), inAnnotatedType, id);

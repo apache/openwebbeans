@@ -23,13 +23,13 @@ import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.IllegalProductException;
-import javax.enterprise.inject.TransientReference;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.Producer;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.IllegalProductException;
+import jakarta.enterprise.inject.TransientReference;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.config.WebBeansContext;

@@ -23,7 +23,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.LoaderService;
 import org.apache.webbeans.util.WebBeansUtil;
 
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.Extension;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.logging.Level;

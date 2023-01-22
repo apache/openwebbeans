@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.factory.beans;
 
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 

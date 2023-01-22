@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.web.jetty9.test;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 /**

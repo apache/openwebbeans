@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.arquillian.standalone;
 
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.BDABeansXmlScanner;

@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.portable.events.extensions;
 
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.ProcessObserverMethod;
 
 public class ProcessObserverMethodExtension implements Extension
 {

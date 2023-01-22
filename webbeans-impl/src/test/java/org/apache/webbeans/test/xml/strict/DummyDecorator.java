@@ -20,9 +20,9 @@ package org.apache.webbeans.test.xml.strict;
 
 import org.apache.webbeans.test.component.IPayment;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.inject.Inject;
 
 @Decorator
 public class DummyDecorator implements IPayment

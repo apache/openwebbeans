@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.portable.events.generics;
 
-import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.Producer;
+import jakarta.enterprise.inject.spi.AnnotatedMember;
+import jakarta.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.portable.events.ProcessProducerImpl;
 import org.apache.webbeans.util.ClassUtil;

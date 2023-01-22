@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 /**
  * {@link RequestScoped} literal annotation.

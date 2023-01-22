@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.portable.events;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.ProcessManagedBean;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.ProcessManagedBean;
 
 import org.apache.webbeans.component.ManagedBean;
 

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.profields.beans.stringproducer;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Named("org.apache.webbeans.test.profields.beans.GetterStringFieldInjector")
 public class GetterStringFieldInjector

@@ -61,15 +61,13 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jcdi_2.0_spec</artifactId>
-            <scope>provided</scope>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-atinject_1.0_spec</artifactId>
-            <scope>provided</scope>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
         </dependency>
 
         <dependency>
@@ -89,7 +87,7 @@
                     <instructions>
                         <Import-Package>
                             javax.servlet.*;version="[${osgi.servlet.range},5)",
-                            javax.el.*;version="[${osgi.el.range},3)",
+                            jakarta.el.*;version="[${osgi.el.range},3)",
                             javax.faces.*;version="[${osgi.faces.range},3)",
                             *
                         </Import-Package>

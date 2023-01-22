@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.injection.serialization.beans;
 
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.Produces;
 
 /**
  * Producer method with non serializable producer method parameters.

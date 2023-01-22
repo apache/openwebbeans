@@ -18,12 +18,12 @@
  */
 package org.apache.webbeans.test.disposes.beans;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.test.disposes.common.DependentModel;
 import org.apache.webbeans.test.disposes.common.HttpHeader;

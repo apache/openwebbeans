@@ -21,9 +21,10 @@ package org.apache.webbeans.test.portable.injectiontarget;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.InjectionTarget;
 
 import org.junit.Assert;
 
@@ -55,13 +56,14 @@ public class InjectionTargetTest extends AbstractUnitTest
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(PersonModel.class);
         startContainer(classes);
-        
-        InjectionTarget<PersonModel> model = getBeanManager().createInjectionTarget(getBeanManager().createAnnotatedType(PersonModel.class));
-        PersonModel person = model.produce(getBeanManager().createCreationalContext(new InjectionTargetTest.MyContextual<PersonModel>()));
+
+        final AnnotatedType<PersonModel> annotatedType = getBeanManager().createAnnotatedType(PersonModel.class);
+        InjectionTarget<PersonModel> model = getBeanManager().getInjectionTargetFactory(annotatedType).createInjectionTarget(null);
+        PersonModel person = model.produce(getBeanManager().createCreationalContext(new InjectionTargetTest.MyContextual<>()));
         Assert.assertNotNull(person);
 
         // check that createInjectionTarget did not deploy a second observer method
-        getBeanManager().fireEvent("test");
+        getBeanManager().getEvent().fire("test");
         Assert.assertEquals(1, PersonModel.getEventCount());
         shutDownContainer();
         

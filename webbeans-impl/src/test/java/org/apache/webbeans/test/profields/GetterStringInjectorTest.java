@@ -21,7 +21,7 @@ package org.apache.webbeans.test.profields;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.junit.Assert;
 

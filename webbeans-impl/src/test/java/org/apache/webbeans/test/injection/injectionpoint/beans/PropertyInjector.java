@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.injection.injectionpoint.beans;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Named("org.apache.webbeans.test.injection.injectionpoint.beans.PropertyInjector")
 public class PropertyInjector {

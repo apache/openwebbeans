@@ -29,7 +29,7 @@ import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent5;
 import org.apache.webbeans.test.component.event.broken.BrokenObserverComponent6;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 public class BrokenComponentTest extends AbstractUnitTest
 {

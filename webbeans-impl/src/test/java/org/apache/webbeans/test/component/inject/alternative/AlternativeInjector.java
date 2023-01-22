@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.inject.alternative;
 
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Inject;
 
 public class AlternativeInjector
 {

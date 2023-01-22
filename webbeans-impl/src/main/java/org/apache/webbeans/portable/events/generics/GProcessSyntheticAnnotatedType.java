@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.portable.events.generics;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ProcessSyntheticAnnotatedTypeImpl;

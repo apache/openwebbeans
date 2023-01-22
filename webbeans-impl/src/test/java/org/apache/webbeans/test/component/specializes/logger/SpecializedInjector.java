@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.specializes.logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class SpecializedInjector
 {

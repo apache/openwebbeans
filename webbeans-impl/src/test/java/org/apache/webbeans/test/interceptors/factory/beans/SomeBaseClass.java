@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.factory.beans;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 /**
  * Test class for our proxy bytecode generator logic.

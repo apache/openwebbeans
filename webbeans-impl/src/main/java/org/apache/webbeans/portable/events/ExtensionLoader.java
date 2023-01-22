@@ -33,10 +33,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.DefinitionException;
-import javax.enterprise.inject.spi.DeploymentException;
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.component.ExtensionBean;
 import org.apache.webbeans.component.creation.ExtensionBeanBuilder;
@@ -51,7 +51,7 @@ import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.xbean.finder.archive.FileArchive;
 
 /**
- * Loads META-INF/services/javax.enterprise.inject.spi.Extension
+ * Loads META-INF/services/jakarta.enterprise.inject.spi.Extension
  * services.
  * 
  * @version $Rev$ $Date$

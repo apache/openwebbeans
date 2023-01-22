@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.util;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +51,7 @@ public class PriorityClasses
 
     /**
      * Used for Classes which are added by Beans which implement the
-     * {@link javax.enterprise.inject.spi.Prioritized} interface
+     * {@link jakarta.enterprise.inject.spi.Prioritized} interface
      */
     public void add(Class<?> clazz, int priority)
     {

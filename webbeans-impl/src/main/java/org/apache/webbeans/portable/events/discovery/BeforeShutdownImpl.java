@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.portable.events.discovery;
 
-import javax.enterprise.inject.spi.BeforeShutdown;
+import jakarta.enterprise.inject.spi.BeforeShutdown;
 
 /**
  * Event that is fired by the container before it shuts down.

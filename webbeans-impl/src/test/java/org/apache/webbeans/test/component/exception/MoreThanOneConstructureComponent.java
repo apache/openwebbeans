@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 
 public class MoreThanOneConstructureComponent

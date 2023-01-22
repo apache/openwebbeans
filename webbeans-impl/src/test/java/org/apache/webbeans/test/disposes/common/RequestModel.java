@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.disposes.common;
 
-import javax.annotation.PreDestroy;
-import javax.enterprise.inject.Typed;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.inject.Typed;
 
 @Typed
 public class RequestModel

@@ -21,8 +21,8 @@ package org.apache.webbeans.test.producer;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Assert;

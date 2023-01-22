@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.exception.initializer;
 
-import javax.enterprise.inject.Disposes;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.inject.Inject;
 
 public class BrokenInitializer3
 {

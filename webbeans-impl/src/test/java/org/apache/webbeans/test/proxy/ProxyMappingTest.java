@@ -19,7 +19,7 @@
 package org.apache.webbeans.test.proxy;
 
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 
 import org.apache.webbeans.intercept.ApplicationScopedBeanInterceptorHandler;
 import org.apache.webbeans.intercept.NormalScopedBeanInterceptorHandler;

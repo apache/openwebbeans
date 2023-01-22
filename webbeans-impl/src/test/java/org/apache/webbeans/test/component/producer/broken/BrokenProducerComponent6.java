@@ -20,7 +20,7 @@ package org.apache.webbeans.test.component.producer.broken;
 
 import java.util.List;
 
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Produces;
 
 public class BrokenProducerComponent6
 {

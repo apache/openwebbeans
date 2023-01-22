@@ -20,8 +20,8 @@ package org.apache.webbeans.event;
 
 import java.util.Set;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 

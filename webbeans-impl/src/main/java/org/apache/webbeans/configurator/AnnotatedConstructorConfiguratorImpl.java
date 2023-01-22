@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.configurator;
 
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator;
-import javax.enterprise.inject.spi.configurator.AnnotatedParameterConfigurator;
+import jakarta.enterprise.inject.spi.AnnotatedConstructor;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedConstructorConfigurator;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedParameterConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.function.Predicate;

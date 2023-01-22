@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.injection.typed;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Typed;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Typed;
 
 @Dependent
 public class TypedMethodProducer

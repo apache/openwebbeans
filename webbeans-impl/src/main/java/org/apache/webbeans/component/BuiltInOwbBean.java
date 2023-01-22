@@ -18,12 +18,12 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.inject.spi.Producer;
+import jakarta.enterprise.inject.spi.Producer;
 
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.CollectionUtil;
 
-import javax.enterprise.inject.spi.ProducerFactory;
+import jakarta.enterprise.inject.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
 
 public abstract class BuiltInOwbBean<T> extends AbstractOwbBean<T>

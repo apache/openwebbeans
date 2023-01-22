@@ -18,16 +18,16 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Producer;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Producer;
 
-import javax.enterprise.inject.spi.ProducerFactory;
+import jakarta.enterprise.inject.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ExtensionProducer;
 
 /**
- * A factory for {@link javax.enterprise.inject.spi.Producer}s that produce CDI {@link javax.enterprise.inject.spi.Extension}s.
+ * A factory for {@link jakarta.enterprise.inject.spi.Producer}s that produce CDI {@link jakarta.enterprise.inject.spi.Extension}s.
  * 
  * @version $Rev: 1440403 $ $Date: 2013-01-30 14:27:15 +0100 (Mi, 30 Jan 2013) $
  */

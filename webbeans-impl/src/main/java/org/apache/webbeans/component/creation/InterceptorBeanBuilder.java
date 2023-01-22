@@ -18,18 +18,18 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.InterceptionType;
-import javax.interceptor.AroundConstruct;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.AroundTimeout;
-import javax.interceptor.InvocationContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedParameter;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.InterceptionType;
+import jakarta.interceptor.AroundConstruct;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.AroundTimeout;
+import jakarta.interceptor.InvocationContext;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -111,10 +111,10 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
     /**
      * <p>Grab all methods which act as interceptors for the various
-     * {@link javax.enterprise.inject.spi.InterceptionType}s.</p>
+     * {@link jakarta.enterprise.inject.spi.InterceptionType}s.</p>
      *
      * <p>This method will also check some rules, e.g. that there must not be
-     * more than a single {@link javax.interceptor.AroundInvoke} method
+     * more than a single {@link jakarta.interceptor.AroundInvoke} method
      * on a class.</p>
      *
      * <p>For the interceptors where multiple are allowed, the following rules apply:

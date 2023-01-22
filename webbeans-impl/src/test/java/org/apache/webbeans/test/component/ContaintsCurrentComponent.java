@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.component;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Inject;
 
 
 @RequestScoped

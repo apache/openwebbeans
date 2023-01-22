@@ -77,7 +77,7 @@ public final class DefaultAnnotation implements InvocationHandler, Annotation
     }
 
     /**
-     * Copied from javax.enterprise.util.AnnotationLiteral#toString()
+     * Copied from jakarta.enterprise.util.AnnotationLiteral#toString()
      * with minor changes.
      *
      * @return

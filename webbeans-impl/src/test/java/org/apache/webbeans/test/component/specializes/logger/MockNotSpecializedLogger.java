@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.specializes.logger;
 
-import javax.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Alternative;
 
 @LoggerBinding
 @Alternative

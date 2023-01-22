@@ -23,8 +23,8 @@ import java.lang.annotation.Annotation;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.ProducerFactory;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.ProducerFactory;
 
 public class ResourceBean<X, T extends Annotation> extends ProducerFieldBean<X>
 {

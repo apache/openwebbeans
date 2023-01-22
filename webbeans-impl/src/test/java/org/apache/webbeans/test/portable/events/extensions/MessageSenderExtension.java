@@ -16,10 +16,10 @@
  */
 package org.apache.webbeans.test.portable.events.extensions;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
 
 import org.junit.Assert;
 
@@ -40,6 +40,6 @@ public class MessageSenderExtension implements Extension
         Assert.assertNotNull(beforeBeanDiscovery);
         Assert.assertNotNull(beanManager);
 
-        beanManager.fireEvent(new ExtensionPayload());
+        beanManager.getEvent().fire(new ExtensionPayload());
     }
 }

@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.interceptors.factory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.RequestScoped;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.test.interceptors.factory.beans.SomeBaseClass;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;

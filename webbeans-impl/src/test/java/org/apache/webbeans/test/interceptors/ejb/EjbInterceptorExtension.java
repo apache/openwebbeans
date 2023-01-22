@@ -20,12 +20,12 @@ package org.apache.webbeans.test.interceptors.ejb;
 
 import org.apache.webbeans.test.interceptors.lifecycle.LifecycleBinding;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.interceptor.Interceptors;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.interceptor.Interceptors;
 
 
 public class EjbInterceptorExtension implements Extension

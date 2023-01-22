@@ -22,7 +22,7 @@ import org.apache.webbeans.annotation.AnyLiteral;
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.util.SingleItemSet;
 
-import javax.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.BeanAttributes;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;

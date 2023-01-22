@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.specalization.observer.TestEvent;
@@ -49,7 +49,7 @@ public class ProtectedObserverTest extends AbstractUnitTest
         Assert.assertEquals(1, beans.size());
         
         TestEvent testEvent = new TestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
 
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
         Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[specialize]"));
@@ -72,7 +72,7 @@ public class ProtectedObserverTest extends AbstractUnitTest
         Assert.assertEquals(1, beans.size());
         
         TestEvent testEvent = new TestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
         
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
         Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[alternative]:[specialize]"));
@@ -92,7 +92,7 @@ public class ProtectedObserverTest extends AbstractUnitTest
         Assert.assertEquals(1, beans.size());
 
         TestEvent testEvent = new TestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
 
         Assert.assertEquals(BeanE.class, beans.toArray(new Bean<?>[0])[0].getBeanClass());
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
@@ -113,7 +113,7 @@ public class ProtectedObserverTest extends AbstractUnitTest
         Assert.assertEquals(1, beans.size());
 
         TestEvent testEvent = new TestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
 
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
         Assert.assertTrue(testEvent.getCalledObservers().iterator().next().endsWith(":[specialize]"));

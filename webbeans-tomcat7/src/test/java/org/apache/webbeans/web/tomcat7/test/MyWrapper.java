@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.web.tomcat7.test;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 
 @SessionScoped

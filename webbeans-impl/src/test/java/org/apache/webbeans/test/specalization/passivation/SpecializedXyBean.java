@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.specalization.passivation;
 
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.Specializes;
 import java.io.Serializable;
 
 /**

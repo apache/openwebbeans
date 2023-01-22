@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.producer.beans;
 
-import javax.enterprise.inject.Typed;
+import jakarta.enterprise.inject.Typed;
 
 /**
  * A sample bean which gets produced by a producer method with modifier 'protected'

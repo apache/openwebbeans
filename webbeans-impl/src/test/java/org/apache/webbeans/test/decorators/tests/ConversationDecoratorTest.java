@@ -21,10 +21,10 @@ package org.apache.webbeans.test.decorators.tests;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.context.Conversation;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.context.Conversation;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 import org.junit.Assert;
 

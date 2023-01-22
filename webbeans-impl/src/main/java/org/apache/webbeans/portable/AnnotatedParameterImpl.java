@@ -22,8 +22,8 @@ import org.apache.webbeans.config.WebBeansContext;
 
 import java.lang.reflect.Type;
 
-import javax.enterprise.inject.spi.AnnotatedCallable;
-import javax.enterprise.inject.spi.AnnotatedParameter;
+import jakarta.enterprise.inject.spi.AnnotatedCallable;
+import jakarta.enterprise.inject.spi.AnnotatedParameter;
 
 /**
  * Implementation of {@link AnnotatedParameter} interface.

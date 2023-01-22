@@ -91,7 +91,7 @@ Bug
     * [OWB-589] - " ... requires a passivation capable dependency ..." for producer method with return type String and non serializable injected dependency
     * [OWB-597] - StackOverFlow when injecting product in same bean where @Produces is placed
     * [OWB-615] - remove @Overrides for interfaces to be java5 compatible
-    * [OWB-616] - javax.el.ExpressionFactory has final methods! CDI doesn't allow that. - Test on final **PRIVATE** methods too?
+    * [OWB-616] - jakarta.el.ExpressionFactory has final methods! CDI doesn't allow that. - Test on final **PRIVATE** methods too?
     * [OWB-618] - we sometimes invoke a dispose method without having created the bean upfront
     * [OWB-619] - @New beans must only exist if there is at least one injection point for them
     * [OWB-620] - any disabled bean of passivating scope will wrongly be detected as 'not passivatable'

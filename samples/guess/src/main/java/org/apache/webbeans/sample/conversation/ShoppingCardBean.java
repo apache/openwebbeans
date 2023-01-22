@@ -20,11 +20,11 @@ package org.apache.webbeans.sample.conversation;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.Conversation;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.Conversation;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import javax.faces.application.FacesMessage;
 
 import org.apache.webbeans.sample.model.conversation.ConversationModel;

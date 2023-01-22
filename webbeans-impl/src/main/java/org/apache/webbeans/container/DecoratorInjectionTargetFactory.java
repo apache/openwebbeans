@@ -20,9 +20,9 @@ package org.apache.webbeans.container;
 
 import java.lang.reflect.Modifier;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.AbstractDecoratorInjectionTarget;

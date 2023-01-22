@@ -35,7 +35,7 @@ package org.apache.webbeans.component;
  * <p>
  * Producer Method Components are defined within the class that is annotated
  * with {@link OwbBean} annotation. In these classes, there are methods that
- * are annotated with {@link javax.enterprise.inject.Produces} annotation.
+ * are annotated with {@link jakarta.enterprise.inject.Produces} annotation.
  * These methods become the producer method components of this web beans component.
  * It maybe defined using the web-beans.xml file using the &lt;producer&gt; element.
  * It is possible to mix these two definitons.

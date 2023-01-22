@@ -21,8 +21,8 @@ package org.apache.webbeans.portable.events.generics;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.events.ProcessBeanAttributesImpl;
 
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.BeanAttributes;
 
 public class GProcessBeanAttributes extends ProcessBeanAttributesImpl implements GenericBeanEvent
 {

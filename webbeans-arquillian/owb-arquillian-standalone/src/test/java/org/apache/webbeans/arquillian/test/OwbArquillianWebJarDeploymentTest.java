@@ -26,7 +26,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.arquillian.test.beans.SampleUser;
 import org.jboss.arquillian.container.test.api.Deployment;

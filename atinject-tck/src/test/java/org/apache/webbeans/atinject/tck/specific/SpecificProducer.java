@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.atinject.tck.specific;
 
-import javax.enterprise.inject.Typed;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.inject.Typed;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.New;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 import org.atinject.tck.auto.Drivers;
 import org.atinject.tck.auto.DriversSeat;

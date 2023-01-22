@@ -20,8 +20,8 @@ package org.apache.webbeans.component;
 
 import java.lang.reflect.Method;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.BeanAttributes;
 
 import org.apache.webbeans.component.creation.MethodProducerFactory;
 

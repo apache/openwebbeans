@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.lifecycle;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 @Named("org.apache.webbeans.test.interceptors.lifecycle.NotAnnotatedBean")
 public class NotAnnotatedBean

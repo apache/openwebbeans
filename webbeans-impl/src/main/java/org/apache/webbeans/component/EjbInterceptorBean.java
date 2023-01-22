@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.InterceptionType;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.InterceptionType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -30,9 +30,9 @@ import java.util.Set;
 import org.apache.webbeans.config.WebBeansContext;
 
 /**
- * <p>{@link javax.enterprise.inject.spi.Interceptor} Bean implementation for EJB-style Beans.
+ * <p>{@link jakarta.enterprise.inject.spi.Interceptor} Bean implementation for EJB-style Beans.
  * This is Interceptors which got defined by being referenced via
- * &#064;{@link javax.interceptor.Interceptors}.</p>
+ * &#064;{@link jakarta.interceptor.Interceptors}.</p>
  */
 public class EjbInterceptorBean<T> extends InterceptorBean<T>
 {

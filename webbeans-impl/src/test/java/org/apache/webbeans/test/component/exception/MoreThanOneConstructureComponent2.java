@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 import org.apache.webbeans.test.component.service.ServiceImpl1;

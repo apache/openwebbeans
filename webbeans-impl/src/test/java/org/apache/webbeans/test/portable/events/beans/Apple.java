@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.portable.events.beans;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 @Named
 public class Apple

@@ -19,10 +19,10 @@
 package org.apache.webbeans.test.disposes.beans.broken;
 
 
-import javax.enterprise.inject.Disposes;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 
 import java.io.Serializable;
 

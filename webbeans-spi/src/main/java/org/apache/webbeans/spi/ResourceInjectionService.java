@@ -24,7 +24,7 @@ import java.io.ObjectOutput;
 import java.lang.annotation.Annotation;
 
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 import org.apache.webbeans.spi.api.ResourceReference;
 
 /**
@@ -58,7 +58,7 @@ public interface ResourceInjectionService
      * For example;
      * <p>
      * <code>
-     * @javax.enterprise.inject.Produces &#064;MyPersistenceContext PersistenceContext EntityManager manager;
+     * @jakarta.enterprise.inject.Produces &#064;MyPersistenceContext PersistenceContext EntityManager manager;
      * </code>
      * </p>
      * <p>

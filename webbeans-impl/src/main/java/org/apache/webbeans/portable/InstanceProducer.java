@@ -24,9 +24,9 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.Interceptor;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.InstanceBean;

@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.decorators.dependent;
 
-import javax.annotation.PreDestroy;
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
+import jakarta.annotation.PreDestroy;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.inject.Inject;
 
 @Decorator
 public class DependentDecorator implements IDestroy

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.unused;
 
-import javax.enterprise.inject.Typed;
+import jakarta.enterprise.inject.Typed;
 
 /**
  * This bean will acually never been touched.

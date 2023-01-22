@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.portable.events.extensions.errors;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
 
 public class AfterBeanDiscoveryErrorExtension implements Extension
 {

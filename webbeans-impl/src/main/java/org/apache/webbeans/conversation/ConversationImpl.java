@@ -25,9 +25,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.BusyConversationException;
-import javax.enterprise.context.Conversation;
-import javax.enterprise.context.ConversationScoped;
+import jakarta.enterprise.context.BusyConversationException;
+import jakarta.enterprise.context.Conversation;
+import jakarta.enterprise.context.ConversationScoped;
 
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;

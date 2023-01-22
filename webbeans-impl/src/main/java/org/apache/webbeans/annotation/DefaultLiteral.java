@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Set;
 
-import javax.enterprise.inject.Default;
+import jakarta.enterprise.inject.Default;
 
 /**
  * {@link Default} literal annotation.

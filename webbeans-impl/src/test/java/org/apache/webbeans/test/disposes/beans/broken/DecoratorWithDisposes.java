@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.disposes.beans.broken;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.enterprise.inject.Disposes;
-import javax.inject.Inject;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.decorators.multiple.IOutputProvider;
 

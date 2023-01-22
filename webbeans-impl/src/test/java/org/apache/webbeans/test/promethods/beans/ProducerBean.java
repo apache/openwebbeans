@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.promethods.beans;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 /**
  * Bean with ProducerMethods to drive through the WebBeansAnnotatedTypeUtil codepath.

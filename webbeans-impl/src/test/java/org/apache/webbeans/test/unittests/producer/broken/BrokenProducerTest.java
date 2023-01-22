@@ -28,7 +28,7 @@ import org.apache.webbeans.test.component.producer.broken.BrokenProducerComponen
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 public class BrokenProducerTest extends AbstractUnitTest
 {

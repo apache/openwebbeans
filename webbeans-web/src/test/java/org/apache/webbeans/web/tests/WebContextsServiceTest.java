@@ -23,8 +23,8 @@ import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.web.context.WebContextsService;
 import org.junit.Test;
 
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.SessionScoped;
 import java.util.HashMap;
 import java.util.Properties;
 

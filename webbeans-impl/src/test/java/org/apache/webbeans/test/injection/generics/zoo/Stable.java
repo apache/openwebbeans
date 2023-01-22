@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.generics.zoo;
 
-import javax.enterprise.inject.Typed;
+import jakarta.enterprise.inject.Typed;
 
 /**
  * A stable for horses, pigs, etc

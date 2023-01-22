@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.injection.serialization.beans;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 
 /**

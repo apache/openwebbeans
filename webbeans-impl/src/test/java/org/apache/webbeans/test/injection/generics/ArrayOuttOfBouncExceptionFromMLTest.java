@@ -21,7 +21,7 @@ package org.apache.webbeans.test.injection.generics;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import java.util.Arrays;
 import java.util.Collections;

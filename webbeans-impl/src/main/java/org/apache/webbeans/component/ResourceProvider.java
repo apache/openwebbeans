@@ -23,7 +23,7 @@ import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.spi.ResourceInjectionService;
 import org.apache.webbeans.spi.api.ResourceReference;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 

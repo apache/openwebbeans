@@ -20,11 +20,11 @@ import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.DefinitionException;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.spi.DefinitionException;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 
 /**

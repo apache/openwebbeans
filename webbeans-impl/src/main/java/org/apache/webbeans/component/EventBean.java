@@ -20,8 +20,8 @@ package org.apache.webbeans.component;
 
 import java.lang.reflect.Type;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.event.EventImpl;

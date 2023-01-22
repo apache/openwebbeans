@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.portable.events;
 
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.ProcessBean;
+import jakarta.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.ProcessBean;
 
 import org.apache.webbeans.config.WebBeansContext;
 

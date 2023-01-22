@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.interceptors.resolution.interceptors;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Typed;
-import javax.interceptor.InvocationContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Typed;
+import jakarta.interceptor.InvocationContext;
 
 /**
  *

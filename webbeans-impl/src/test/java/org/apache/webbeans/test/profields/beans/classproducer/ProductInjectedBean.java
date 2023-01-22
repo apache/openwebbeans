@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.profields.beans.classproducer;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class ProductInjectedBean {
     

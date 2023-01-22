@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.decorators.multiple;
 
-import javax.inject.Inject;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.inject.Inject;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 
 @MyIntercept @Interceptor
 public class OutputInterceptor {

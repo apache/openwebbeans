@@ -19,8 +19,8 @@
 package org.apache.webbeans.test.events.specializedalternative;
 
 
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Specializes;
 
 /**
  * Not activated Alternative should simply get ignored

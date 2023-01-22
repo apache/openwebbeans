@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.interceptors.dependent;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Named;
 
 @Named("org.apache.webbeans.test.interceptors.dependent.DependentLifecycleBean")
 public class DependentLifecycleBean extends DependentSuperBean

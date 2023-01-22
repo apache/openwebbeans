@@ -19,9 +19,9 @@
 package org.apache.webbeans.reservation.intercept;
 
 
-import javax.decorator.Delegate;
-import javax.decorator.Decorator;
-import javax.inject.Inject;
+import jakarta.decorator.Delegate;
+import jakarta.decorator.Decorator;
+import jakarta.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;

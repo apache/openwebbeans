@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.resolution;
 
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import org.junit.Assert;
 

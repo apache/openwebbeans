@@ -18,13 +18,13 @@
  */
 package org.apache.webbeans.portable.events.discovery;
 
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.Extension;
 
 import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
 
 /**
  * Hold information for lifecycle Events which can modify or add multiple
- * {@link javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator}
+ * {@link jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator}
  */
 public class AnnotatedTypeConfiguratorHolder<T>
 {

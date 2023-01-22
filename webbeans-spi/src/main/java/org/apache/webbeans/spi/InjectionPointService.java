@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.spi;
 
-import javax.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.Annotated;
 
 public interface InjectionPointService
 {

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.ejb;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class ManagedBeanWithoutInterceptor

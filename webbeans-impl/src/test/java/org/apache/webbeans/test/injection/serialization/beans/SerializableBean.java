@@ -20,7 +20,7 @@ package org.apache.webbeans.test.injection.serialization.beans;
 
 import java.io.Serializable;
 
-import javax.enterprise.inject.Typed;
+import jakarta.enterprise.inject.Typed;
 
 /**
  * Simple serializable bean.

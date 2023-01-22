@@ -22,10 +22,10 @@ import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.PassivationCapable;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.PassivationCapable;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -37,7 +37,7 @@ import java.util.Set;
  * This is basically a delegate to an underlying Bean&lt;T&gt;.
  *
  * We use the {@link PassivationCapable#getId()} and
- * {@link javax.enterprise.inject.spi.BeanManager#getPassivationCapableBean(String)}
+ * {@link jakarta.enterprise.inject.spi.BeanManager#getPassivationCapableBean(String)}
  * for serialisation and deserialisation.
  *
  * @version $Rev$ $Date$
@@ -91,12 +91,6 @@ public final class SerializableBean<T> implements Bean<T>, PassivationCapable, S
     public String getName()
     {
         return bean.getName();
-    }
-
-    @Override
-    public boolean isNullable()
-    {
-        return bean.isNullable();
     }
 
     @Override

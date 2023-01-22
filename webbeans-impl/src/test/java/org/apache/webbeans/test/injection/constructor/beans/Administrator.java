@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.injection.constructor.beans;
 
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Typed;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.Typed;
 
 @SessionScoped
 @Typed(Administrator.class)

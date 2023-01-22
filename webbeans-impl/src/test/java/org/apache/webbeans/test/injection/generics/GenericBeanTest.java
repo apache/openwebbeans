@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.generics;
 
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.util.TypeLiteral;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.inject.generic.GenericComponent;

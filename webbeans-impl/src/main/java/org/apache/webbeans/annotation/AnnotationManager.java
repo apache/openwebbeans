@@ -18,7 +18,6 @@
  */
 package org.apache.webbeans.annotation;
 
-import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.deployment.stereotype.IStereoTypeModel;
@@ -30,22 +29,21 @@ import org.apache.webbeans.util.ArrayUtil;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 
-import javax.enterprise.context.NormalScope;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.Stereotype;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.Nonbinding;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Qualifier;
-import javax.inject.Scope;
-import javax.interceptor.InterceptorBinding;
+import jakarta.enterprise.context.NormalScope;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Stereotype;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedParameter;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.util.Nonbinding;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Qualifier;
+import jakarta.inject.Scope;
+import jakarta.interceptor.InterceptorBinding;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
@@ -106,13 +104,13 @@ public final class AnnotationManager
 
     /**
      * Returns true if the annotation is defined in xml or annotated with
-     * {@link javax.interceptor.InterceptorBinding} or an InterceptorBinding
-     * registered via {@link javax.enterprise.inject.spi.BeforeBeanDiscovery}.
+     * {@link jakarta.interceptor.InterceptorBinding} or an InterceptorBinding
+     * registered via {@link jakarta.enterprise.inject.spi.BeforeBeanDiscovery}.
      * False otherwise.
      *
      * @param clazz type of the annotation
      * @return true if the annotation is defined in xml or annotated with
-     *         {@link javax.interceptor.InterceptorBinding}, false otherwise
+     *         {@link jakarta.interceptor.InterceptorBinding}, false otherwise
      */
     public boolean isInterceptorBindingAnnotation(Class<? extends Annotation> clazz)
     {
@@ -259,11 +257,11 @@ public final class AnnotationManager
 
     /**
      * Returns true if the annotation is defined in xml or annotated with
-     * {@link javax.inject.Qualifier} false otherwise.
+     * {@link jakarta.inject.Qualifier} false otherwise.
      *
      * @param clazz type of the annotation
      * @return true if the annotation is defined in xml or annotated with
-     *         {@link javax.inject.Qualifier} false otherwise
+     *         {@link jakarta.inject.Qualifier} false otherwise
      */
     public boolean isQualifierAnnotation(Class<? extends Annotation> clazz)
     {
@@ -526,11 +524,11 @@ public final class AnnotationManager
 
     /**
      * Returns true if the annotation is defined in xml or annotated with
-     * {@link javax.enterprise.inject.Stereotype} false otherwise.
+     * {@link jakarta.enterprise.inject.Stereotype} false otherwise.
      *
      * @param clazz type of the annotation
      * @return true if the annotation is defined in xml or annotated with
-     *         {@link javax.enterprise.inject.Stereotype} false otherwise
+     *         {@link jakarta.enterprise.inject.Stereotype} false otherwise
      */
     public boolean isStereoTypeAnnotation(Class<? extends Annotation> clazz)
     {
@@ -815,81 +813,6 @@ public final class AnnotationManager
     }
 
 
-    /**
-     * Check conditions for the new binding.
-     * @param annotations annotations
-     * @return Annotation[] with all binding annotations
-     * @throws WebBeansConfigurationException if New plus any other binding annotation is set
-     */
-    public Annotation[] checkForNewQualifierForDeployment(Type type, Class<?> clazz, String name,
-                                                                 Annotation[] annotations)
-    {
-        Asserts.assertNotNull(type, "Type argument");
-        Asserts.nullCheckForClass(clazz);
-        Asserts.assertNotNull(annotations, "Annotations argument");
-
-        Annotation[] as = getQualifierAnnotations(annotations);
-        for (Annotation a : annotations)
-        {
-            if (a.annotationType().equals(New.class))
-            {
-                if (as.length > 1)
-                {
-                    throw new WebBeansConfigurationException("@New binding annotation can not have any binding "
-                                                             + "annotation in class : " + clazz.getName()
-                                                             + " in field/method : " + name);
-                }
-            }
-        }
-
-        return as;
-    }
-
-    /**
-     * Configures the name of the producer method for specializing the parent.
-     *
-     * @param component producer method component
-     * @param method specialized producer method
-     * @param superMethod overriden super producer method
-     */
-    public boolean isSuperMethodNamed(AbstractOwbBean<?> component,
-                                                            Method method,
-                                                            Method superMethod)
-    {
-        Asserts.assertNotNull(component,"component");
-        Asserts.assertNotNull(method,"method");
-        Asserts.assertNotNull(superMethod,"superMethod");
-
-        boolean hasName = false;
-        if(AnnotationUtil.hasMethodAnnotation(superMethod, Named.class))
-        {
-            hasName = true;
-        }
-        else
-        {
-            Annotation[] anns = getStereotypeMetaAnnotations(superMethod.getAnnotations());
-            for(Annotation ann : anns)
-            {
-                if(ann.annotationType().isAnnotationPresent(Stereotype.class))
-                {
-                    hasName = true;
-                    break;
-                }
-            }
-        }
-
-        if(hasName)
-        {
-            if(AnnotationUtil.hasMethodAnnotation(method, Named.class))
-            {
-                throw new WebBeansConfigurationException("Specialized method : " + method.getName() + " in class : "
-                        + component.getReturnType().getName() + " may not define @Named annotation");
-            }
-        }
-
-        return hasName;
-    }
-
     @SuppressWarnings("unchecked")
     public <X> Method getDisposalWithGivenAnnotatedMethod(AnnotatedType<X> annotatedType, Type beanType, Annotation[] qualifiers)
     {
@@ -945,7 +868,7 @@ public final class AnnotationManager
     }
 
     /**
-     * JavaEE components can not inject {@link javax.enterprise.inject.spi.InjectionPoint}.
+     * JavaEE components can not inject {@link jakarta.enterprise.inject.spi.InjectionPoint}.
      * @param clazz javaee component class info
      * @throws WebBeansConfigurationException exception if condition is not applied
      */

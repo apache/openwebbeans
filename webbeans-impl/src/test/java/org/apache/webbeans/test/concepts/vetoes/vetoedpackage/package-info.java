@@ -19,4 +19,4 @@
 @Vetoed
 package org.apache.webbeans.test.concepts.vetoes.vetoedpackage;
 
-import javax.enterprise.inject.Vetoed;
+import jakarta.enterprise.inject.Vetoed;

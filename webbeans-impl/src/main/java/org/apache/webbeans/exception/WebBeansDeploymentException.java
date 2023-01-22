@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.exception;
 
-import javax.enterprise.inject.spi.DeploymentException;
+import jakarta.enterprise.inject.spi.DeploymentException;
 import org.apache.webbeans.exception.helper.DescriptiveException;
 import org.apache.webbeans.exception.helper.ExceptionMessageBuilder;
 

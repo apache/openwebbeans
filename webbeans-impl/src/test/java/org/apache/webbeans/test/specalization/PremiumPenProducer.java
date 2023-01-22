@@ -18,10 +18,9 @@
  */
 package org.apache.webbeans.test.specalization;
 
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Specializes;
 
 @Alternative
 public class PremiumPenProducer extends AdvancedPenProducer {
@@ -30,7 +29,8 @@ public class PremiumPenProducer extends AdvancedPenProducer {
    @Produces
    @Alternative
    @Specializes
-   @QualifierSpecialized IPen makeMeAPen(@New Pen pen) {
+   @QualifierSpecialized IPen makeMeAPen() {
+      Pen pen = new Pen();
       pen.str = "An premium ";
       return pen;
    }

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.reservation.controller;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;

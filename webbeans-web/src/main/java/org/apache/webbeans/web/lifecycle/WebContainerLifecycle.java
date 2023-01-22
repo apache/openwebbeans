@@ -32,12 +32,12 @@ import org.apache.webbeans.spi.adaptor.ELAdaptor;
 import org.apache.webbeans.web.context.WebContextsService;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ConversationScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.jsp.JspApplicationContext;
@@ -130,7 +130,7 @@ public class WebContainerLifecycle extends AbstractLifeCycle
         {
             servletContext = (ServletContext)(startupObject);
 
-            // Add BeanManager to the 'javax.enterprise.inject.spi.BeanManager' servlet context attribute
+            // Add BeanManager to the 'jakarta.enterprise.inject.spi.BeanManager' servlet context attribute
             servletContext.setAttribute(BeanManager.class.getName(), getBeanManager());
         }
 
@@ -275,7 +275,7 @@ public class WebContainerLifecycle extends AbstractLifeCycle
         if (factory != null)
         {
             JspApplicationContext applicationCtx = factory.getJspApplicationContext(startupObject);
-            applicationCtx.addELResolver(javax.el.ELResolver.class.cast(resolver));
+            applicationCtx.addELResolver(jakarta.el.ELResolver.class.cast(resolver));
         }
         else
         {

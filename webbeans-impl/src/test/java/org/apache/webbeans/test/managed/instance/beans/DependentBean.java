@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.managed.instance.beans;
 
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.Dependent;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.Dependent;
 
 /**
  * Test for properly destroying dependent contextual instances

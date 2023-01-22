@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.event.broken;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 import org.apache.webbeans.test.event.broke.BrokenEvent;
 

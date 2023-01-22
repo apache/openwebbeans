@@ -21,9 +21,9 @@ package org.apache.webbeans.portable.events;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 
 /**
  * Default implementation of the {@link ProcessAnnotatedType}.

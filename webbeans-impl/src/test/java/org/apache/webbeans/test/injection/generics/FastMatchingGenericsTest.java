@@ -21,8 +21,8 @@ package org.apache.webbeans.test.injection.generics;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.test.AbstractUnitTest;

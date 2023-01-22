@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.xml.strict;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 
 @AlternativeStereotype
 @Priority(1000)

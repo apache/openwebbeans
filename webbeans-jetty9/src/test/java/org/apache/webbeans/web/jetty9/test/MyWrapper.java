@@ -20,8 +20,8 @@ package org.apache.webbeans.web.jetty9.test;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 
 @SessionScoped
 public class MyWrapper implements Serializable {

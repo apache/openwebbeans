@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.events.observer;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import java.util.ArrayList;
 import java.util.List;
 

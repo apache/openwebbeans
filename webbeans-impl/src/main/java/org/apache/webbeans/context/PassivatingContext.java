@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.context;
 
-import javax.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.Contextual;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.NotSerializableException;

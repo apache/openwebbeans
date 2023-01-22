@@ -36,7 +36,7 @@
 
     <description>
         Apache OpenWebBeans is an open source implementation of the
-        JSR-365 CDI 2.0 Specification.
+        Jakarta CDI 4.0 Specification.
     </description>
 
     <organization>
@@ -50,9 +50,9 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/openwebbeans.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/openwebbeans.git</developerConnection>
         <url>https://github.com/apache/openwebbeans</url>
-      <tag>openwebbeans-2.0.25</tag>
     </scm>
 
+<!-- Should not be needed anymore
     <repositories>
         <repository>
             <id>jboss-public-repository-group</id>
@@ -68,6 +68,7 @@
             </snapshots>
         </repository>
     </repositories>
+-->
 
     <issueManagement>
         <system>jira</system>
@@ -75,23 +76,27 @@
     </issueManagement>
 
     <properties>
+        <jakarta.atinject-api.version>2.0.0</jakarta.atinject-api.version>
+        <jakarta.cdi-api.version>4.0.0</jakarta.cdi-api.version>
+        <jakarta.interceptor-api.version>2.0.0</jakarta.interceptor-api.version>
+        <jakarta.annotation-api.version>2.0.0</jakarta.annotation-api.version>
+        <jakarta.el-api.version>4.0.0</jakarta.el-api.version>
+        <jakarta.transaction-api.version>2.0.0</jakarta.transaction-api.version>
+        <jakarta.validation-api.version>3.0.0</jakarta.validation-api.version>
+
+
         <geronimo_jaxws.version>1.2</geronimo_jaxws.version>
         <geronimo_servlet.version>1.0</geronimo_servlet.version>
         <geronimo_ejb.version>1.0.2</geronimo_ejb.version>
-        <geronimo_el.version>1.1</geronimo_el.version>
-        <geronimo_annotation.version>1.3</geronimo_annotation.version>
         <geronimo_jpa.version>1.1</geronimo_jpa.version>
         <geronimo_jta.version>1.1.1</geronimo_jta.version>
         <geronimo_jsp.version>1.0.1</geronimo_jsp.version>
-        <geronimo_cdi.version>1.3</geronimo_cdi.version>
-        <geronimo_atinject.version>1.2</geronimo_atinject.version>
-        <geronimo_interceptor.version>1.2</geronimo_interceptor.version>
         <geronimo_validation.version>1.1</geronimo_validation.version>
         <tomcat7.version>7.0.109</tomcat7.version>
         <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
         <jetty.version>9.4.12.v20180830</jetty.version>
         <myfaces.version>2.3.6</myfaces.version>
-        <xbean.version>4.21</xbean.version>
+        <xbean.version>4.22</xbean.version>
         <arquillian.version>1.7.0.Alpha10</arquillian.version>
         <cdi.tck.version>2.0.5.Final</cdi.tck.version>
         <httpclient.version>4.5.13</httpclient.version>
@@ -394,21 +399,21 @@
                             </artifactSet>
                             <relocations>
                                 <relocation>
-                                    <pattern>javax.annotation</pattern>
+                                    <pattern>jakarta.annotation.</pattern>
                                     <shadedPattern>jakarta.annotation</shadedPattern>
                                     <excludes>
-                                        <exclude>javax.annotation.processing.**</exclude>
+                                        <exclude>jakarta.annotation.processing.**</exclude>
                                     </excludes>
                                 </relocation>
                                 <relocation>
-                                    <pattern>javax.el</pattern>
+                                    <pattern>jakarta.el</pattern>
                                     <shadedPattern>jakarta.el</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>javax.enterprise</pattern>
                                     <shadedPattern>jakarta.enterprise</shadedPattern>
                                     <excludes>
-                                        <exclude>javax.enterprise.deploy.**</exclude>
+                                        <exclude>jakarta.enterprise.deploy.**</exclude>
                                     </excludes>
                                 </relocation>
                                 <relocation>
@@ -416,11 +421,11 @@
                                     <shadedPattern>jakarta.decorator</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>javax.inject</pattern>
+                                    <pattern>jakarta.inject</pattern>
                                     <shadedPattern>jakarta.inject</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>javax.interceptor</pattern>
+                                    <pattern>jakarta.interceptor</pattern>
                                     <shadedPattern>jakarta.interceptor</shadedPattern>
                                 </relocation>
                                 <relocation>
@@ -540,7 +545,7 @@
                     <dependency>
                         <groupId>org.apache.openwebbeans.build-tools</groupId>
                         <artifactId>checkstyle-rules</artifactId>
-                        <version>1.3</version>
+                        <version>4.0-SNAPSHOT</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -573,7 +578,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>enforce-java-version</id>
@@ -583,7 +588,7 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>1.8</version>
+                                    <version>17</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
@@ -660,6 +665,7 @@
     <modules>
         <module>webbeans-spi</module>
         <module>webbeans-impl</module>
+<!--X TODO re-enable
         <module>webbeans-ee-common</module>
         <module>webbeans-web</module>
         <module>webbeans-ejb</module>
@@ -683,11 +689,60 @@
         <module>webbeans-junit5</module>
         <module>webbeans-slf4j</module>
         <module>bom</module>
+-->
     </modules>
 
     <dependencyManagement>
 
         <dependencies>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.inject</groupId>
+                <artifactId>jakarta.inject-api</artifactId>
+                <version>${jakarta.atinject-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                <version>${jakarta.cdi-api.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>jakarta.inject</groupId>
+                        <artifactId>jakarta.inject-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.interceptor</groupId>
+                <artifactId>jakarta.interceptor-api</artifactId>
+                <version>${jakarta.interceptor-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.el</groupId>
+                <artifactId>jakarta.el-api</artifactId>
+                <version>${jakarta.el-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.transaction</groupId>
+                <artifactId>jakarta.transaction-api</artifactId>
+                <version>${jakarta.transaction-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${jakarta.validation-api.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
@@ -708,17 +763,7 @@
                 <version>${geronimo_ejb.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-el_2.2_spec</artifactId>
-                <version>${geronimo_el.version}</version>
-            </dependency>
 
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-validation_1.0_spec</artifactId>
-                <version>${geronimo_validation.version}</version>
-            </dependency>
 
 
             <dependency>
@@ -762,12 +807,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-annotation_1.3_spec</artifactId>
-                <version>${geronimo_annotation.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>4.2.0</version>
@@ -781,18 +820,6 @@
                 <version>${geronimo_jpa.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-interceptor_1.2_spec</artifactId>
-                <version>${geronimo_interceptor.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jta_1.1_spec</artifactId>
-                <version>${geronimo_jta.version}</version>
-                <scope>provided</scope>
-            </dependency>
 
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
@@ -800,17 +827,6 @@
                 <version>${geronimo_jsp.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jcdi_2.0_spec</artifactId>
-                <version>${geronimo_cdi.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-atinject_1.0_spec</artifactId>
-                <version>${geronimo_atinject.version}</version>
-            </dependency>
 
             <!--  this is used for TCK tests        -->
             <dependency>

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.arquillian.test.beans;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 
 /**

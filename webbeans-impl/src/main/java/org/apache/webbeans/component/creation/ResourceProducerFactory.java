@@ -24,9 +24,9 @@ import org.apache.webbeans.portable.ProviderBasedProducerFactory;
 import org.apache.webbeans.portable.ResourceProducer;
 import org.apache.webbeans.spi.api.ResourceReference;
 
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Producer;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Producer;
 
 public class ResourceProducerFactory<P> extends ProviderBasedProducerFactory<P>
 {

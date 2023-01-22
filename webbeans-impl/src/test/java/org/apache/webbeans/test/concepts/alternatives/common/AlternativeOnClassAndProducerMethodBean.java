@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.concepts.alternatives.common;
 
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Produces;
 
 /**
  * This one has the &#064;Alternative on the class

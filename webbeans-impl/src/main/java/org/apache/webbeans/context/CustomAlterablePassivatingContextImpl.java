@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.context;
 
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.AlterableContext;
+import jakarta.enterprise.context.spi.Contextual;
 
 import org.apache.webbeans.container.SerializableBeanVault;
 

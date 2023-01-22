@@ -34,10 +34,10 @@ public class EventTest extends AbstractUnitTest {
         startContainer(Painter.class);
 
         final Orange orange = new Orange();
-        getBeanManager().fireEvent(orange);
+        getBeanManager().getEvent().fire(orange);
 
         final Green green = new Green();
-        getBeanManager().fireEvent(green);
+        getBeanManager().getEvent().fire(green);
 
         final Painter painter = getInstance(Painter.class);
         Assert.assertEquals(2, painter.getObserved().size());
@@ -53,7 +53,7 @@ public class EventTest extends AbstractUnitTest {
         startContainer(Superclass.class, BeanA.class);
 
         TestEvent testEvent = new TestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
 
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
         Assert.assertTrue(testEvent.getCalledObservers().iterator().next().equals("BeanA"));
@@ -82,7 +82,7 @@ public class EventTest extends AbstractUnitTest {
         startContainer(Superclass.class, BeanB.class);
 
         TestEvent testEvent = new TestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
 
         Assert.assertEquals(0, testEvent.getCalledObservers().size());
 
@@ -94,7 +94,7 @@ public class EventTest extends AbstractUnitTest {
         startContainer(Superclass.class, BeanA.class);
 
         PrivateTestEvent testEvent = new PrivateTestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
 
         Assert.assertEquals(2, testEvent.getCalledObservers().size());
         Assert.assertTrue(testEvent.getCalledObservers().contains("BeanA"));
@@ -109,7 +109,7 @@ public class EventTest extends AbstractUnitTest {
         startContainer(Superclass.class, BeanB.class);
 
         PrivateTestEvent testEvent = new PrivateTestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
 
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
         Assert.assertEquals("BeanB[Superclass]", testEvent.getCalledObservers().iterator().next());
@@ -123,7 +123,7 @@ public class EventTest extends AbstractUnitTest {
         startContainer(Superclass.class, BeanA.class);
 
         StaticTestEvent testEvent = new StaticTestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
 
         Assert.assertEquals(2, testEvent.getCalledObservers().size());
         Assert.assertTrue(testEvent.getCalledObservers().contains("BeanA"));
@@ -138,7 +138,7 @@ public class EventTest extends AbstractUnitTest {
         startContainer(Superclass.class, BeanB.class);
 
         StaticTestEvent testEvent = new StaticTestEvent();
-        getBeanManager().fireEvent(testEvent);
+        getBeanManager().getEvent().fire(testEvent);
 
         Assert.assertEquals(1, testEvent.getCalledObservers().size());
         Assert.assertEquals("Superclass", testEvent.getCalledObservers().iterator().next());
@@ -159,7 +159,7 @@ public class EventTest extends AbstractUnitTest {
         long start = System.nanoTime();
         for (int i = 0; i < 5_000_000; i++)
         {
-            getBeanManager().fireEvent(orange);
+            getBeanManager().getEvent().fire(orange);
         }
 
         long end = System.nanoTime();

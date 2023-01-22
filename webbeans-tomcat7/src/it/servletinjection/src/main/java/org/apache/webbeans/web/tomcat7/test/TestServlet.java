@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.web.tomcat7.test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;

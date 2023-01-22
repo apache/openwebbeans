@@ -22,7 +22,7 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.security.Principal;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.SecurityService;

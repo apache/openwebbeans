@@ -20,7 +20,7 @@ package org.apache.webbeans.test.interceptors.business.common;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 /**
  * This class extends a bean with intercepted methods.

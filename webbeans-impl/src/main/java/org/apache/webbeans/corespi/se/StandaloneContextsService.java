@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.corespi.se;
 
-import javax.enterprise.context.spi.Context;
+import jakarta.enterprise.context.spi.Context;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.SingletonContext;

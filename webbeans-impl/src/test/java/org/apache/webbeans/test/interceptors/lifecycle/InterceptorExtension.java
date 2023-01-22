@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.interceptors.lifecycle;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.*;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.interceptor.Interceptor;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.*;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.interceptor.Interceptor;
 
 import org.apache.webbeans.util.ExceptionUtil;
 
@@ -73,7 +73,7 @@ public class InterceptorExtension implements Extension
         anns.add(new AnnotationLiteral<Interceptor>(){});
         annotatedType.setAnnotations(anns);
 
-        bbd.addAnnotatedType(annotatedType);
+        bbd.addAnnotatedType(annotatedType, "test");
     }
 
     public static class AnnotatedTypeImpl<X> implements AnnotatedType<X>

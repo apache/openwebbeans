@@ -21,12 +21,12 @@ package org.apache.webbeans.test.portable.events;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Extension;
-import javax.inject.Inject;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.inject.Inject;
 import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
@@ -54,7 +54,7 @@ public class AfterBeanDiscoveryEventTest extends AbstractUnitTest {
             {
                 final AnnotatedType<MyWrapper> annotatedType = beanManager.createAnnotatedType(MyWrapper.class);
                 // injections point can't be validated yet, should be after the whole phase
-                beanManager.createInjectionTarget(annotatedType);
+                beanManager.getInjectionTargetFactory(annotatedType).createInjectionTarget(null);
 
                 // add the bean
                 afterBeanDiscovery.addBean(beanManager.createBean(

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.jms.component;
 
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.Producer;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.Producer;
 import javax.jms.Destination;
 
 import org.apache.webbeans.component.AbstractOwbBean;

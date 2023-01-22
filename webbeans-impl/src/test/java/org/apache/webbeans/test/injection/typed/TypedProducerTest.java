@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.typed;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 import java.util.Set;
 
 import org.junit.Assert;

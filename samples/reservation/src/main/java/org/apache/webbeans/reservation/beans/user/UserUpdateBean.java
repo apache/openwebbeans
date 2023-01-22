@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.reservation.beans.user;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Default;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.reservation.controller.user.UserController;
 import org.apache.webbeans.reservation.entity.User;

@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.component.decorator.broken;
 
-import javax.decorator.Delegate;
-import javax.decorator.Decorator;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Any;
+import jakarta.decorator.Delegate;
+import jakarta.decorator.Decorator;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Any;
 
 import org.apache.webbeans.test.annotation.binding.Check;
 import org.apache.webbeans.test.component.IPayment;

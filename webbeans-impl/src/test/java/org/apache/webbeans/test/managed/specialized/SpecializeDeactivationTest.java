@@ -22,11 +22,11 @@ import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Specializes;
+import jakarta.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 

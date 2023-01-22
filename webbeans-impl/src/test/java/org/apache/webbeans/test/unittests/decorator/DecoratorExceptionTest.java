@@ -36,7 +36,7 @@ import org.apache.webbeans.test.component.decorator.broken.MoreThanOneDelegateAt
 import org.apache.webbeans.test.component.decorator.broken.PaymentDecorator;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 public class DecoratorExceptionTest extends AbstractUnitTest
 {

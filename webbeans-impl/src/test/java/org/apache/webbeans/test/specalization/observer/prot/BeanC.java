@@ -19,9 +19,9 @@
 package org.apache.webbeans.test.specalization.observer.prot;
 
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Specializes;
 
 @Specializes
 @Alternative

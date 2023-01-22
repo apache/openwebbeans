@@ -34,15 +34,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.TypeLiteral;
-import javax.inject.Provider;
+import jakarta.enterprise.context.spi.AlterableContext;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.util.TypeLiteral;
+import jakarta.inject.Provider;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.config.WebBeansContext;
@@ -107,6 +107,20 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         {
             qualifierAnnotations.add(ann);
         }
+    }
+
+    @Override
+    public Handle<T> getHandle()
+    {
+        //X TODO implement!
+        return null;
+    }
+
+    @Override
+    public Iterable<? extends Handle<T>> handles()
+    {
+        //X TODO implement!
+        return null;
     }
 
     /**

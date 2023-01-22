@@ -20,8 +20,8 @@ package org.apache.webbeans.test.producer.beans;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Named
 public class ListConsumerBean {

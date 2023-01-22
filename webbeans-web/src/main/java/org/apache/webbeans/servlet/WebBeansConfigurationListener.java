@@ -27,9 +27,9 @@ import org.apache.webbeans.spi.ContextsService;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.web.util.ServletCompatibilityUtil;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.Context;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.spi.Context;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

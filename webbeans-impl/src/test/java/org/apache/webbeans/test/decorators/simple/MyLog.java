@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.decorators.simple;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 @Named("org.apache.webbeans.test.decorators.simple.MyLog")
 public class MyLog implements ILog

@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.portable.events;
 
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.ProcessProducerMethod;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedParameter;
+import jakarta.enterprise.inject.spi.ProcessProducerMethod;
 
 import org.apache.webbeans.component.ProducerMethodBean;
 

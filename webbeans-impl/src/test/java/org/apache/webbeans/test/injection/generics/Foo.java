@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.generics;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class Foo extends Bar<String, BazSubclass> {

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.event.normal;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.event.Observes;
 
 import org.apache.webbeans.test.annotation.binding.Role;
 import org.apache.webbeans.test.component.IPayment;

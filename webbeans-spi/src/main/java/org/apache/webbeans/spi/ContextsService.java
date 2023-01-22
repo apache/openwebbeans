@@ -20,8 +20,8 @@ package org.apache.webbeans.spi;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.context.ContextException;
-import javax.enterprise.context.spi.Context;
+import jakarta.enterprise.context.ContextException;
+import jakarta.enterprise.context.spi.Context;
 
 /**
  * Contexts services provides demarcation

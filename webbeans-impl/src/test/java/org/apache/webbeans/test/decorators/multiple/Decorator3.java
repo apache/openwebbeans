@@ -21,14 +21,14 @@ package org.apache.webbeans.test.decorators.multiple;
 import org.apache.webbeans.component.DecoratorBean;
 import org.junit.Assert;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Decorated;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.Bean;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Decorated;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 
 @Decorator
@@ -38,7 +38,7 @@ public abstract class Decorator3 implements IOutputProvider
     @Inject @Default RequestStringBuilder rsb;
 
 
-    @Inject javax.enterprise.inject.spi.Decorator<Decorator3> decoratorMetadata;
+    @Inject jakarta.enterprise.inject.spi.Decorator<Decorator3> decoratorMetadata;
     @Inject @Decorated Bean<IOutputProvider> beanMetadata;
 
     @Override

@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import org.apache.webbeans.se.sample.Login;
 import org.apache.webbeans.se.sample.bindings.FileLoginBinding;

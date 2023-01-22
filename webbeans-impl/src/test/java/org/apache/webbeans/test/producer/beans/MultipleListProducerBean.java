@@ -21,8 +21,8 @@ package org.apache.webbeans.test.producer.beans;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 public class MultipleListProducerBean
 {

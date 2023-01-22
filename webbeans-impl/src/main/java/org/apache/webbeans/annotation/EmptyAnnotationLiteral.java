@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.annotation;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -66,7 +66,7 @@ public abstract class EmptyAnnotationLiteral<T extends Annotation> extends Annot
      * Implemented for performance reasons.
      * This is needed because an Annotation always returns 0 as hashCode
      * if there is no method in it.
-     * Contrary to this the generic {@link javax.enterprise.util.AnnotationLiteral#hashCode()}
+     * Contrary to this the generic {@link jakarta.enterprise.util.AnnotationLiteral#hashCode()}
      * always does search for methods via reflection and only then returns 0.
      * Not very well performing ...
      * @return always 0

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.noncontextual;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class NonContextualBean
 {

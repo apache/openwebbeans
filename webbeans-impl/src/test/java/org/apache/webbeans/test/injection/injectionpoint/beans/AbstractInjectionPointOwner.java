@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.injectionpoint.beans;
 
-import javax.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 
 public abstract class AbstractInjectionPointOwner
 {

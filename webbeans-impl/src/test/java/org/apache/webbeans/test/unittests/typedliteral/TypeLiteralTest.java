@@ -21,8 +21,8 @@ package org.apache.webbeans.test.unittests.typedliteral;
 import java.util.List;
 import java.util.Map;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.util.TypeLiteral;
 
 import org.junit.Assert;
 

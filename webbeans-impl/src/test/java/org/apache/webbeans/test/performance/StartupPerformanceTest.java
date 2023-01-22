@@ -75,7 +75,6 @@ import org.apache.webbeans.test.promethods.common.Person;
 import org.apache.webbeans.test.specalization.AdvancedPenProducer;
 import org.apache.webbeans.test.specalization.DefaultPenProducer;
 import org.apache.webbeans.test.specalization.Pen;
-import org.apache.webbeans.test.specalization.PremiumPenProducer;
 import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.IPayment;
@@ -110,7 +109,6 @@ public class StartupPerformanceTest extends AbstractUnitTest
         beanClasses.add(Pen.class);
         beanClasses.add(DefaultPenProducer.class);
         beanClasses.add(AdvancedPenProducer.class);
-        beanClasses.add(PremiumPenProducer.class);
         beanClasses.add(PersonalDataBean.class);
         beanClasses.add(CircularDependentScopedBean.class);
         beanClasses.add(CircularApplicationScopedBean.class);

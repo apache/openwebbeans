@@ -18,14 +18,12 @@
  */
 package org.apache.webbeans.test.disposes.beans;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
-import org.apache.webbeans.test.concepts.alternatives.common.Pencil;
 import org.apache.webbeans.test.disposes.common.DependentModel;
 import org.apache.webbeans.test.disposes.common.HttpHeader;
 
@@ -40,8 +38,9 @@ public class AppScopedBean
     static DependentModel producedModel = null;
     
     @Produces @Dependent @HttpHeader
-    public static DependentModel dproduce(@New DependentModel model)
+    public static DependentModel dproduce()
     {
+        DependentModel model = new DependentModel();
         model.setValue(true);
         model.setId(index++);
         if (producedModel == null) {
@@ -54,7 +53,7 @@ public class AppScopedBean
     }
     
     
-    public static void ddispose(@Disposes @HttpHeader DependentModel model, @New Pencil pencil)
+    public static void ddispose(@Disposes @HttpHeader DependentModel model)
     {
         OK = model.isValue();
         if (OK) {

@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.test.interceptors.factory.beans;
 
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InterceptionFactory;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Named;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.spi.InterceptionFactory;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure2;
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;

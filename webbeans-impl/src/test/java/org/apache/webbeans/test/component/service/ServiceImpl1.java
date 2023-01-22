@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.service;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.apache.webbeans.test.annotation.binding.Binding1;
 

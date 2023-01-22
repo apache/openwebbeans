@@ -20,9 +20,9 @@ package org.apache.webbeans.test.promethods.beans;
 
 import java.util.ArrayList;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 public class MethodTypeProduces1<T extends String>
 {

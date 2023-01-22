@@ -21,9 +21,9 @@ package org.apache.webbeans.test.proxy;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 import java.util.ArrayList;
 

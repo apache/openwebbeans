@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.typed;
 
-import javax.enterprise.inject.Typed;
+import jakarta.enterprise.inject.Typed;
 
 @Typed(Raven.class)
 public class NotInTyped implements Bird{

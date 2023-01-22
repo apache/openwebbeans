@@ -20,8 +20,8 @@ package org.apache.webbeans.test.util;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.IllegalProductException;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.IllegalProductException;
 
 import org.junit.Assert;
 

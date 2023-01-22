@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.intercept.webbeans;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Secure;
 

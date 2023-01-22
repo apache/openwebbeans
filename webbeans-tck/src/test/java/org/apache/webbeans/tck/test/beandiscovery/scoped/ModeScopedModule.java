@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.tck.test.beandiscovery.scoped;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 
 /**
  * Will get loaded with a beans.xml with bean-discovery-mode="scoped"

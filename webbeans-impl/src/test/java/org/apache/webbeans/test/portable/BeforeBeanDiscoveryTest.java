@@ -5,14 +5,14 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 import org.junit.Assert;
 
@@ -53,7 +53,7 @@ public class BeforeBeanDiscoveryTest extends AbstractUnitTest
         startContainer(Foo.class);
 
         // just check we don't have :
-        // javax.enterprise.inject.AmbiguousResolutionException: There is more than one Bean @Default
+        // jakarta.enterprise.inject.AmbiguousResolutionException: There is more than one Bean @Default
         final Foo instance = getInstance(Foo.class);
         assertNotNull(instance);
     }

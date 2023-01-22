@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.specalization.multiple;
 
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.inject.Specializes;
 
 @Specializes
 public class BeanB extends BeanA

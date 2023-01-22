@@ -21,9 +21,9 @@ package org.apache.webbeans.test.profields.beans.stringproducer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 public class MultipleListProducer
 {

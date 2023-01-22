@@ -18,7 +18,7 @@
  */
 package org.superbiz.conversation;
 
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 
 /**

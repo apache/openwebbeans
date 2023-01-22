@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.specalization.multiple;
 
-import javax.enterprise.inject.Specializes;
+import jakarta.enterprise.inject.Specializes;
 
 /**
  * invalid as there must not be multiple classes which specialize the same bean.

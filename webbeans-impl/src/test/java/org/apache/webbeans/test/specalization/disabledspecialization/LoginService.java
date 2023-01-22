@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.specalization.disabledspecialization;
 
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 /**
  * This dummy login service always denies the login attempt.

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.named;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 @Named("named")
 public class NamedBean extends AbstractNamedBean {

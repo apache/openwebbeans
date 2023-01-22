@@ -20,9 +20,9 @@ package org.apache.webbeans.test.portable.injectiontarget.customtarget;
 
 import java.util.Collections;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.InjectionTarget;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
@@ -41,7 +41,7 @@ public class CustomTargetNoConstructorTest extends AbstractUnitTest
             startContainer(Collections.<Class<?>> emptyList());
             final BeanManagerImpl manager = WebBeansContext.getInstance().getBeanManagerImpl();
             AnnotatedType<CustomTarget> annotatedType = manager.createAnnotatedType(CustomTarget.class);
-            InjectionTarget<CustomTarget> injectionTarget = manager.createInjectionTarget(annotatedType);
+            InjectionTarget<CustomTarget> injectionTarget = manager.getInjectionTargetFactory(annotatedType).createInjectionTarget(null);
             CreationalContext<CustomTarget> context = manager.createCreationalContext(null);
             try
             {
@@ -73,7 +73,7 @@ public class CustomTargetNoConstructorTest extends AbstractUnitTest
             manager = WebBeansContext.getInstance().getBeanManagerImpl();
             context = manager.createCreationalContext(null);
             AnnotatedType<CustomTarget> annotatedType = manager.createAnnotatedType(CustomTarget.class);
-            InjectionTarget<CustomTarget> injectionTarget = manager.createInjectionTarget(annotatedType);
+            InjectionTarget<CustomTarget> injectionTarget = manager.getInjectionTargetFactory(annotatedType).createInjectionTarget(null);
             try
             {
                 instance = new CustomTarget("Hiho");

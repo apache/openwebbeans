@@ -24,11 +24,11 @@ import org.apache.webbeans.test.disposes.beans.DisposeModel;
 import org.apache.webbeans.test.disposes.beans.DisposerMethodBean;
 import org.junit.Test;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;

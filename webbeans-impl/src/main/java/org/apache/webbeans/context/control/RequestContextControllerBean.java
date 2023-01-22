@@ -27,7 +27,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.CollectionUtil;
 
-import javax.enterprise.context.control.RequestContextController;
+import jakarta.enterprise.context.control.RequestContextController;
 
 public class RequestContextControllerBean extends BuiltInOwbBean<RequestContextController>
 {

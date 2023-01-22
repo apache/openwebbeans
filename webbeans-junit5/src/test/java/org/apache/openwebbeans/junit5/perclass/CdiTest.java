@@ -22,7 +22,7 @@ import org.apache.openwebbeans.junit5.Cdi;
 import org.apache.openwebbeans.junit5.bean.MyService;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

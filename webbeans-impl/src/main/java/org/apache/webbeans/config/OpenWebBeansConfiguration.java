@@ -61,11 +61,11 @@ public class OpenWebBeansConfiguration
      * Environment property which comma separated list of classes which
      * should NOT fail with UnproxyableResolutionException
      */
-    public static final String ALLOW_PROXYING_PARAM = "javax.enterprise.inject.allowProxying.classes";
+    public static final String ALLOW_PROXYING_PARAM = "jakarta.enterprise.inject.allowProxying.classes";
 
     /**
-     * Lifycycle methods like {@link javax.annotation.PostConstruct} and
-     * {@link javax.annotation.PreDestroy} must not define a checked Exception
+     * Lifycycle methods like {@link jakarta.annotation.PostConstruct} and
+     * {@link jakarta.annotation.PreDestroy} must not define a checked Exception
      * regarding to the spec. But this is often unnecessary restrictive so we
      * allow to disable this check application wide.
      */
@@ -131,9 +131,9 @@ public class OpenWebBeansConfiguration
      *
      * Example:
      * <pre>
-     * org.apache.webbeans.proxy.mapping.javax.enterprise.context.ApplicationScoped=org.apache.webbeans.intercept.ApplicationScopedBeanInterceptorHandler
-     * org.apache.webbeans.proxy.mapping.javax.enterprise.context.RequestScoped=org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler
-     * org.apache.webbeans.proxy.mapping.javax.enterprise.context.SessionScoped=org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler
+     * org.apache.webbeans.proxy.mapping.jakarta.enterprise.context.ApplicationScoped=org.apache.webbeans.intercept.ApplicationScopedBeanInterceptorHandler
+     * org.apache.webbeans.proxy.mapping.jakarta.enterprise.context.RequestScoped=org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler
+     * org.apache.webbeans.proxy.mapping.jakarta.enterprise.context.SessionScoped=org.apache.webbeans.intercept.SessionScopedBeanInterceptorHandler
      * </pre>
      *
      */

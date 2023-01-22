@@ -20,9 +20,9 @@ package org.apache.webbeans.component.creation;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.BeanAttributes;
 
 import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.component.ResourceBean;

@@ -21,7 +21,7 @@ package org.apache.webbeans.test.interceptors.resolution;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.interceptors.resolution.beans.Foo;

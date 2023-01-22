@@ -21,8 +21,8 @@ package org.apache.webbeans.test.contexts.session.tests;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
 
 import org.junit.Assert;
 

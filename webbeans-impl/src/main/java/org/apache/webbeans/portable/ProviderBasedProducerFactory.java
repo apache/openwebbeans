@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.portable;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Producer;
-import javax.inject.Provider;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Producer;
+import jakarta.inject.Provider;
 
-import javax.enterprise.inject.spi.ProducerFactory;
+import jakarta.enterprise.inject.spi.ProducerFactory;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.util.Asserts;
 

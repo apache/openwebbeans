@@ -20,7 +20,7 @@ package org.apache.webbeans.sample.model;
 
 import java.io.Serializable;
 
-import javax.enterprise.inject.Model;
+import jakarta.enterprise.inject.Model;
 
 /**
  * Simple model object for loginned users.

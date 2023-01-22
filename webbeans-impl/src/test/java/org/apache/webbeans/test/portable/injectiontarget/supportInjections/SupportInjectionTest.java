@@ -21,9 +21,11 @@ package org.apache.webbeans.test.portable.injectiontarget.supportInjections;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.InjectionTarget;
 
+import org.apache.webbeans.test.promethods.beans.PersonProducerBean;
 import org.junit.Assert;
 
 import org.apache.webbeans.test.AbstractUnitTest;
@@ -35,12 +37,10 @@ public class SupportInjectionTest extends AbstractUnitTest
     @Test
     public void testInjectionTarget()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.add(Chair.class);
-        classes.add(Table.class);
-        startContainer(classes);
-        
-        InjectionTarget<SupportInjectionBean> model = getBeanManager().createInjectionTarget(getBeanManager().createAnnotatedType(SupportInjectionBean.class));
+        startContainer(Chair.class, Table.class, PersonProducerBean.class);
+
+        final AnnotatedType<SupportInjectionBean> annotatedType = getBeanManager().createAnnotatedType(SupportInjectionBean.class);
+        InjectionTarget<SupportInjectionBean> model = getBeanManager().getInjectionTargetFactory(annotatedType).createInjectionTarget(null);
         CreationalContext cc = getBeanManager().createCreationalContext(null);
         SupportInjectionBean instance = model.produce(cc);
         

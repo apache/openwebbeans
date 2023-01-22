@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.generics;
 
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Produces;
 
 public class GenericFactory {
     @Produces

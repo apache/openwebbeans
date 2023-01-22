@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.el22;
 
-import javax.el.ELResolver;
-import javax.el.ExpressionFactory;
+import jakarta.el.ELResolver;
+import jakarta.el.ExpressionFactory;
 
 import org.apache.webbeans.spi.adaptor.ELAdaptor;
 

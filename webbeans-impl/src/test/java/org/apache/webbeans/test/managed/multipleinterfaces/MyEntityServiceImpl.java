@@ -19,7 +19,7 @@
 
 package org.apache.webbeans.test.managed.multipleinterfaces;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class MyEntityServiceImpl extends AbstractCrudService<MyEntity> implements MyEntityService {

@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.decorators.generic;
 
-import javax.inject.Scope;
+import jakarta.inject.Scope;
 
 public interface ExtendedGenericInterface extends GenericInterface<Scope> {
 

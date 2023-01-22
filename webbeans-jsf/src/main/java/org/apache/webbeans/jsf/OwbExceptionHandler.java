@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.jsf;
 
-import javax.enterprise.context.NonexistentConversationException;
+import jakarta.enterprise.context.NonexistentConversationException;
 import javax.faces.FacesException;
 import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerWrapper;

@@ -18,12 +18,12 @@
  */
 package org.apache.webbeans.test.specalization;
 
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Produces;
 
 public class DefaultPenProducer {
 
-   @Produces @QualifierSpecialized IPen makeMeAPen(@New Pen pen) {
+   @Produces @QualifierSpecialized IPen makeMeAPen() {
+      Pen pen = new Pen();
       pen.str = "An default ";
       return pen;
    }

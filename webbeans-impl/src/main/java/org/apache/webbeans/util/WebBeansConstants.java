@@ -33,7 +33,7 @@ public final class WebBeansConstants
     }
 
     public static final String [] OWB_INJECTABLE_RESOURCE_ANNOTATIONS = {"javax.ejb.EJB",
-                                                                         "javax.annotation.Resource",
+                                                                         "jakarta.annotation.Resource",
                                                                          "javax.xml.ws.WebServiceRef",
                                                                          "javax.persistence.PersistenceUnit",
                                                                          "javax.persistence.PersistenceContext"};
@@ -53,7 +53,7 @@ public final class WebBeansConstants
     public static final String WEB_BEANS_XML_IF_CLASS_AVAILABLE = "if-class-available";
     public static final String WEB_BEANS_XML_IF_SYSTEM_PROPERTY = "if-system-property";
 
-    /**JNDI name of the {@link javax.enterprise.inject.spi.BeanManager} instance*/
+    /**JNDI name of the {@link jakarta.enterprise.inject.spi.BeanManager} instance*/
     public static final String WEB_BEANS_MANAGER_JNDI_NAME = "java:comp/BeanManager";
         public final static String WEB_BEANS_MESSAGES = "openwebbeans/Messages";
 

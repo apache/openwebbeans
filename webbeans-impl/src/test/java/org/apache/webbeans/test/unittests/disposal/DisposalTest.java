@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.unittests.disposal;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 import java.util.List;
 
 import org.apache.webbeans.test.AbstractUnitTest;

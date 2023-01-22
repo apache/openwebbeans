@@ -18,18 +18,18 @@
  */
 package org.apache.webbeans.component;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanAttributes;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.portable.InjectionTargetImpl;
 
 /**
- * Managed bean implementation of the {@link javax.enterprise.inject.spi.Bean}.
+ * Managed bean implementation of the {@link jakarta.enterprise.inject.spi.Bean}.
  * 
  * @version $Rev$ $Date$
  */

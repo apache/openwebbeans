@@ -31,8 +31,8 @@ import org.apache.webbeans.xml.DefaultBeanArchiveService;
 import org.apache.xbean.finder.archive.ClassesArchive;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;

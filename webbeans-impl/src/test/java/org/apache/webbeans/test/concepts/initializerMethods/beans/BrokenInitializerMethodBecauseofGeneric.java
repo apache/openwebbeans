@@ -20,13 +20,12 @@ package org.apache.webbeans.test.concepts.initializerMethods.beans;
 
 import java.util.ArrayList;
 
-import javax.enterprise.inject.New;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class BrokenInitializerMethodBecauseofGeneric
 {
     @Inject
-    public <T> ArrayList<T> initializer(@New ArrayList<T> list)
+    public <T> ArrayList<T> initializer(ArrayList<T> list)
     {
         return new ArrayList<T>();
     }

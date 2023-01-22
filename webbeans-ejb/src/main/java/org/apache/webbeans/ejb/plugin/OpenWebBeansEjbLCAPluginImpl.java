@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 
 import javax.ejb.PrePassivate;
 import javax.ejb.PostActivate;
-import javax.interceptor.AroundTimeout;
+import jakarta.interceptor.AroundTimeout;
 
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
 import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;

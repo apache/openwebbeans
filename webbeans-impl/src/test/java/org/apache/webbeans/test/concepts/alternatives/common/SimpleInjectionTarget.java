@@ -20,9 +20,9 @@ package org.apache.webbeans.test.concepts.alternatives.common;
 
 import java.util.Iterator;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 public class SimpleInjectionTarget
 {

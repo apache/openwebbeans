@@ -23,11 +23,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.AnnotatedConstructor;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Before;
@@ -69,7 +69,7 @@ public class AnnotatedTypeImplTest
                 @Override
                 public void doit()
                 {
-                    beanManager.createInjectionTarget(annotatedType);
+                    beanManager.getInjectionTargetFactory(annotatedType).createInjectionTarget(null);
                 }
             }.start();
         }

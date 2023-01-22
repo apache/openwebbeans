@@ -20,7 +20,6 @@ package org.apache.webbeans.util;
 
 import org.apache.webbeans.annotation.AnnotationManager;
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.annotation.NewLiteral;
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.AbstractProducerBean;
 import org.apache.webbeans.component.BeanAttributesImpl;
@@ -38,13 +37,11 @@ import org.apache.webbeans.component.InterceptedOrDecoratedBeanMetadataBean;
 import org.apache.webbeans.component.InterceptionFactoryBean;
 import org.apache.webbeans.component.InterceptorMetadataBean;
 import org.apache.webbeans.component.ManagedBean;
-import org.apache.webbeans.component.NewManagedBean;
 import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.component.PrincipalBean;
 import org.apache.webbeans.component.ProducerFieldBean;
 import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.component.ResourceBean;
-import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.component.creation.BeanAttributesBuilder;
 import org.apache.webbeans.component.creation.ManagedBeanBuilder;
 import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
@@ -86,55 +83,55 @@ import org.apache.webbeans.spi.InjectionPointService;
 import org.apache.webbeans.spi.plugins.OpenWebBeansEjbPlugin;
 import org.apache.webbeans.spi.plugins.OpenWebBeansPlugin;
 
-import javax.annotation.Priority;
-import javax.decorator.Decorator;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Decorated;
-import javax.enterprise.inject.IllegalProductException;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Intercepted;
-import javax.enterprise.inject.Specializes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.BeforeBeanDiscovery;
-import javax.enterprise.inject.spi.BeforeShutdown;
-import javax.enterprise.inject.spi.DefinitionException;
-import javax.enterprise.inject.spi.DeploymentException;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InterceptionFactory;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.PassivationCapable;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.inject.spi.ProcessBeanAttributes;
-import javax.enterprise.inject.spi.ProcessInjectionPoint;
-import javax.enterprise.inject.spi.ProcessInjectionTarget;
-import javax.enterprise.inject.spi.ProcessManagedBean;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
-import javax.enterprise.inject.spi.ProcessProducer;
-import javax.enterprise.inject.spi.ProcessProducerField;
-import javax.enterprise.inject.spi.ProcessProducerMethod;
-import javax.enterprise.inject.spi.ProcessSessionBean;
-import javax.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
-import javax.enterprise.inject.spi.ProcessSyntheticBean;
-import javax.enterprise.inject.spi.ProcessSyntheticObserverMethod;
-import javax.enterprise.inject.spi.Producer;
-import javax.enterprise.util.TypeLiteral;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.Priority;
+import jakarta.decorator.Decorator;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Decorated;
+import jakarta.enterprise.inject.IllegalProductException;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.Intercepted;
+import jakarta.enterprise.inject.Specializes;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.AfterDeploymentValidation;
+import jakarta.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.AnnotatedConstructor;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.AnnotatedMember;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedParameter;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
+import jakarta.enterprise.inject.spi.BeforeShutdown;
+import jakarta.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InterceptionFactory;
+import jakarta.enterprise.inject.spi.Interceptor;
+import jakarta.enterprise.inject.spi.PassivationCapable;
+import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
+import jakarta.enterprise.inject.spi.ProcessBean;
+import jakarta.enterprise.inject.spi.ProcessBeanAttributes;
+import jakarta.enterprise.inject.spi.ProcessInjectionPoint;
+import jakarta.enterprise.inject.spi.ProcessInjectionTarget;
+import jakarta.enterprise.inject.spi.ProcessManagedBean;
+import jakarta.enterprise.inject.spi.ProcessObserverMethod;
+import jakarta.enterprise.inject.spi.ProcessProducer;
+import jakarta.enterprise.inject.spi.ProcessProducerField;
+import jakarta.enterprise.inject.spi.ProcessProducerMethod;
+import jakarta.enterprise.inject.spi.ProcessSessionBean;
+import jakarta.enterprise.inject.spi.ProcessSyntheticAnnotatedType;
+import jakarta.enterprise.inject.spi.ProcessSyntheticBean;
+import jakarta.enterprise.inject.spi.ProcessSyntheticObserverMethod;
+import jakarta.enterprise.inject.spi.Producer;
+import jakarta.enterprise.util.TypeLiteral;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -148,8 +145,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -157,7 +152,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import javax.enterprise.inject.spi.AfterTypeDiscovery;
+import jakarta.enterprise.inject.spi.AfterTypeDiscovery;
 
 
 /**
@@ -346,13 +341,13 @@ public final class WebBeansUtil
 
     public void checkManagedBeanCondition(Class<?> clazz) throws WebBeansConfigurationException
     {
-        if (AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && AnnotationUtil.hasClassAnnotation(clazz, javax.interceptor.Interceptor.class))
+        if (AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && AnnotationUtil.hasClassAnnotation(clazz, jakarta.interceptor.Interceptor.class))
         {
             throw new WebBeansConfigurationException("ManagedBean implementation class : " + clazz.getName()
                                                      + " may not annotated with both @Interceptor and @Decorator annotation");
         }
 
-        if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, javax.interceptor.Interceptor.class))
+        if (!AnnotationUtil.hasClassAnnotation(clazz, Decorator.class) && !AnnotationUtil.hasClassAnnotation(clazz, jakarta.interceptor.Interceptor.class))
         {
             webBeansContext.getInterceptorUtil().checkSimpleWebBeansInterceptorConditions(clazz);
         }
@@ -434,47 +429,6 @@ public final class WebBeansUtil
             }
         }
         return null;
-    }
-
-    public <T> Bean<T> createNewComponent(Class<T> type)
-    {
-        Asserts.nullCheckForClass(type);
-
-        OpenWebBeansEjbPlugin ejbPlugin = webBeansContext.getPluginLoader().getEjbPlugin();
-        if (ejbPlugin != null && ejbPlugin.isNewSessionBean(type))
-        {
-            return ejbPlugin.defineNewSessionBean(type);
-        }
-
-        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
-        BeanAttributesImpl<T> defaultBeanAttributes = BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(annotatedType).build();
-        BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<>(defaultBeanAttributes.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
-        // TODO replace this by InjectionPointBuilder
-        ManagedBeanBuilder<T, ManagedBean<T>> beanBuilder = new ManagedBeanBuilder<>(webBeansContext, annotatedType, newBeanAttributes, false);
-        NewManagedBean<T> newBean
-            = new NewManagedBean<>(webBeansContext, WebBeansType.MANAGED, annotatedType, newBeanAttributes, type, beanBuilder.getBean().getInjectionPoints());
-        return newBean;
-    }
-    
-    /**
-     * New WebBeans component class.
-     *
-     * @return the new component
-     */
-    public <T> NewManagedBean<T> createNewComponent(OwbBean<T> bean, Class<T> type)
-    {
-        Asserts.assertNotNull(bean, "bean");
-        if (!EnumSet.of(WebBeansType.MANAGED, WebBeansType.ENTERPRISE, WebBeansType.PRODUCERMETHOD, WebBeansType.PRODUCERFIELD).contains(bean.getWebBeansType()))
-        {
-            throw new WebBeansConfigurationException("@New annotation on type : " + bean.getBeanClass()
-                    + " must defined as a simple or an enterprise web bean");
-        }
-
-        AnnotatedType<T> annotatedType = webBeansContext.getAnnotatedElementFactory().newAnnotatedType(type);
-        BeanAttributesImpl<T> newBeanAttributes = new BeanAttributesImpl<>(bean.getTypes(), Collections.<Annotation>singleton(new NewLiteral(type)));
-        NewManagedBean<T> newBean = new NewManagedBean<>(bean.getWebBeansContext(), bean.getWebBeansType(), annotatedType, newBeanAttributes, type, bean.getInjectionPoints());
-        //TODO XXX set producer
-        return newBean;
     }
 
     /**
@@ -634,7 +588,7 @@ public final class WebBeansUtil
             if(!(rawType.isAssignableFrom(Instance.class)))
             {
                 throw new WebBeansConfigurationException("<Instance> field injection " + injectionPoint.toString()
-                        + " must have type javax.inject.Instance");
+                        + " must have type jakarta.inject.Instance");
             }
             else
             {
@@ -1188,7 +1142,7 @@ public final class WebBeansUtil
     }
 
     /**
-     * This method will be used in {@link AfterBeanDiscovery#addBean(javax.enterprise.inject.spi.Bean)}}
+     * This method will be used in {@link AfterBeanDiscovery#addBean(jakarta.enterprise.inject.spi.Bean)}}
      */
     public <T> ManagedBean<T> defineManagedBeanWithoutFireEvents(AnnotatedType<T> type)
     {
@@ -1291,11 +1245,11 @@ public final class WebBeansUtil
 
     /**
      * @return <code>true</code> if this AnnotatedType represents a CDI Interceptor
-     *         defined via a {@link javax.interceptor.Interceptor} annotation
+     *         defined via a {@link jakarta.interceptor.Interceptor} annotation
      */
     public static boolean isCdiInterceptor(AnnotatedType<?> annotatedType)
     {
-        return annotatedType.isAnnotationPresent(javax.interceptor.Interceptor.class);
+        return annotatedType.isAnnotationPresent(jakarta.interceptor.Interceptor.class);
     }
 
     /**
@@ -1308,12 +1262,12 @@ public final class WebBeansUtil
     {
         int modifier = type.getJavaClass().getModifiers();
 
-        if (type.isAnnotationPresent(Decorator.class) && type.isAnnotationPresent(javax.interceptor.Interceptor.class))
+        if (type.isAnnotationPresent(Decorator.class) && type.isAnnotationPresent(jakarta.interceptor.Interceptor.class))
         {
             throw new WebBeansConfigurationException("Annotated type "+ type +  " may not annotated with both @Interceptor and @Decorator annotation");
         }
 
-        if (!type.isAnnotationPresent(Decorator.class) && !type.isAnnotationPresent(javax.interceptor.Interceptor.class))
+        if (!type.isAnnotationPresent(Decorator.class) && !type.isAnnotationPresent(jakarta.interceptor.Interceptor.class))
         {
             checkManagedWebBeansInterceptorConditions(type);
         }
@@ -1442,7 +1396,7 @@ public final class WebBeansUtil
         if (bean != null)
         {
             isInterceptor = bean instanceof Interceptor;
-            isDecorator = !isInterceptor && bean instanceof javax.enterprise.inject.spi.Decorator;
+            isDecorator = !isInterceptor && bean instanceof jakarta.enterprise.inject.spi.Decorator;
         }
 
         boolean delegateFound = false;
@@ -1459,7 +1413,7 @@ public final class WebBeansUtil
             else
             {
                 Class<?> rawType = ClassUtil.getRawTypeForInjectionPoint(injectionPoint);
-                if (rawType.equals(javax.enterprise.inject.spi.Decorator.class) ||
+                if (rawType.equals(jakarta.enterprise.inject.spi.Decorator.class) ||
                     (isDecorator && rawType.equals(Bean.class)) ||
                     rawType.equals(Interceptor.class))
                 {
@@ -1494,7 +1448,7 @@ public final class WebBeansUtil
                     List<Method> abstractMethods = ClassUtil.getAbstractMethods(bean.getBeanClass());
                     if (!abstractMethods.isEmpty())
                     {
-                        Set<Type> types = ((javax.enterprise.inject.spi.Decorator) bean).getDecoratedTypes();
+                        Set<Type> types = ((jakarta.enterprise.inject.spi.Decorator) bean).getDecoratedTypes();
                         for (Method abstractMethod : abstractMethods)
                         {
                             boolean methodDeclared = false;
@@ -1542,7 +1496,7 @@ public final class WebBeansUtil
 
             if (injectionPoint.getQualifiers().contains(DefaultLiteral.INSTANCE)
                     && ParameterizedType.class.isInstance(injectionPoint.getType())
-                    && javax.enterprise.inject.spi.Decorator.class == ParameterizedType.class.cast(injectionPoint.getType()).getRawType()
+                    && jakarta.enterprise.inject.spi.Decorator.class == ParameterizedType.class.cast(injectionPoint.getType()).getRawType()
                     && !isDecorator)
             {
                 throw new WebBeansConfigurationException("@Inject Decorator<X> only supported in decorators");
@@ -1732,7 +1686,7 @@ public final class WebBeansUtil
         {
             Type[] types = ClassUtil.getActualTypeArguments(injectionPoint.getType());
             if (types.length != 1 ||
-                    !((javax.enterprise.inject.spi.Decorator) bean).getDecoratedTypes().contains(types[0]))
+                    !((jakarta.enterprise.inject.spi.Decorator) bean).getDecoratedTypes().contains(types[0]))
             {
                 throw new WebBeansConfigurationException("ParametrizedType must be a DecoratedTyp at InjectionPoint " + injectionPoint);
             }

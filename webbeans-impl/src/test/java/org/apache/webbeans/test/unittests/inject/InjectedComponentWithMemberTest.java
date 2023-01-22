@@ -28,7 +28,7 @@ import org.apache.webbeans.test.component.BindingComponent;
 import org.apache.webbeans.test.component.NonBindingComponent;
 import org.junit.Test;
 
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 public class InjectedComponentWithMemberTest extends AbstractUnitTest
 {

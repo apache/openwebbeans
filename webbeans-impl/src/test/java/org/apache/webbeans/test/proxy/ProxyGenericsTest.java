@@ -22,8 +22,8 @@ import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * test whether generics in method signatures are properly proxied.

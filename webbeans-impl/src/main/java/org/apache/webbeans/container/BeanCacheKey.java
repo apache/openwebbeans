@@ -21,8 +21,8 @@ package org.apache.webbeans.container;
 import org.apache.webbeans.annotation.EmptyAnnotationLiteral;
 import org.apache.webbeans.util.AnnotationUtil;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.util.Nonbinding;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;

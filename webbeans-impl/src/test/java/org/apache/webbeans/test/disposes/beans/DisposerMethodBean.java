@@ -18,13 +18,11 @@
  */
 package org.apache.webbeans.test.disposes.beans;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.New;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
-import org.apache.webbeans.test.concepts.alternatives.common.Pencil;
 
 @Named("org.apache.webbeans.test.disposes.beans.DisposerMethodBean")
 public class DisposerMethodBean
@@ -32,15 +30,16 @@ public class DisposerMethodBean
     public static boolean OK = false;
     
     @Produces @Dependent @Named
-    public DisposeModel produce(@New DisposeModel model)
+    public DisposeModel produce()
     {
+        DisposeModel model = new DisposeModel();
         model.setValue(true);
         
         return model;
     }
     
     
-    public void dispose(@Disposes DisposeModel model, @New Pencil pencil)
+    public void dispose(@Disposes DisposeModel model)
     {
         OK = model.isValue();
     }

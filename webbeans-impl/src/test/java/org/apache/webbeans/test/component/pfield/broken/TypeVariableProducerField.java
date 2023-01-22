@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.pfield.broken;
 
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Produces;
 
 public class TypeVariableProducerField<T>
 {

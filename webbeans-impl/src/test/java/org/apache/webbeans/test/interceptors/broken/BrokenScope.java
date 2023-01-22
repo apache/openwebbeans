@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.interceptors.broken;
 
-import javax.enterprise.context.RequestScoped;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 

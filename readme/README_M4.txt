@@ -52,7 +52,7 @@ Release Notes - OpenWebBeans - Version M4
 -------------------------------------------
 Sub-task
 
-    * [OWB-140] - Remove javax.enterprise.event.Observer
+    * [OWB-140] - Remove jakarta.enterprise.event.Observer
 
 Bug
 
@@ -71,7 +71,7 @@ Bug
     * [OWB-149] - BeforeShutDown (in current code) should be BeforeShutdown to match spec.
     * [OWB-150] - remove ActivityManager from OWB
     * [OWB-152] - @New needs a value parameter for the Class it should create
-    * [OWB-153] - javax.enterprise.inject.spi.Decorator#getDelegateBindings() must be renamed to getDelegateQualifiers();
+    * [OWB-153] - jakarta.enterprise.inject.spi.Decorator#getDelegateBindings() must be renamed to getDelegateQualifiers();
     * [OWB-154] - remove Bean#getDeploymentType()
     * [OWB-155] - Conversation#isLongRunning() logic must be converted to isTransient();
     * [OWB-156] - ProcessSessionBean SPI interface needs to be updated to the latest spec
@@ -105,7 +105,7 @@ Bug
     * [OWB-201] - @New must use its value field while creating New bean
     * [OWB-206] - proxies only get injected for the 1st instance of a bean
     * [OWB-207] - <interceptors> may now be defined in multiple beans.xml
-    * [OWB-208] - the atinject-tck must use our genonimo-cdi interface instead of javax.inject:javax.inject
+    * [OWB-208] - the atinject-tck must use our genonimo-cdi interface instead of jakarta.inject:jakarta.inject
     * [OWB-210] - creating a proxy fails for beans which have the same interface defined multiple times in their declaration chain
     * [OWB-211] - JSFUtil.getViewId() crashes if viewRoot is not yet set
     * [OWB-215] - after leaving the incubator a new location for the site needs to be configured

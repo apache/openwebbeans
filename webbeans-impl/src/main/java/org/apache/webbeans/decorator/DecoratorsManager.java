@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.spi.Decorator;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.spi.Decorator;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
 import org.apache.webbeans.component.OwbBean;
@@ -127,7 +127,7 @@ public class DecoratorsManager
         for(Class<?> decoratorClazz : enabledDecorators)
         {
             //Validate decorator classes
-            if(!decoratorClazz.isAnnotationPresent(javax.decorator.Decorator.class) && !containsCustomDecoratorClass(decoratorClazz))
+            if(!decoratorClazz.isAnnotationPresent(jakarta.decorator.Decorator.class) && !containsCustomDecoratorClass(decoratorClazz))
             {
                 throw new WebBeansDeploymentException("Given class : " + decoratorClazz + " is not a decorator class");
             }   

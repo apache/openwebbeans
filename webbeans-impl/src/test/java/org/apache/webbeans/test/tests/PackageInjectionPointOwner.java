@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.tests;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Package private injection point owner

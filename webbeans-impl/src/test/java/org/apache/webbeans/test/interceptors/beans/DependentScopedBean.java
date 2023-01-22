@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.interceptors.beans;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.test.interceptors.annotation.DependentInterceptorBindingType;
 

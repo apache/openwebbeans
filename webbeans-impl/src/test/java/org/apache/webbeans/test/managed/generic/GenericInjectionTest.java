@@ -21,8 +21,8 @@ package org.apache.webbeans.test.managed.generic;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.inject.Inject;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;

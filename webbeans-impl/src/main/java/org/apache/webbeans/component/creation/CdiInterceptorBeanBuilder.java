@@ -19,9 +19,9 @@
 package org.apache.webbeans.component.creation;
 
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.InterceptionType;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.InterceptionType;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;

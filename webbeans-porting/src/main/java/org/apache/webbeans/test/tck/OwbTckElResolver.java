@@ -20,10 +20,10 @@ package org.apache.webbeans.test.tck;
 
 import java.util.Set;
 
-import javax.el.ELContext;
-import javax.el.ELException;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.Bean;
+import jakarta.el.ELContext;
+import jakarta.el.ELException;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;

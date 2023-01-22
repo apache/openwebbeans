@@ -21,8 +21,8 @@ package org.apache.webbeans.test.portable.events;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.event.Observes;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.portable.events.extensions.ProcessObserverMethodExtension;

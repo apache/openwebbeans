@@ -54,12 +54,12 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.DefinitionException;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Vetoed;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
@@ -93,20 +93,20 @@ import org.apache.webbeans.util.WebBeansConstants;
 import org.apache.webbeans.util.WebBeansUtil;
 import org.apache.webbeans.xml.DefaultBeanArchiveInformation;
 
-import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.Model;
-import javax.enterprise.inject.UnproxyableResolutionException;
-import javax.enterprise.inject.UnsatisfiedResolutionException;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.Decorator;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.Producer;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.Model;
+import jakarta.enterprise.inject.UnproxyableResolutionException;
+import jakarta.enterprise.inject.UnsatisfiedResolutionException;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.Decorator;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.inject.spi.Interceptor;
+import jakarta.enterprise.inject.spi.ObserverMethod;
+import jakarta.enterprise.inject.spi.Producer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -145,7 +145,7 @@ public class BeansDeployer
 {
     //Logger instance
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeansDeployer.class);
-    public static final String JAVAX_ENTERPRISE_PACKAGE = "javax.enterprise.";
+    public static final String JAVAX_ENTERPRISE_PACKAGE = "jakarta.enterprise.";
 
 
     /**Deployment is started or not*/
@@ -238,7 +238,7 @@ public class BeansDeployer
                 webBeansContext.getInterceptorsManager().addCdiInterceptor(webBeansContext.getWebBeansUtil().getRequestContextInterceptorBean());
                 webBeansContext.getInterceptorsManager().addPriorityClazzInterceptor(
                         ActivateRequestContextInterceptorBean.InterceptorClass.class,
-                        javax.interceptor.Interceptor.Priority.PLATFORM_BEFORE + 100);
+                        jakarta.interceptor.Interceptor.Priority.PLATFORM_BEFORE + 100);
 
                 //Fire Event
                 fireBeforeBeanDiscoveryEvent();
@@ -575,7 +575,7 @@ public class BeansDeployer
 
 
     /**
-     * @throws DefinitionException if {@link javax.enterprise.inject.spi.Decorator#getDecoratedTypes()} isEmpty
+     * @throws DefinitionException if {@link jakarta.enterprise.inject.spi.Decorator#getDecoratedTypes()} isEmpty
      */
     private void validateDecoratorDecoratedTypes()
     {
@@ -671,7 +671,7 @@ public class BeansDeployer
                     alternativesManager.addPriorityClazzAlternative(annotatedType.getJavaClass(), priority);
                 }
             }
-            if (annotatedType.getAnnotation(javax.interceptor.Interceptor.class) != null)
+            if (annotatedType.getAnnotation(jakarta.interceptor.Interceptor.class) != null)
             {
                 Priority priority = annotatedType.getAnnotation(Priority.class);
                 if (priority != null)
@@ -680,7 +680,7 @@ public class BeansDeployer
                     interceptorsManager.addPriorityClazzInterceptor(javaClass, priority.value());
                 }
             }
-            if (annotatedType.getAnnotation(javax.decorator.Decorator.class) != null)
+            if (annotatedType.getAnnotation(jakarta.decorator.Decorator.class) != null)
             {
                 Priority priority = annotatedType.getAnnotation(Priority.class);
                 if (priority != null)
@@ -1116,7 +1116,7 @@ public class BeansDeployer
         validate(decorators);
         
         //Adding interceptors to validate
-        List<javax.enterprise.inject.spi.Interceptor<?>> interceptors = interceptorsManager.getCdiInterceptors();
+        List<jakarta.enterprise.inject.spi.Interceptor<?>> interceptors = interceptorsManager.getCdiInterceptors();
         
         logger.fine("Validation of the interceptor's injection points has started.");
         
@@ -1822,7 +1822,7 @@ public class BeansDeployer
                     classAnnotations = new Annotation[0];
                 }
 
-                if (AnnotationUtil.hasAnnotation(classAnnotations, javax.interceptor.Interceptor.class) &&
+                if (AnnotationUtil.hasAnnotation(classAnnotations, jakarta.interceptor.Interceptor.class) &&
                         !webBeansContext.getAnnotationManager().hasInterceptorBindingMetaAnnotation(classAnnotations))
                 {
                     throw new WebBeansDeploymentException(createConfigurationFailedMessage(bdaLocation) + "Interceptor class : "

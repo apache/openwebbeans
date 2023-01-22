@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.events.observer;
 
-import javax.enterprise.event.Observes;
+import jakarta.enterprise.event.Observes;
 
 public abstract class Superclass
 {

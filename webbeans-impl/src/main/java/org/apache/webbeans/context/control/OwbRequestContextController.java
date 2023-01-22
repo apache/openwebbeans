@@ -23,10 +23,10 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.intercept.RequestScopedBeanInterceptorHandler;
 import org.apache.webbeans.spi.ContextsService;
 
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.control.RequestContextController;
-import javax.enterprise.context.spi.Context;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.control.RequestContextController;
+import jakarta.enterprise.context.spi.Context;
 
 public class OwbRequestContextController implements RequestContextController
 {

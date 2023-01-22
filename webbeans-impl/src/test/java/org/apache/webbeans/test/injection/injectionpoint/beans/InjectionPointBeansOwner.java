@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.injection.injectionpoint.beans;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 public class InjectionPointBeansOwner {
 

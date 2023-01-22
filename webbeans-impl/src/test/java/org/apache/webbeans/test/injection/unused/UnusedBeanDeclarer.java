@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.unused;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * This class declares the UnusedBean as injectionpoint

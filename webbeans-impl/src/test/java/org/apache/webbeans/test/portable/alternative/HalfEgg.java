@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.portable.alternative;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 /**
  * This class is NOT annotated as Alternative, but it will get set as such

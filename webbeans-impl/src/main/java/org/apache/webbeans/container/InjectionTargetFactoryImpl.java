@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.container;
 
-import javax.enterprise.inject.spi.InjectionTargetFactory;
+import jakarta.enterprise.inject.spi.InjectionTargetFactory;
 
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.config.WebBeansContext;
@@ -27,14 +27,14 @@ import org.apache.webbeans.portable.InjectionTargetImpl;
 import org.apache.webbeans.portable.events.generics.GProcessInjectionTarget;
 import org.apache.webbeans.util.Asserts;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import java.util.List;
 import java.util.Set;
 

@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.tests;
 
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.injection.injectionpoint.beans.AbstractInjectionPointOwner;
 

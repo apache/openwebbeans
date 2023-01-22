@@ -20,7 +20,7 @@ package org.apache.openwebbeans.se;
 
 import org.apache.webbeans.service.DefaultLoaderService;
 
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.Extension;
 import java.util.Collection;
 import java.util.List;
 

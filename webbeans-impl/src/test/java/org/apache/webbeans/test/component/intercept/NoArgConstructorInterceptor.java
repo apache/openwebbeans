@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.intercept;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.InvocationContext;
 
 public class NoArgConstructorInterceptor
 {

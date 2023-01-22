@@ -22,9 +22,9 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.Date;
 
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
 @SessionScoped // just to test @Initialized(SessionScoped.class)
 public class CurrentDateProvider implements Serializable

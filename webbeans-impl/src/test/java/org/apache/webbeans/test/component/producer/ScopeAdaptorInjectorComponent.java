@@ -20,8 +20,8 @@ package org.apache.webbeans.test.component.producer;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 
 import org.apache.webbeans.test.annotation.binding.Binding2;
 import org.apache.webbeans.test.component.IPayment;

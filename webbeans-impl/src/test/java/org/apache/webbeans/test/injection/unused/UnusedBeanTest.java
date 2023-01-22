@@ -22,7 +22,7 @@ import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 import org.junit.Assert;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 import java.util.ArrayList;
 import java.util.Collection;
 

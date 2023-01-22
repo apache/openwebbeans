@@ -28,9 +28,9 @@ import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.spi.SingletonService;
 import org.apache.webbeans.xml.DefaultBeanArchiveInformation;
 
-import javax.enterprise.inject.se.SeContainer;
-import javax.enterprise.inject.se.SeContainerInitializer;
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.se.SeContainer;
+import jakarta.enterprise.inject.se.SeContainerInitializer;
+import jakarta.enterprise.inject.spi.Extension;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -60,7 +60,7 @@ public class OWBInitializer extends SeContainerInitializer
     public OWBInitializer()
     {
         scannerService.loader(loader);
-        if (Boolean.getBoolean("javax.enterprise.inject.scan.implicit"))
+        if (Boolean.getBoolean("jakarta.enterprise.inject.scan.implicit"))
         {
             addProperty("org.apache.webbeans.scanBeansXmlOnly", true);
         }
@@ -278,7 +278,7 @@ public class OWBInitializer extends SeContainerInitializer
                 addProperty(key.substring("openwebbeans.property.".length()), value);
                 break;
             }
-            case "javax.enterprise.inject.scan.implicit":
+            case "jakarta.enterprise.inject.scan.implicit":
                 addProperty("org.apache.webbeans.scanBeansXmlOnly", value);
                 break;
             default:

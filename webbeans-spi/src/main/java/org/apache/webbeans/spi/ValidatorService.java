@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.spi;
 
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 /**
  * Validator SPI.

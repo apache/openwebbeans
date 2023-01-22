@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.component.exception;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 
 public class PostContructMethodHasStaticComponent

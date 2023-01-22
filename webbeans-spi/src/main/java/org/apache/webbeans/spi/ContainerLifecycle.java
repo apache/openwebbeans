@@ -20,7 +20,7 @@ package org.apache.webbeans.spi;
 
 import java.util.Properties;
 
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 /**
  * <h3>JSR-299 Container lifecycle.</h3>

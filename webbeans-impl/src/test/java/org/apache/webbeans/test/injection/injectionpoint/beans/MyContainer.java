@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.injection.injectionpoint.beans;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class MyContainer {
 

@@ -30,19 +30,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.spi.AlterableContext;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
 
 import org.apache.webbeans.container.SerializableBean;
 import org.apache.webbeans.container.SerializableBeanVault;
 import org.apache.webbeans.context.creational.BeanInstanceBag;
 
 /**
- * Abstract implementation of the {@link javax.enterprise.context.spi.Context} interfaces.
+ * Abstract implementation of the {@link jakarta.enterprise.context.spi.Context} interfaces.
  * 
- * @see javax.enterprise.context.spi.Context
+ * @see jakarta.enterprise.context.spi.Context
  * @see RequestContext
  * @see DependentContext
  * @see SessionContext

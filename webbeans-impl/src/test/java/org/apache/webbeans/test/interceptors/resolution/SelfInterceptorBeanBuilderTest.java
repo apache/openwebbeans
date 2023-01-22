@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.resolution;
 
-import javax.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Collection;
 

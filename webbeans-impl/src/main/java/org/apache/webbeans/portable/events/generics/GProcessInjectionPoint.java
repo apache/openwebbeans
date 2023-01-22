@@ -20,8 +20,8 @@ package org.apache.webbeans.portable.events.generics;
 
 import org.apache.webbeans.portable.events.ProcessInjectionPointImpl;
 
-import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.AnnotatedMember;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 import java.lang.reflect.Type;
 
 

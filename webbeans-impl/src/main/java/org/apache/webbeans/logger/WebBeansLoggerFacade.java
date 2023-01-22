@@ -25,7 +25,7 @@ package org.apache.webbeans.logger;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.util.WebBeansConstants;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;

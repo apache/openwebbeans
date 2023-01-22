@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.injection.injectionpoint.beans;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 
 public class InjectionPointObserver extends AbstractInjectionPointOwner {
 

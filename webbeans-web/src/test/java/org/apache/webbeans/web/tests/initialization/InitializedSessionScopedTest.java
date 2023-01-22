@@ -20,8 +20,8 @@ package org.apache.webbeans.web.tests.initialization;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
 import javax.servlet.ServletRequestEvent;
 import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;

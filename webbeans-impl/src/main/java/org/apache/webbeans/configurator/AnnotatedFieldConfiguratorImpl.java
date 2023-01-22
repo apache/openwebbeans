@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.configurator;
 
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator;
+import jakarta.enterprise.inject.spi.AnnotatedField;
+import jakarta.enterprise.inject.spi.configurator.AnnotatedFieldConfigurator;
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 

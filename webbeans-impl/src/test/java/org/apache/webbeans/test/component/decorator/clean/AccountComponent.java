@@ -20,8 +20,8 @@ package org.apache.webbeans.test.component.decorator.clean;
 
 import java.math.BigDecimal;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Default;
 
 
 @RequestScoped

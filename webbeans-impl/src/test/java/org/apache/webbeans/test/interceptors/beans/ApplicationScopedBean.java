@@ -17,8 +17,8 @@
  
 package org.apache.webbeans.test.interceptors.beans;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import org.apache.webbeans.test.component.intercept.webbeans.bindings.Transactional;
 

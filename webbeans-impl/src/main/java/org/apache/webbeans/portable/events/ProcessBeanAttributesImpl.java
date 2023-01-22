@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.portable.events;
 
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.ProcessBeanAttributes;
-import javax.enterprise.inject.spi.configurator.BeanAttributesConfigurator;
+import jakarta.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.ProcessBeanAttributes;
+import jakarta.enterprise.inject.spi.configurator.BeanAttributesConfigurator;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.configurator.BeanAttributesConfiguratorImpl;

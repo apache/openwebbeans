@@ -42,9 +42,9 @@ import org.apache.xbean.finder.archive.Archive;
 import org.apache.xbean.finder.filter.Filter;
 import org.apache.xbean.finder.util.Files;
 
-import javax.decorator.Decorator;
-import javax.enterprise.context.Dependent;
-import javax.interceptor.Interceptor;
+import jakarta.decorator.Decorator;
+import jakarta.enterprise.context.Dependent;
+import jakarta.interceptor.Interceptor;
 
 import java.io.File;
 import java.io.IOException;

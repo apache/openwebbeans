@@ -18,10 +18,10 @@
  */
 package org.apache.webbeans.el22;
 
-import javax.el.ELContext;
-import javax.el.ELException;
-import javax.el.ValueExpression;
-import javax.el.ValueReference;
+import jakarta.el.ELContext;
+import jakarta.el.ELException;
+import jakarta.el.ValueExpression;
+import jakarta.el.ValueReference;
 
 import org.apache.webbeans.el.ELContextStore;
 
@@ -39,7 +39,7 @@ public class WrappedValueExpression extends ValueExpression
     
 
     /* (non-Javadoc)
-     * @see javax.el.ValueExpression#getValueReference(javax.el.ELContext)
+     * @see jakarta.el.ValueExpression#getValueReference(jakarta.el.ELContext)
      */
     @Override
     public ValueReference getValueReference(ELContext context)

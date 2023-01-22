@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.container;
 
-import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.inject.spi.CDIProvider;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.spi.CDIProvider;
 
 public class OwbCDIProvider implements CDIProvider
 {

@@ -19,7 +19,7 @@
 package org.apache.webbeans.test.proxy.beans;
 
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * To test the proxy for application scoped beans.

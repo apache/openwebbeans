@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.decorator.broken;
 
-import javax.decorator.Delegate;
-import javax.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.decorator.Decorator;
 
 import org.apache.webbeans.test.component.BindingComponent;
 

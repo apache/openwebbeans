@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.component.binding;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Default;
 
 import org.apache.webbeans.test.annotation.binding.NonBindingAnnotationType;
 

@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.interceptors.resolution.interceptors;
 
-import javax.enterprise.context.RequestScoped;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.InvocationContext;
 
 /**
  * Sample bean which has an AroundInvoke interceptor on itself.

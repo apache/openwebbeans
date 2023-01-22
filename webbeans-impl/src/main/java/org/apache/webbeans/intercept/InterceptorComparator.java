@@ -20,7 +20,7 @@ package org.apache.webbeans.intercept;
 
 import java.util.Comparator;
 
-import javax.enterprise.inject.spi.Interceptor;
+import jakarta.enterprise.inject.spi.Interceptor;
 
 import org.apache.webbeans.config.WebBeansContext;
 

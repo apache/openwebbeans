@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.test.injection.injectionpoint.beans;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 
 public class FieldInjectionPointOwner extends AbstractInjectionPointOwner implements Serializable

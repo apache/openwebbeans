@@ -18,11 +18,11 @@
  */
 package org.apache.webbeans.component.creation;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.AnnotatedMember;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.spi.AnnotatedMember;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanAttributes;
+import jakarta.enterprise.inject.spi.DefinitionException;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;

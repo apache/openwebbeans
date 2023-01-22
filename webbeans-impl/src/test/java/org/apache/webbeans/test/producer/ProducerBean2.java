@@ -18,8 +18,8 @@
  */
 package org.apache.webbeans.test.producer;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 
 public class ProducerBean2 {
     @Produces

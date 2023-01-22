@@ -22,8 +22,8 @@ import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 /**
  * A few simple generics handling tests.

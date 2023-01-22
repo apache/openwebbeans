@@ -28,11 +28,11 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.PassivationCapable;
-import javax.enterprise.inject.spi.Producer;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.PassivationCapable;
+import jakarta.enterprise.inject.spi.Producer;
 
 import static org.junit.Assert.assertTrue;
 
@@ -101,11 +101,6 @@ public class SerializableBeanEqualTest {
         @Override
         public Class<?> getBeanClass() {
             return null;
-        }
-
-        @Override
-        public boolean isNullable() {
-            return false;
         }
 
         @Override
