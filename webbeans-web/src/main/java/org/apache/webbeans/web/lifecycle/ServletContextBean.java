@@ -25,7 +25,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.portable.ProviderBasedProducer;
 
 import jakarta.inject.Provider;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 class ServletContextBean extends BuiltInOwbBean<ServletContext>
 {

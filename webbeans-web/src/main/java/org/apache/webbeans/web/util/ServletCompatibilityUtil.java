@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.web.util;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * This utility helps to be compatible with Servlet API 2.4

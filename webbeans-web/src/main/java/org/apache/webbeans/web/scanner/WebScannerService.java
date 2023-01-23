@@ -24,7 +24,7 @@ import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;

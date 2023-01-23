@@ -79,7 +79,7 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            javax.servlet.*;version="[${osgi.servlet.range},5)",
+                            jakarta.servlet.*;version="[${osgi.servlet.range},5)",
                             *
                         </Import-Package>
                     </instructions>

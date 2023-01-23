@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.web.context;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.webbeans.context.RequestContext;
 

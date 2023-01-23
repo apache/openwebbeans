@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.web.lifecycle.test;
 
-import javax.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextEvent;
 
 
 public class MockServletContextEvent extends ServletContextEvent

@@ -25,7 +25,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 @RequestScoped
 public class MySessionHandler

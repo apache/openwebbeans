@@ -33,9 +33,9 @@ import org.junit.Test;
 
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;

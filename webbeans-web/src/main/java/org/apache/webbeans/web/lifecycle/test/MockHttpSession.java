@@ -18,9 +18,8 @@
  */
 package org.apache.webbeans.web.lifecycle.test;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
 import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -85,27 +84,6 @@ public class MockHttpSession implements HttpSession
     }
 
     @Override
-    public HttpSessionContext getSessionContext()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Object getValue(String arg0)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String[] getValueNames()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public void invalidate()
     {
         // TODO Auto-generated method stub
@@ -120,21 +98,7 @@ public class MockHttpSession implements HttpSession
     }
 
     @Override
-    public void putValue(String arg0, Object arg1)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public void removeAttribute(String arg0)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void removeValue(String arg0)
     {
         // TODO Auto-generated method stub
 

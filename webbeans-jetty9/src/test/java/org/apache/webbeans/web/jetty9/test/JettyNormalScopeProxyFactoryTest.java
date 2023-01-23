@@ -27,8 +27,8 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.webbeans.config.WebBeansContext;

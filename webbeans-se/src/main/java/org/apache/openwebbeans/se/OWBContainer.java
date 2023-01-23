@@ -93,6 +93,20 @@ public class OWBContainer implements SeContainer
     }
 
     @Override
+    public Handle<Object> getHandle()
+    {
+        //X TODO implement, new in CDI-4.0
+        return null;
+    }
+
+    @Override
+    public Iterable<? extends Handle<Object>> handles()
+    {
+        //X TODO implement, new in CDI-4.0
+        return null;
+    }
+
+    @Override
     public void destroy(Object instance) // not sure it is the right impl
     {
         InstanceImpl.class.cast(instance).destroy(instance);

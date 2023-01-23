@@ -18,7 +18,7 @@
  */
 package org.apache.openwebbeans.web.it;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 

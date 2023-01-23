@@ -86,7 +86,7 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            javax.servlet.*;version="[${osgi.servlet.range},5)",
+                            jakarta.servlet.*;version="[${osgi.servlet.range},5)",
                             jakarta.el.*;version="[${osgi.el.range},3)",
                             javax.faces.*;version="[${osgi.faces.range},3)",
                             *

@@ -20,7 +20,7 @@ package org.apache.webbeans.reservation.beans;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.webbeans.reservation.util.JSFUtility;
 

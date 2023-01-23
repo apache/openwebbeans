@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.web.context;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.webbeans.config.WebBeansContext;

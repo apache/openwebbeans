@@ -79,7 +79,7 @@ public class CDISETest
         try (final SeContainer container = SeContainerInitializer.newInstance()
                 .disableDiscovery()
                 .initialize()) {
-            container.getBeanManager().fireEvent(new Object());
+            container.getBeanManager().getEvent().fire(new Object());
         }
     }
 

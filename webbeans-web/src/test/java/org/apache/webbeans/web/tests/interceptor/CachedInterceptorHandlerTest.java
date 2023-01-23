@@ -32,7 +32,7 @@ import org.junit.Test;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.Bean;
-import javax.servlet.ServletRequestEvent;
+import jakarta.servlet.ServletRequestEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;

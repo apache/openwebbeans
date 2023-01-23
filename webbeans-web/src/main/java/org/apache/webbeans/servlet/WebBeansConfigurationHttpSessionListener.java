@@ -26,8 +26,8 @@ import org.apache.webbeans.util.WebBeansUtil;
 
 import jakarta.enterprise.context.ConversationScoped;
 import jakarta.enterprise.context.SessionScoped;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

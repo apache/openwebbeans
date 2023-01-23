@@ -28,7 +28,7 @@ import org.junit.Test;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
-import javax.servlet.ServletRequestEvent;
+import jakarta.servlet.ServletRequestEvent;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

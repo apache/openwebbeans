@@ -23,8 +23,8 @@ import static org.apache.webbeans.util.Asserts.assertNotNull;
 import java.util.EventListener;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 import org.apache.webbeans.servlet.WebBeansConfigurationListener;
 import org.apache.webbeans.spi.ContainerLifecycle;

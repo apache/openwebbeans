@@ -32,7 +32,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import jakarta.enterprise.context.ConversationScoped;
-import javax.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextEvent;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.servlet.WebBeansConfigurationListener;

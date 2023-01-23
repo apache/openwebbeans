@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.SessionScoped;
-import javax.servlet.ServletRequestEvent;
+import jakarta.servlet.ServletRequestEvent;
 import org.junit.Assert;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.web.lifecycle.test.MockServletContext;

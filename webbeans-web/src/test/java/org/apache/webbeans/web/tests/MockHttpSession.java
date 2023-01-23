@@ -20,9 +20,8 @@ package org.apache.webbeans.web.tests;
 
 import java.util.Enumeration;
 import java.util.HashMap;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
 
 public class MockHttpSession implements HttpSession
 {
@@ -65,31 +64,13 @@ public class MockHttpSession implements HttpSession
     }
 
     @Override
-    public HttpSessionContext getSessionContext()
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Object getAttribute(String string)
     {
         return attributes.get(string);
     }
 
     @Override
-    public Object getValue(String string)
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Enumeration<String> getAttributeNames()
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String[] getValueNames()
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -101,19 +82,7 @@ public class MockHttpSession implements HttpSession
     }
 
     @Override
-    public void putValue(String string, Object o)
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void removeAttribute(String string)
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void removeValue(String string)
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

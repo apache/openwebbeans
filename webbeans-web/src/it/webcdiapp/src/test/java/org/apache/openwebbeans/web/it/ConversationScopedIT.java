@@ -19,7 +19,7 @@
 package org.apache.openwebbeans.web.it;
 
 import jakarta.enterprise.context.NonexistentConversationException;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Assert;

@@ -20,7 +20,7 @@ package org.apache.webbeans.web.jetty9.test;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Test bean which gets used in the TestServlet.
