@@ -28,7 +28,10 @@
     <homepage rdf:resource="https://openwebbeans.apache.org" />
     <asfext:pmc rdf:resource="https://openwebbeans.apache.org" />
     <shortdesc>Dependency Injection Platform.</shortdesc>
-    <description>OpenWebBeans is an ALv2-licensed implementation of the "Contexts and Dependency Injection for the Java EE platform" specification which is defined as JSR-299.</description>
+    <description>
+        OpenWebBeans is an ALv2-licensed implementation of the "Contexts and Dependency Injection for the Java EE platform"
+        specification which is defined as JSR-299, JSR-365, etc as well as the Jakarta CDI specification
+    </description>
     <bug-database rdf:resource="http://issues.apache.org/jira/browse/OWB" />
     <mailing-list rdf:resource="https://openwebbeans.apache.org/community.html" />
     <download-page rdf:resource="https://www.apache.org/dyn/closer.cgi/openwebbeans/" />
@@ -36,9 +39,9 @@
     <category rdf:resource="http://projects.apache.org/category/javaee" />
     <release>
       <Version>
-        <name>2.0.11</name>
-        <created>2019-05-19</created>
-        <revision>2.0.11</revision>
+        <name>2.0.27</name>
+        <created>2022-05-24</created>
+        <revision>2.0.27</revision>
       </Version>
     </release>
     <repository>
@@ -53,8 +56,8 @@
     </repository>
     <asfext:implements><asfext:Standard>
       <asfext:title>Contexts and Dependency Injection for the Java EE platform</asfext:title>
-      <asfext:body>JCP</asfext:body>
-      <asfext:id>JSR 299, 346, 365</asfext:id>
+      <asfext:body>JCP, Eclipse Jakarta</asfext:body>
+      <asfext:id>JSR 299, 346, 365, Jakarta CDI-4.0</asfext:id>
       <asfext:url rdf:resource="http://jcp.org/en/jsr/detail?id=365"/>
     </asfext:Standard></asfext:implements>
   </Project>
