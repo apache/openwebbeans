@@ -584,9 +584,10 @@
         <module>webbeans-tomcat</module>
         <module>webbeans-arquillian</module>
         <module>webbeans-slf4j</module>
+        <module>webbeans-gradle</module>
+        <module>webbeans-junit5</module>
 <!--X TODO re-enable
         <module>webbeans-ee-common</module>
-        <module>webbeans-ejb</module>
         <module>webbeans-ee</module>
         <module>webbeans-jetty9</module>
         <module>webbeans-jms</module>
@@ -599,8 +600,6 @@
         <module>webbeans-tck</module>
         <module>webbeans-tck-jakarta</module>
         <module>distribution</module>
-        <module>webbeans-gradle</module>
-        <module>webbeans-junit5</module>
         <module>bom</module>
 -->
     </modules>

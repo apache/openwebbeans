@@ -138,7 +138,7 @@ public class CdiExtension extends CdiParametersResolverExtension implements Befo
             {
                 final BeanManager manager = container.getBeanManager();
                 final AnnotatedType<?> annotatedType = manager.createAnnotatedType(instance.getClass());
-                final InjectionTarget injectionTarget = manager.createInjectionTarget(annotatedType);
+                final InjectionTarget injectionTarget = manager.getInjectionTargetFactory(annotatedType).createInjectionTarget(null);
                 final CreationalContext<Object> creationalContext = manager.createCreationalContext(null);
                 creationalContexts.add(creationalContext);
                 injectionTarget.inject(instance, creationalContext);
