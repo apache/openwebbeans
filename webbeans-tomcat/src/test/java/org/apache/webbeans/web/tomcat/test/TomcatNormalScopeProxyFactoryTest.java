@@ -22,6 +22,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.session.FileStore;
+import org.apache.catalina.session.PersistentManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.apache.webbeans.config.WebBeansContext;
@@ -65,7 +67,14 @@ public class TomcatNormalScopeProxyFactoryTest
             tomcat.setPort(0);
             tomcat.setBaseDir(base.getAbsolutePath());
 
+
             final Context ctx = tomcat.addContext("/test", war.getAbsolutePath());
+
+            //required to persist state during restart
+            final PersistentManager persistentManager = new PersistentManager();
+            final FileStore fileStore = new FileStore();
+            persistentManager.setStore(fileStore);
+            ctx.setManager(persistentManager);
             ctx.addLifecycleListener(new ContextLifecycleListener());
 
             // needed for Java9
@@ -94,17 +103,16 @@ public class TomcatNormalScopeProxyFactoryTest
                     final BeanManager bm = CDI.current().getBeanManager();
 
                     final Response response = new Response();
-                    //Xresponse.setConnector(tomcat.getConnector());
                     response.setCoyoteResponse(new org.apache.coyote.Response());
 
                     final Request request = new Request(tomcat.getConnector());
-                    //X request.setContext(ctx);
+                    request.getMappingData().context = ctx;
                     request.setResponse(response);
                     request.setRequestedSessionId(sessionId);
+                    response.setRequest(request);
 
                     final ContextsService contextsService = WebBeansContext.currentInstance().getContextsService();
                     final ServletRequestEvent startParameter = new ServletRequestEvent(ctx.getServletContext(), request);
-                    contextsService.startContext(RequestScoped.class, startParameter);
                     if (request.getSession() != null)
                     {
                         contextsService.startContext(SessionScoped.class, request.getSession());
@@ -124,9 +132,6 @@ public class TomcatNormalScopeProxyFactoryTest
                     // don't do to not destroy the instance
                     // contextsService.endContext(SessionScoped.class, request.getSession());
                 }
-                catch (Exception e) {
-                    log.log(Level.SEVERE, "Exception during test execution", e);
-                }
                 finally
                 {
                     thread.setContextClassLoader(old);
@@ -136,6 +141,7 @@ public class TomcatNormalScopeProxyFactoryTest
             {
                 try
                 {
+                    ctx.getManager().unload();;
                     tomcat.stop();
                 }
                 catch (Exception e)
