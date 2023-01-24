@@ -89,7 +89,7 @@
 
         <httpclient.version>4.5.14</httpclient.version>
         <xbean.version>4.22</xbean.version>
-        <arquillian.version>1.7.0.Alpha10</arquillian.version>
+        <arquillian.version>1.7.0.Alpha13</arquillian.version>
 
 <!-- OLD remove: -->
         <geronimo_jaxws.version>1.2</geronimo_jaxws.version>
