@@ -19,7 +19,7 @@
 package org.apache.webbeans.ee.beans;
 
 import jakarta.inject.Provider;
-import javax.transaction.UserTransaction;
+import jakarta.transaction.UserTransaction;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.TransactionService;

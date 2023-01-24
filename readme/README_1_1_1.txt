@@ -409,7 +409,7 @@ Improvement
     * [OWB-136] - fix 'broken' license headers in our java files
     * [OWB-170] - Address findbug issues in webbeans-impl
     * [OWB-183] - Improve webbeans-doc module to get a documentation more user friendly
-    * [OWB-214] - get rid of javax.transaction.Transaction dependency in webbeans-impl
+    * [OWB-214] - get rid of jakarta.transaction.Transaction dependency in webbeans-impl
     * [OWB-237] - NoSuchElementException when WebBeansConfigurationListener is absent
     * [OWB-275] - remove unused imports and cleanup code
     * [OWB-286] - java.lang.NoClassDefFoundError: javax/validation/Validator

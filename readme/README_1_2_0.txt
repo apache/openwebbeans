@@ -323,7 +323,7 @@ Bug
     * [OWB-567] - Lookup of Provider results in NullPointerException on get()
     * [OWB-574] - NewBean doesn't support EJBs
     * [OWB-580] - ObserverMethodImpl needs support for EJB's whose Bean Types do not include the EJB class
-    * [OWB-602] - OpenWebBeans OpenEJB integration OSGi bundle declares the wrong version for the javax.transaction package
+    * [OWB-602] - OpenWebBeans OpenEJB integration OSGi bundle declares the wrong version for the jakarta.transaction package
     * [OWB-617] - NullPointerException in InstanceBean#createInstance
     * [OWB-628] - Event injection doesn't work in observer methods.
     * [OWB-633] - define stereotypes & thirdparty
@@ -740,7 +740,7 @@ Improvement
     * [OWB-136] - fix 'broken' license headers in our java files
     * [OWB-170] - Address findbug issues in webbeans-impl
     * [OWB-183] - Improve webbeans-doc module to get a documentation more user friendly
-    * [OWB-214] - get rid of javax.transaction.Transaction dependency in webbeans-impl
+    * [OWB-214] - get rid of jakarta.transaction.Transaction dependency in webbeans-impl
     * [OWB-237] - NoSuchElementException when WebBeansConfigurationListener is absent
     * [OWB-275] - remove unused imports and cleanup code
     * [OWB-286] - java.lang.NoClassDefFoundError: javax/validation/Validator

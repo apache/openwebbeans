@@ -84,6 +84,7 @@
         <jakarta.transaction-api.version>2.0.0</jakarta.transaction-api.version>
         <jakarta.validation-api.version>3.0.0</jakarta.validation-api.version>
         <jakarta.ejb-api.version>4.0.0</jakarta.ejb-api.version>
+        <jakarta.jms-api.version>3.0.0</jakarta.jms-api.version>
 
         <tomcat.version>10.1.5</tomcat.version>
 
@@ -765,11 +766,11 @@
         <module>webbeans-junit5</module>
         <module>webbeans-porting</module>
         <module>atinject-tck</module>
-<!--X TODO re-enable
         <module>webbeans-ee-common</module>
         <module>webbeans-ee</module>
-        <module>webbeans-jetty9</module>
         <module>webbeans-jms</module>
+<!--X TODO re-enable
+        <module>webbeans-jetty9</module>
         <module>webbeans-jsf</module>
         <module>webbeans-resource</module>
         <module>webbeans-osgi</module>

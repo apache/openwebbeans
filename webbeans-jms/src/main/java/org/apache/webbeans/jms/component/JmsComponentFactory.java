@@ -23,16 +23,16 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueReceiver;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.jms.TopicSubscriber;
+import jakarta.jms.Queue;
+import jakarta.jms.QueueConnection;
+import jakarta.jms.QueueReceiver;
+import jakarta.jms.QueueSender;
+import jakarta.jms.QueueSession;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicConnection;
+import jakarta.jms.TopicPublisher;
+import jakarta.jms.TopicSession;
+import jakarta.jms.TopicSubscriber;
 
 import org.apache.webbeans.component.BeanAttributesImpl;
 import org.apache.webbeans.config.WebBeansContext;

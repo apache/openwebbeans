@@ -124,7 +124,7 @@
                     <artifactId>jsp-api</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>javax.transaction</groupId>
+                    <groupId>jakarta.transaction</groupId>
                     <artifactId>jta</artifactId>
                 </exclusion>
             </exclusions>

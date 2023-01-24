@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.ee.beans;
 
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ValidatorFactory;
 
 import org.apache.webbeans.component.BuiltInOwbBean;
 import org.apache.webbeans.component.SimpleProducerFactory;

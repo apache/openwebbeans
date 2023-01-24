@@ -20,7 +20,7 @@ package org.apache.webbeans.jms.component;
 
 import jakarta.enterprise.inject.spi.BeanAttributes;
 import jakarta.enterprise.inject.spi.Producer;
-import javax.jms.Destination;
+import jakarta.jms.Destination;
 
 import org.apache.webbeans.component.AbstractOwbBean;
 import org.apache.webbeans.component.JmsBeanMarker;

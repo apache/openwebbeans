@@ -18,7 +18,7 @@
  */
 package org.apache.webbeans.ee.beans;
 
-import javax.transaction.UserTransaction;
+import jakarta.transaction.UserTransaction;
 
 import org.apache.webbeans.component.BuiltInOwbBean;
 import org.apache.webbeans.component.SimpleProducerFactory;
@@ -29,7 +29,6 @@ import org.apache.webbeans.portable.ProviderBasedProducer;
 //used by BeansDeployer (created via reflection)
 public class UserTransactionBean extends BuiltInOwbBean<UserTransaction>
 {
-
     public UserTransactionBean(WebBeansContext webBeansContext)
     {
         super(webBeansContext,
