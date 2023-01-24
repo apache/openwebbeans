@@ -43,7 +43,6 @@ import org.apache.webbeans.util.Asserts;
 /**
  * Validates session beans.
  * 
- * @version $Rev: 915746 $ $Date: 2010-02-24 12:43:43 +0200 (Wed, 24 Feb 2010) $
  */
 public final class EjbValidator
 {

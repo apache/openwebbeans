@@ -20,8 +20,8 @@ package org.apache.webbeans.ejb.plugin;
 
 import java.lang.annotation.Annotation;
 
-import javax.ejb.PrePassivate;
-import javax.ejb.PostActivate;
+import jakarta.ejb.PrePassivate;
+import jakarta.ejb.PostActivate;
 import jakarta.interceptor.AroundTimeout;
 
 import org.apache.webbeans.plugins.OpenWebBeansEjbLCAPlugin;
@@ -29,7 +29,6 @@ import org.apache.webbeans.spi.plugins.AbstractOwbPlugin;
 
 /**
  * EJB Plugin for EJB related components.
- * @version $Rev$ $Date$
  */
 public class OpenWebBeansEjbLCAPluginImpl extends AbstractOwbPlugin implements OpenWebBeansEjbLCAPlugin  
 {

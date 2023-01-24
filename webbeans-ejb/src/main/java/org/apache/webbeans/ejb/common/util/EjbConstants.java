@@ -19,7 +19,6 @@
 package org.apache.webbeans.ejb.common.util;
 
 /**
- * @version $Rev: 889852 $ $Date: 2009-12-12 01:11:53 +0200 (Sat, 12 Dec 2009) $
  */
 public final class EjbConstants
 {

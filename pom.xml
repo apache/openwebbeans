@@ -83,6 +83,7 @@
         <jakarta.el-api.version>4.0.0</jakarta.el-api.version>
         <jakarta.transaction-api.version>2.0.0</jakarta.transaction-api.version>
         <jakarta.validation-api.version>3.0.0</jakarta.validation-api.version>
+        <jakarta.ejb-api.version>4.0.0</jakarta.ejb-api.version>
 
         <tomcat.version>10.1.5</tomcat.version>
 
@@ -102,7 +103,7 @@
         <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
         <jetty.version>9.4.12.v20180830</jetty.version>
         <myfaces.version>2.3.6</myfaces.version>
-        <cdi.tck.version>2.0.5.Final</cdi.tck.version>
+        <cdi.tck.version>4.0.7</cdi.tck.version>
 
         <osgi.servlet.range>2.4</osgi.servlet.range>
         <osgi.el.range>2.2</osgi.el.range>
@@ -757,10 +758,12 @@
         <module>webbeans-se</module>
         <module>webbeans-web</module>
         <module>webbeans-tomcat</module>
+        <module>webbeans-ejb</module>
         <module>webbeans-arquillian</module>
         <module>webbeans-slf4j</module>
         <module>webbeans-gradle</module>
         <module>webbeans-junit5</module>
+        <module>webbeans-porting</module>
 <!--X TODO re-enable
         <module>webbeans-ee-common</module>
         <module>webbeans-ee</module>
@@ -769,7 +772,6 @@
         <module>webbeans-jsf</module>
         <module>webbeans-resource</module>
         <module>webbeans-osgi</module>
-        <module>webbeans-porting</module>
         <module>samples</module>
         <module>atinject-tck</module>
         <module>webbeans-tck</module>
@@ -841,8 +843,19 @@
                 <version>${tomcat.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>jakarta.ejb</groupId>
+                <artifactId>jakarta.ejb-api</artifactId>
+                <version>${jakarta.ejb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-ejb_3.1_spec</artifactId>
+                <version>${geronimo_ejb.version}</version>
+            </dependency>
 
-<!-- OLD REMOVE -->
+
+            <!-- OLD REMOVE -->
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jaxws_2.2_spec</artifactId>
@@ -856,11 +869,6 @@
             </dependency>
 
 
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-ejb_3.1_spec</artifactId>
-                <version>${geronimo_ejb.version}</version>
-            </dependency>
 
 
 

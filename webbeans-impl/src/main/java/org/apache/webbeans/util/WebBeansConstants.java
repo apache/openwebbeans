@@ -32,11 +32,11 @@ public final class WebBeansConstants
         throw new UnsupportedOperationException();
     }
 
-    public static final String [] OWB_INJECTABLE_RESOURCE_ANNOTATIONS = {"javax.ejb.EJB",
+    public static final String [] OWB_INJECTABLE_RESOURCE_ANNOTATIONS = {"jakarta.ejb.EJB",
                                                                          "jakarta.annotation.Resource",
-                                                                         "javax.xml.ws.WebServiceRef",
-                                                                         "javax.persistence.PersistenceUnit",
-                                                                         "javax.persistence.PersistenceContext"};
+                                                                         "jakarta.xml.ws.WebServiceRef",
+                                                                         "jakarta.persistence.PersistenceUnit",
+                                                                         "jakarta.persistence.PersistenceContext"};
     
     public static final String WEB_BEANS_XML_INTERCEPTORS_ELEMENT = "interceptors";
     public static final String WEB_BEANS_XML_DECORATORS_ELEMENT = "decorators";
