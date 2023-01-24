@@ -769,14 +769,12 @@
         <module>webbeans-ee-common</module>
         <module>webbeans-ee</module>
         <module>webbeans-jms</module>
+        <module>webbeans-tck</module>
 <!--X TODO re-enable
         <module>webbeans-jetty9</module>
         <module>webbeans-jsf</module>
-        <module>webbeans-resource</module>
         <module>webbeans-osgi</module>
         <module>samples</module>
-        <module>atinject-tck</module>
-        <module>webbeans-tck</module>
         <module>webbeans-tck-jakarta</module>
         <module>distribution</module>
         <module>bom</module>
