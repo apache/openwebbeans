@@ -583,6 +583,7 @@
         <module>webbeans-web</module>
         <module>webbeans-tomcat</module>
         <module>webbeans-arquillian</module>
+        <module>webbeans-slf4j</module>
 <!--X TODO re-enable
         <module>webbeans-ee-common</module>
         <module>webbeans-ejb</module>
@@ -600,7 +601,6 @@
         <module>distribution</module>
         <module>webbeans-gradle</module>
         <module>webbeans-junit5</module>
-        <module>webbeans-slf4j</module>
         <module>bom</module>
 -->
     </modules>
