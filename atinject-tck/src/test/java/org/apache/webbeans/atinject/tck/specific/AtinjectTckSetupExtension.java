@@ -18,50 +18,25 @@
  */
 package org.apache.webbeans.atinject.tck.specific;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Typed;
-import jakarta.enterprise.inject.Default;
-import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Named;
-
-import org.atinject.tck.auto.Drivers;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
 import org.atinject.tck.auto.DriversSeat;
-import org.atinject.tck.auto.Seat;
 import org.atinject.tck.auto.accessories.SpareTire;
 
-
-@ApplicationScoped
-public class SpecificProducer
+/**
+ * Fixes some setup weirdness which got created after removal of @New
+ */
+public class AtinjectTckSetupExtension implements Extension
 {
-    public SpecificProducer()
+    public void initTckBeans(@Observes BeforeBeanDiscovery bbd)
     {
-        
+        bbd.addAnnotatedType(DriversSeat.class, "tck")
+            .add(Typed.Literal.of(new Class[]{DriversSeat.class}));
+
+        bbd.addAnnotatedType(SpareTire.class, "tck")
+            .add(new AnnotationLiteral<TckNew>() {});
     }
-    
-    @Produces @Drivers
-    public Seat produceDrivers(DriversSeat seat)
-    {
-        return seat;
-    }
-    
-    
-    @Produces @DriverBinding @Typed(value={DriversSeat.class})
-    public DriversSeat produceDriverSeat(DriversSeat seat)
-    {
-        return seat;
-    }
-    
-    
-    @Produces @Named("spare") @SpareBinding
-    public SpareTire produceSpare(SpareTire tire)
-    {
-        return tire;
-    }
-    
-    @Produces @Default @Typed(value={SpareTire.class})
-    public SpareTire produceSpareTire(@TckNew SpareTire tire)
-    {
-        return tire;
-    }
-    
 }

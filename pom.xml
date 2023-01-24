@@ -764,6 +764,7 @@
         <module>webbeans-gradle</module>
         <module>webbeans-junit5</module>
         <module>webbeans-porting</module>
+        <module>atinject-tck</module>
 <!--X TODO re-enable
         <module>webbeans-ee-common</module>
         <module>webbeans-ee</module>
