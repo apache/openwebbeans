@@ -904,8 +904,8 @@ public final class WebBeansUtil
         {
             for (Class<? extends Annotation> stereotype : stereotypes)
             {
-                if (alternativesManager.isAlternativeStereotype(stereotype) &&
-                    (at.getAnnotation(Priority.class) != null || isStereotypeWithPriority(stereotype, stereotypes)))
+                if (alternativesManager.isAlternativeStereotype(stereotype) ||
+                    at.getAnnotation(Priority.class) != null || isStereotypeWithPriority(stereotype, stereotypes))
                 {
                     return true;
                 }
@@ -913,23 +913,32 @@ public final class WebBeansUtil
 
         }
         return false;
-
     }
 
-    private boolean isStereotypeWithPriority(Class<? extends Annotation> stereotype, Set<Class<? extends Annotation>> stereotypes)
+    public boolean isStereotypeWithPriority(Class<? extends Annotation> stereotype, Set<Class<? extends Annotation>> stereotypes)
     {
-        if (stereotype.getAnnotation(Priority.class) != null)
+        return getStereotypePriority(stereotype, stereotypes) != null;
+    }
+
+    public Priority getStereotypePriority(Class<? extends Annotation> stereotype, Set<Class<? extends Annotation>> stereotypes)
+    {
+        Priority priority = stereotype.getAnnotation(Priority.class);
+        if (priority != null)
         {
-            return true;
+            return priority;
         }
         for (Annotation annotation : stereotype.getAnnotations())
         {
-            if (stereotypes.contains(annotation.annotationType()) && annotation.annotationType().getAnnotation(Priority.class) != null)
+            if (stereotypes.contains(annotation.annotationType()))
             {
-                return true;
+                priority = annotation.annotationType().getAnnotation(Priority.class);
+                if (priority != null)
+                {
+                    return priority;
+                }
             }
         }
-        return false;
+        return null;
     }
 
     public static boolean isAlternative(Annotated annotated, Set<Class<? extends Annotation>> stereotypes)

@@ -131,13 +131,6 @@ public class SpecializationUtil
                     AnnotatedType<?> superType = getAnnotatedTypeForClass(allAnnotatedTypes, superClass);
                     if (notSpecializationOnly)
                     {
-                        /*X TODO remove?
-                        if (superType != null && superType.getAnnotation(Specializes.class) != null)
-                        {
-                            continue;
-                        }
-                        */
-
                         if ((superType == null && !webBeansContext.findMissingAnnotatedType(superClass)) || (superType != null && !webBeansUtil.isConstructorOk(superType)))
                         {
                             throw new WebBeansDeploymentException(new InconsistentSpecializationException("@Specializes class " + specialClass.getName()

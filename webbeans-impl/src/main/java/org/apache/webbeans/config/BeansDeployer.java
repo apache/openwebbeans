@@ -547,6 +547,25 @@ public class BeansDeployer
                     return true;
                 }
             }
+        }
+        if (at.getAnnotation(Priority.class) != null || hasStereoTypeWithPriority(stereotypes))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasStereoTypeWithPriority(Set<Class<? extends Annotation>> stereotypes)
+    {
+        if (stereotypes != null && !stereotypes.isEmpty())
+        {
+            for (Class<? extends Annotation> stereotype : stereotypes)
+            {
+                if (webBeansContext.getWebBeansUtil().isStereotypeWithPriority(stereotype, stereotypes))
+                {
+                    return true;
+                }
+            }
 
         }
         return false;
@@ -665,7 +684,7 @@ public class BeansDeployer
         {
             if (annotatedType.getAnnotation(Alternative.class) != null)
             {
-                Priority priority = annotatedType.getAnnotation(Priority.class);
+                Priority priority = resolvePriority(annotatedType);
                 if (priority != null)
                 {
                     alternativesManager.addPriorityClazzAlternative(annotatedType.getJavaClass(), priority);
@@ -673,7 +692,7 @@ public class BeansDeployer
             }
             if (annotatedType.getAnnotation(jakarta.interceptor.Interceptor.class) != null)
             {
-                Priority priority = annotatedType.getAnnotation(Priority.class);
+                Priority priority = resolvePriority(annotatedType);
                 if (priority != null)
                 {
                     Class<?> javaClass = annotatedType.getJavaClass();
@@ -682,7 +701,7 @@ public class BeansDeployer
             }
             if (annotatedType.getAnnotation(jakarta.decorator.Decorator.class) != null)
             {
-                Priority priority = annotatedType.getAnnotation(Priority.class);
+                Priority priority = resolvePriority(annotatedType);
                 if (priority != null)
                 {
                     Class<?> javaClass = annotatedType.getJavaClass();
@@ -690,6 +709,35 @@ public class BeansDeployer
                 }
             }
         }
+    }
+
+    private Priority resolvePriority(AnnotatedType<?> annotatedType)
+    {
+        Priority priority = annotatedType.getAnnotation(Priority.class);
+        if (priority != null)
+        {
+            return priority;
+        }
+        for (Annotation annotation : annotatedType.getAnnotations())
+        {
+            if (webBeansContext.getAnnotationManager().isStereoTypeAnnotation(annotation.annotationType()))
+            {
+                final Priority stereoPriority = annotation.annotationType().getAnnotation(Priority.class);
+                if (stereoPriority != null)
+                {
+                    if (priority == null)
+                    {
+                        priority = stereoPriority;
+                    }
+                    else
+                    {
+                        throw new WebBeansConfigurationException("Multiple Stereotypes with @Priority found on class " + annotatedType);
+                    }
+                }
+            }
+        }
+
+        return priority;
     }
 
     /**
