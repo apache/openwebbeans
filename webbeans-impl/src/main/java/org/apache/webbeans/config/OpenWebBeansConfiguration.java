@@ -581,12 +581,12 @@ public class OpenWebBeansConfiguration
                     final String conf = getProperty("org.apache.webbeans.generator.proxyReservedPackages");
                     if (conf == null)
                     {
-                        proxyReservedPackages = asList("java.", "javax.", "sun.misc.");
+                        proxyReservedPackages = asList("java.", "javax.", "jakarta.", "sun.misc.");
                     }
                     else
                     {
                         proxyReservedPackages = Stream.concat(
-                                Stream.of("java.", "javax.", "sun.misc."),
+                                Stream.of("java.", "javax.", "jakarta.", "sun.misc."),
                                 Stream.of(conf.split(","))
                                         .map(String::trim)
                                         .filter(it -> !it.isEmpty()))
