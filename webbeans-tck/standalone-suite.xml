@@ -57,29 +57,30 @@
         <classes>
 
             <!-- Tests broken in the CDI-2.0 TCK: -->
-<!--
 
-            &lt;!&ndash; https://issues.jboss.org/projects/CDITCK/issues/CDITCK-576 &ndash;&gt;
+            <!-- https://issues.jboss.org/projects/CDITCK/issues/CDITCK-576 -->
+<!--
             <class name="org.jboss.cdi.tck.tests.context.passivating.dependency.builtin.BuiltinBeanPassivationDependencyTest">
                 <methods>
                     <exclude name="testInjectionPoint"/>
                 </methods>
             </class>
+-->
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-577 &ndash;&gt;
+            <!-- https://issues.jboss.org/browse/CDITCK-577 -->
             <class name="org.jboss.cdi.tck.tests.definition.bean.BeanDefinitionTest">
                 <methods>
                     <exclude name="testRawBeanTypes"/>
                 </methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-432 &ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.decorators.builtin.event.complex.ComplexEventDecoratorTest">
+            <!-- https://issues.jboss.org/browse/CDITCK-432 -->
+            <class name="org.jboss.cdi.tck.tests.full.decorators.builtin.event.complex.ComplexEventDecoratorTest">
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-578, https://issues.jboss.org/browse/CDITCK-579 &ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.definition.bean.custom.CustomBeanImplementationTest">
+            <!-- https://issues.jboss.org/browse/CDITCK-578, https://issues.jboss.org/browse/CDITCK-579 -->
+            <class name="org.jboss.cdi.tck.tests.full.definition.bean.custom.CustomBeanImplementationTest">
                 <methods>
                     <exclude name="testCustomBeanIsPassivationCapable"/>
                     <exclude name="testCustomBeanIsPassivationCapableDependency"/>
@@ -87,24 +88,24 @@
                 </methods>
             </class>
 
-            &lt;!&ndash; this tests Weld specific internals &ndash;&gt;
+            <!-- this tests Weld specific internals -->
             <class name="org.jboss.cdi.tck.tests.definition.bean.types.illegal.BeanTypesWithIllegalTypeTest">
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-580 &ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.inheritance.specialization.simple.SimpleBeanSpecializationTest">
+            <!-- https://issues.jboss.org/browse/CDITCK-580 -->
+            <class name="org.jboss.cdi.tck.tests.full.inheritance.specialization.simple.SimpleBeanSpecializationTest">
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDI-498 dots in EL names are not allowed by the EL spec. &ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.lookup.el.ResolutionByNameTest">
+            <!-- https://issues.jboss.org/browse/CDI-498 dots in EL names are not allowed by the EL spec. -->
+            <class name="org.jboss.cdi.tck.tests.full.lookup.el.ResolutionByNameTest">
                 <methods><exclude name="testBeanNameWithSeparatedListOfELIdentifiers"/></methods>
             </class>
 
-            &lt;!&ndash; OWB provides a bit more for @New than CDI requires
+            <!-- OWB provides a bit more for @New than CDI requires
                https://issues.jboss.org/browse/CDITCK-581
-            &ndash;&gt;
+            -->
             <class name="org.jboss.cdi.tck.tests.lookup.dynamic.DynamicLookupTest">
                 <methods>
                     <exclude name="testNewBeanNotEnabledWithouInjectionPoint"/>
@@ -112,47 +113,46 @@
                 </methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-582 &ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.deployment.discovery.BeanDiscoveryTest">
+            <!-- https://issues.jboss.org/browse/CDITCK-582 -->
+            <class name="org.jboss.cdi.tck.tests.full.deployment.discovery.BeanDiscoveryTest">
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-586 &ndash;&gt;
+            <!-- https://issues.jboss.org/browse/CDITCK-586 -->
             <class name="org.jboss.cdi.tck.tests.event.observer.async.basic.MixedObserversTest">
                 <methods><exclude name="testAsyncObserversCalledInDifferentThread"/></methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-588 equals on AnnotatedType &ndash;&gt;
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-589 because the ct predicate ends up randomly removing from the wrong ct &ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.extensions.configurators.annotatedTypeConfigurator.AnnotatedTypeConfiguratorTest">
+            <!-- https://issues.jboss.org/browse/CDITCK-588 equals on AnnotatedType -->
+            <!-- https://issues.jboss.org/browse/CDITCK-589 because the ct predicate ends up randomly removing from the wrong ct -->
+            <class name="org.jboss.cdi.tck.tests.full.extensions.configurators.annotatedTypeConfigurator.AnnotatedTypeConfiguratorTest">
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-573 should be solved with tck 2.0.1.Final &ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.extensions.configurators.bean.BeanConfiguratorTest">
+            <!-- https://issues.jboss.org/browse/CDITCK-573 should be solved with tck 2.0.1.Final -->
+            <class name="org.jboss.cdi.tck.tests.full.extensions.configurators.bean.BeanConfiguratorTest">
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDITCK-591 &ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.extensions.alternative.metadata.AlternativeMetadataTest">
+            <!-- https://issues.jboss.org/browse/CDITCK-591 -->
+            <class name="org.jboss.cdi.tck.tests.full.extensions.alternative.metadata.AlternativeMetadataTest">
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            &lt;!&ndash; https://issues.jboss.org/browse/CDI-581 , both tests...&ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.specialization.VetoTest">
+            <!-- https://issues.jboss.org/browse/CDI-581 , both tests...-->
+            <class name="org.jboss.cdi.tck.tests.full.extensions.lifecycle.processBeanAttributes.specialization.VetoTest">
                 <methods><exclude name=".*"/></methods>
             </class>
-            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.processBeanAttributes.specialization.SpecializationTest">
+            <class name="org.jboss.cdi.tck.tests.full.extensions.lifecycle.processBeanAttributes.specialization.SpecializationTest">
                 <methods><exclude name=".*"/></methods>
             </class>
 
-            &lt;!&ndash; CDITCK-466 &ndash;&gt;
-            <class name="org.jboss.cdi.tck.tests.extensions.lifecycle.bbd.broken.passivatingScope.AddingPassivatingScopeTest">
+            <!-- CDITCK-466 -->
+            <class name="org.jboss.cdi.tck.tests.full.extensions.lifecycle.bbd.broken.passivatingScope.AddingPassivatingScopeTest">
                 <methods>
                     <exclude name=".*"/>
                 </methods>
             </class>
--->
 
         </classes>
 
