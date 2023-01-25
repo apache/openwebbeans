@@ -905,7 +905,7 @@ public final class WebBeansUtil
             for (Class<? extends Annotation> stereotype : stereotypes)
             {
                 if (alternativesManager.isAlternativeStereotype(stereotype) &&
-                    (at.getAnnotation(Priority.class) != null || stereotype.getAnnotation(Priority.class) != null))
+                    (at.getAnnotation(Priority.class) != null || isStereotypeWithPriority(stereotype, stereotypes)))
                 {
                     return true;
                 }
@@ -914,6 +914,22 @@ public final class WebBeansUtil
         }
         return false;
 
+    }
+
+    private boolean isStereotypeWithPriority(Class<? extends Annotation> stereotype, Set<Class<? extends Annotation>> stereotypes)
+    {
+        if (stereotype.getAnnotation(Priority.class) != null)
+        {
+            return true;
+        }
+        for (Annotation annotation : stereotype.getAnnotations())
+        {
+            if (stereotypes.contains(annotation.annotationType()) && annotation.annotationType().getAnnotation(Priority.class) != null)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isAlternative(Annotated annotated, Set<Class<? extends Annotation>> stereotypes)
