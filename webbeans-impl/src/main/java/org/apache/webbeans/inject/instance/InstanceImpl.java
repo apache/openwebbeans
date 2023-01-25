@@ -32,6 +32,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.enterprise.context.spi.AlterableContext;
@@ -112,15 +113,15 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     @Override
     public Handle<T> getHandle()
     {
-        //X TODO implement!
-        return null;
+        return new HandleImpl<T>(getBean());
     }
 
     @Override
     public Iterable<? extends Handle<T>> handles()
     {
-        //X TODO implement!
-        return null;
+        return resolveBeans().stream()
+            .map(bean -> (Handle<T>)new HandleImpl(bean))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -132,6 +133,13 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     public T get()
     {
 
+        Bean<?> bean = getBean();
+
+        return create(bean);
+    }
+
+    private Bean<?> getBean()
+    {
         Set<Bean<?>> beans = resolveBeans();
 
         Bean<?> bean = webBeansContext.getBeanManagerImpl().resolve(beans);
@@ -142,8 +150,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             anns = qualifierAnnotations.toArray(anns);
             InjectionExceptionUtil.throwUnsatisfiedResolutionException(ClassUtil.getClazz(injectionClazz), injectionPoint, anns);
         }
-
-        return create(bean);
+        return bean;
     }
 
 
@@ -456,4 +463,54 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             out.writeObject(delegate);
         }
     }
+
+    public class HandleImpl<X> implements Instance.Handle<X>
+    {
+        private final Bean<X> bean;
+        private boolean destroyed = false;
+        private X contextualReference = null;
+
+        public HandleImpl(Bean<?> bean)
+        {
+            this.bean = (Bean<X>) bean;
+        }
+
+        @Override
+        public X get()
+        {
+            if (destroyed)
+            {
+                throw new IllegalStateException("Contextual Reference already destroyed");
+            }
+            if (contextualReference == null)
+            {
+                contextualReference = (X) create(bean);
+            }
+
+            return contextualReference;
+        }
+
+        @Override
+        public Bean<X> getBean()
+        {
+            return bean;
+        }
+
+        @Override
+        public void destroy()
+        {
+            if (!destroyed && contextualReference != null)
+            {
+                InstanceImpl.this.destroy((T) contextualReference);
+                destroyed = true;
+            }
+        }
+
+        @Override
+        public void close()
+        {
+            destroy();
+        }
+    }
+
 }
