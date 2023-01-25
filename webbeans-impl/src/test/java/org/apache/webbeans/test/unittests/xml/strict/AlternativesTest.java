@@ -22,7 +22,9 @@ package org.apache.webbeans.test.unittests.xml.strict;
 import jakarta.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.test.xml.strict.Alternative3;
+import org.apache.webbeans.test.xml.strict.Alternative4;
 import org.apache.webbeans.test.xml.strict.AlternativeStereotype;
+import org.apache.webbeans.test.xml.strict.AlternativeStereotypeWithPriority;
 import org.apache.webbeans.test.xml.strict.OriginalBean;
 import org.apache.webbeans.test.xml.strict.SomeInterface;
 import org.junit.Assert;
@@ -65,6 +67,16 @@ public class AlternativesTest extends AbstractUnitTest
         Assert.assertTrue(instance instanceof Alternative3);
     }
     
+    @Test
+    public void testPriorityOnSterotypeEnabledAlternative()
+    {
+        startContainer(Alternative4.class, AlternativeStereotypeWithPriority.class, OriginalBean.class);
+
+        SomeInterface instance = getInstance(SomeInterface.class);
+        Assert.assertNotNull(instance);
+        Assert.assertTrue(instance instanceof Alternative4);
+    }
+
     @Test(expected=WebBeansConfigurationException.class)
     public void testDoubleAlternativeClass()
     {        

@@ -47,7 +47,10 @@
 
                 <!--X TODO OWB-1182 CDI 2.0 exlcuded for now - current focus on ee -->
                 <exclude name="org.jboss.cdi.tck.tests.se.*" />
+
+                <!-- Tests which do require a BuildCompatibleExtension and thus do not run with OWB-4.0 yet -->
                 <exclude name="org.jboss.cdi.tck.tests.build.compatible.*"></exclude>
+                <exclude name="org.jboss.cdi.tck.tests.full.extensions.lite.*"></exclude>
             </package>
 
             <package name="org.jboss.cdi.tck.interceptors.tests.*"/>
@@ -56,17 +59,7 @@
 
 
         <classes>
-            <!-- Tests which do require a BuildCompatibleExtension and thus do not run with OWB-4.0 yet -->
-            <class name="org.jboss.cdi.tck.tests.build.compatible.extensions.syntheticBeanWithLookup.SyntheticBeanWithLookupTest"><methods><exclude name=".*"/></methods></class>
-            <class name="org.jboss.cdi.tck.tests.build.compatible.extensions.changeBeanQualifier.ChangeBeanQualifierTest"><methods><exclude name=".*"/></methods></class>
-            <class name="org.jboss.cdi.tck.tests.build.compatible.extensions.changeInjectionPoint.ChangeInjectionPointTest"><methods><exclude name=".*"/></methods></class>
-            <class name="org.jboss.cdi.tck.tests.build.compatible.extensions.changeObserverQualifier.ChangeObserverQualifierTest"><methods><exclude name=".*"/></methods></class>
-            <class name="org.jboss.cdi.tck.tests.build.compatible.extensions.customQualifier.CustomQualifierTest"><methods><exclude name=".*"/></methods></class>
-            <class name="org.jboss.cdi.tck.tests.build.compatible.extensions.customStereotype.CustomStereotypeTest"><methods><exclude name=".*"/></methods></class>
-            <class name="org.jboss.cdi.tck.tests.build.compatible.extensions.invalid.EnhancementMultipleParamsTest"><methods><exclude name=".*"/></methods></class>
 
-            
-            
             <!-- Tests broken in the CDI-2.0 TCK: -->
 
             <!-- https://issues.jboss.org/projects/CDITCK/issues/CDITCK-576 -->

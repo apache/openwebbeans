@@ -900,11 +900,12 @@ public final class WebBeansUtil
         {
             return true;
         }
-        if (stereotypes != null && !stereotypes.isEmpty() && at.getAnnotation(Priority.class) != null)
+        if (stereotypes != null && !stereotypes.isEmpty())
         {
             for (Class<? extends Annotation> stereotype : stereotypes)
             {
-                if (alternativesManager.isAlternativeStereotype(stereotype))
+                if (alternativesManager.isAlternativeStereotype(stereotype) &&
+                    (at.getAnnotation(Priority.class) != null || stereotype.getAnnotation(Priority.class) != null))
                 {
                     return true;
                 }

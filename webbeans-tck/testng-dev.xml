@@ -18,7 +18,7 @@
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
   <test name="JSR-346 TCK">
     <classes>
-          <class name="org.jboss.cdi.tck.tests.build.compatible.extensions.syntheticBeanWithLookup.SyntheticBeanWithLookupTest" >
+          <class name="org.jboss.cdi.tck.tests.definition.stereotype.priority.StereotypeWithPriorityTest" >
             <methods>
               <include name=".*"/>
             </methods>
