@@ -20,6 +20,8 @@ package org.apache.webbeans.arquillian.standalone;
 
 import jakarta.enterprise.inject.spi.BeanManager;
 
+import jakarta.decorator.Decorator;
+import jakarta.interceptor.Interceptor;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.BdaScannerService;
@@ -297,6 +299,7 @@ public class OwbArquillianScannerService implements BdaScannerService
     {
         Class<? extends Annotation> annotationType = annotation.annotationType();
         boolean isBeanAnnotation = beanManager.isScope(annotationType);
+        isBeanAnnotation |= annotationType.equals(Decorator.class) || annotationType.equals(Interceptor.class);
         isBeanAnnotation = isBeanAnnotation || beanManager.isStereotype(annotationType);
 
         return isBeanAnnotation;
