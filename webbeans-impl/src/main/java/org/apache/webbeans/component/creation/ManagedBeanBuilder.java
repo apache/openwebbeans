@@ -18,6 +18,10 @@
  */
 package org.apache.webbeans.component.creation;
 
+import java.lang.annotation.Annotation;
+import java.util.Set;
+
+import jakarta.annotation.Priority;
 import jakarta.enterprise.inject.UnproxyableResolutionException;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.BeanAttributes;
@@ -25,6 +29,7 @@ import jakarta.enterprise.inject.spi.BeanAttributes;
 import org.apache.webbeans.component.ManagedBean;
 import org.apache.webbeans.component.WebBeansType;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -64,6 +69,7 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
     {
         M bean = (M) new ManagedBean<>(webBeansContext, WebBeansType.MANAGED, annotatedType, beanAttributes, annotatedType.getJavaClass());
         bean.setEnabled(webBeansContext.getWebBeansUtil().isBeanEnabled(beanAttributes, annotatedType, bean.getStereotypes()));
+        checkStereotypes(bean.getStereotypes());
         webBeansContext.getWebBeansUtil().checkManagedBeanCondition(annotatedType);
         WebBeansUtil.checkGenericType(annotatedType.getJavaClass(), beanAttributes.getScope());
         webBeansContext.getWebBeansUtil().validateBeanInjection(bean);
@@ -74,5 +80,20 @@ public class ManagedBeanBuilder<T, M extends ManagedBean<T>>
             return bean;
         }
         return (M) new UnproxyableBean<>(webBeansContext, WebBeansType.MANAGED, beanAttributes, annotatedType, annotatedType.getJavaClass(), lazyException);
+    }
+
+    private void checkStereotypes(Set<Class<? extends Annotation>> stereotypes)
+    {
+        if (stereotypes != null && stereotypes.size() > 1)
+        {
+            long stereoTypesWithPriority = stereotypes.stream()
+                .filter(s -> s.getAnnotation(Priority.class) != null)
+                .count();
+            if (stereoTypesWithPriority > 1)
+            {
+                throw new WebBeansConfigurationException("More than one Stereotype with @Priority on a bean is not allowed!");
+            }
+        }
+
     }
 }

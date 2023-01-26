@@ -18,9 +18,9 @@
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
   <test name="JSR-346 TCK">
     <classes>
-          <class name="org.jboss.cdi.tck.tests.interceptors.definition.InterceptorDefinitionTest" >
+          <class name="org.jboss.cdi.tck.tests.definition.stereotype.broken.multiplePriorities.inherited.StereotypeInheritedPriorityConflictTest" >
             <methods>
-              <include name="testResolveInterceptorsReturnsOrderedList"/>
+              <include name=".*"/>
             </methods>
           </class>
 
