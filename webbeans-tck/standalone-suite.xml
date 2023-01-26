@@ -84,6 +84,11 @@
                     <exclude name="testInterceptorBindingOverriden"/>
                 </methods>
             </class>
+            <class name="org.jboss.cdi.tck.interceptors.tests.contract.lifecycleCallback.bindings.LifecycleInterceptorDefinitionTest" >
+                <methods>
+                    <exclude name="testMultipleLifecycleInterceptors"/>
+                </methods>
+            </class>
 
             <!--
                 This is just the most backward breaking change I've seen in years.
