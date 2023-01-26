@@ -28,6 +28,7 @@ import jakarta.enterprise.inject.spi.BeanAttributes;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.enterprise.inject.spi.PassivationCapable;
+import jakarta.enterprise.inject.spi.Prioritized;
 import jakarta.enterprise.inject.spi.Producer;
 import jakarta.enterprise.inject.spi.configurator.BeanConfigurator;
 import jakarta.enterprise.util.TypeLiteral;
@@ -338,6 +339,11 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
     {
         updateQualifiers();
         setPassivationIdIfNeeded();
+        if (priority != null && alternative)
+        {
+            return new ConstructedPrioritizedBean();
+        }
+
         return new ConstructedBean();
     }
 
@@ -657,6 +663,15 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
 
             return builder.toString();
 
+        }
+    }
+
+    public class ConstructedPrioritizedBean extends ConstructedBean implements Prioritized
+    {
+        @Override
+        public int getPriority()
+        {
+            return priority;
         }
     }
 }
