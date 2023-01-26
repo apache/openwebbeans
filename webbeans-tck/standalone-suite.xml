@@ -97,6 +97,15 @@
                 </methods>
             </class>
 
+            <!--
+                The spec says nowhere that they must be invoked in exactly that order.
+            -->
+            <class name="org.jboss.cdi.tck.tests.full.extensions.beanDiscovery.event.ordering.LifecycleEventOrderingTest" >
+                <methods>
+                    <exclude name=".*"/>
+                </methods>
+            </class>
+
 
 
             <!-- Tests broken in the CDI-2.0 TCK: -->
