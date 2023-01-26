@@ -20,6 +20,7 @@ package org.apache.webbeans.event;
 
 import java.util.Set;
 
+import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.enterprise.inject.spi.ObserverMethod;
 
@@ -36,4 +37,10 @@ public interface OwbObserverMethod<T> extends ObserverMethod<T>
      * Returns the {@link InjectionPoint}s for the parameters of this observer method.
      */
     Set<InjectionPoint> getInjectionPoints();
+
+    @Override
+    default Bean<?> getDeclaringBean()
+    {
+        return getOwnerBean();
+    }
 }
