@@ -60,6 +60,24 @@
 
         <classes>
 
+            <!-- Tests broken in the CDI-4.0 TCK: -->
+
+            <!--
+                Test wrongly assumes a specific ordering although both interceptors have priority 2000 and thus
+                might get invoked in unspecified order.
+            -->
+            <class name="org.jboss.cdi.tck.interceptors.tests.bindings.aroundConstruct.ConstructorInterceptionTest" >
+                <methods>
+                    <exclude name="testMultipleConstructorLevelBinding"/>
+                    <exclude name="testTypeLevelAndConstructorLevelBinding"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.interceptors.definition.InterceptorDefinitionTest" >
+                <methods>
+                    <exclude name="testResolveInterceptorsReturnsOrderedList"/>
+                </methods>
+            </class>
+
             <!-- Tests broken in the CDI-2.0 TCK: -->
 
             <!-- https://issues.jboss.org/projects/CDITCK/issues/CDITCK-576 -->
