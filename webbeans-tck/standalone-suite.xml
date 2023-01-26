@@ -65,6 +65,8 @@
             <!--
                 Test wrongly assumes a specific ordering although both interceptors have priority 2000 and thus
                 might get invoked in unspecified order.
+                The Interceptors Spec explicitly says:
+                "If more than one interceptor has the same priority, the relative order of those interceptors is undefined."
             -->
             <class name="org.jboss.cdi.tck.interceptors.tests.bindings.aroundConstruct.ConstructorInterceptionTest" >
                 <methods>
@@ -75,6 +77,11 @@
             <class name="org.jboss.cdi.tck.tests.interceptors.definition.InterceptorDefinitionTest" >
                 <methods>
                     <exclude name="testResolveInterceptorsReturnsOrderedList"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.interceptors.tests.bindings.overriding.InterceptorBindingOverridingTest" >
+                <methods>
+                    <exclude name="testInterceptorBindingOverriden"/>
                 </methods>
             </class>
 
@@ -107,7 +114,7 @@
             </class>
 
             <!--
-                Illegal code as they do call reateInjectionTarget(null); and not on the real bean.
+                Illegal code as they do call createInjectionTarget(null); and not on the real bean.
             -->
             <class name="org.jboss.cdi.tck.tests.full.extensions.alternative.metadata.interceptor.AlternativeMetadataInterceptorInjectionTargetTest" >
                 <methods>
@@ -121,6 +128,15 @@
             <class name="org.jboss.cdi.tck.tests.full.context.passivating.dependency.builtin.BuiltinBeanPassivationDependencyTest" >
                 <methods>
                     <exclude name="testInjectionPoint"/>
+                </methods>
+            </class>
+
+            <!--
+                Test assumes wrong Exception. An AssertERROR gets thrown, but they catch an Exception...
+            -->
+            <class name="org.jboss.cdi.tck.interceptors.tests.contract.aroundConstruct.bindings.AroundConstructTest" >
+                <methods>
+                    <exclude name="testExceptions"/>
                 </methods>
             </class>
 
