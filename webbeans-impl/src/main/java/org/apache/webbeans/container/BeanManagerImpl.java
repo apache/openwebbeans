@@ -871,7 +871,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     public <X> InjectionTargetFactory<X> getInjectionTargetFactory(AnnotatedType<X> type)
     {
-        return new InjectionTargetFactoryImpl<>(type, webBeansContext);
+        return new ValidatingInjectionTargetFactory<>(type, webBeansContext);
     }
 
     public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
