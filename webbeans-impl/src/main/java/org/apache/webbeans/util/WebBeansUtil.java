@@ -902,13 +902,18 @@ public final class WebBeansUtil
         }
         if (stereotypes != null && !stereotypes.isEmpty())
         {
+            boolean hasPriority = at.getAnnotation(Priority.class) != null;
+            boolean hasStereotypeWithPriority = false;
             for (Class<? extends Annotation> stereotype : stereotypes)
             {
-                if (alternativesManager.isAlternativeStereotype(stereotype) ||
-                    at.getAnnotation(Priority.class) != null || isStereotypeWithPriority(stereotype, stereotypes))
+                if (isStereotypeWithPriority(stereotype, stereotypes))
                 {
-                    return true;
+                    hasStereotypeWithPriority = true;
                 }
+            }
+            if (hasPriority || hasStereotypeWithPriority)
+            {
+                return true;
             }
 
         }

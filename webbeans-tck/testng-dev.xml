@@ -16,29 +16,30 @@
     License.
 -->
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
-  <test name="JSR-346 TCK">
-    <classes>
-          <class name="org.jboss.cdi.tck.tests.full.alternative.selection.stereotype.SelectedBeanWithUnselectedStereotypeTest" >
-            <methods>
-              <include name=".*"/>
-            </methods>
-          </class>
+    <test name="JSR-346 TCK">
 
-      <!--
+        <classes>
+            <class name="org.jboss.cdi.tck.tests.definition.stereotype.priority.inherited.StereotypeInheritedPriorityTest" >
+                <methods>
+                    <include name=".*"/>
+                </methods>
+            </class>
 
-      <class name="org.jboss.cdi.tck.tests.event.parameterized.ParameterizedEventTest" />
-      <class name="org.jboss.cdi.tck.tests.event.fires.FireEventTest" />
-      -->
-    </classes>
-    <groups>
-      <run>
-        <exclude name="integration"/>
-        <exclude name="javaee-full"/>
-      </run>
-    </groups>
-  </test>
-  <listeners>
-    <listener class-name="org.jboss.cdi.tck.impl.testng.SingleTestClassMethodInterceptor"/>
-    <listener class-name="org.jboss.cdi.tck.impl.testng.ProgressLoggingTestListener"/>
-  </listeners>
+            <!--
+
+            <class name="org.jboss.cdi.tck.tests.event.parameterized.ParameterizedEventTest" />
+            <class name="org.jboss.cdi.tck.tests.event.fires.FireEventTest" />
+            -->
+        </classes>
+        <groups>
+            <run>
+                <exclude name="integration"/>
+                <exclude name="javaee-full"/>
+            </run>
+        </groups>
+    </test>
+    <listeners>
+        <listener class-name="org.jboss.cdi.tck.impl.testng.SingleTestClassMethodInterceptor"/>
+        <listener class-name="org.jboss.cdi.tck.impl.testng.ProgressLoggingTestListener"/>
+    </listeners>
 </suite>
