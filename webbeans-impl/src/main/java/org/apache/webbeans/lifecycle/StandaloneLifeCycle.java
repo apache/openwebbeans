@@ -22,6 +22,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ConversationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.event.Startup;
 import jakarta.inject.Singleton;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -71,6 +72,9 @@ public class StandaloneLifeCycle extends AbstractLifeCycle
             webBeansContext.getBeanManagerImpl().fireContextLifecyleEvent(
                     new Object(), InitializedLiteral.INSTANCE_APPLICATION_SCOPED);
         }
+
+        // fire Startup event
+        webBeansContext.getBeanManagerImpl().fireEvent(new Startup());
     }
 
     @Override

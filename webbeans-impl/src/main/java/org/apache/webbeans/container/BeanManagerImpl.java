@@ -447,7 +447,6 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * @deprecated  This method got deprecated in CDI-2.0.
      *      Users should use {@link #getEvent()} instead.
      */
-    @Deprecated
     public void fireEvent(Object event, Annotation... bindings)
     {
         fireEvent(event, false, bindings);
