@@ -18,9 +18,9 @@
 <suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
   <test name="JSR-346 TCK">
     <classes>
-          <class name="org.jboss.cdi.tck.tests.full.extensions.beanDiscovery.event.ordering.LifecycleEventOrderingTest" >
+          <class name="org.jboss.cdi.tck.tests.full.alternative.selection.stereotype.SelectedBeanWithUnselectedStereotypeTest" >
             <methods>
-              <include name="testEventsWereFiredInCorrectOrderForManagedBean"/>
+              <include name=".*"/>
             </methods>
           </class>
 

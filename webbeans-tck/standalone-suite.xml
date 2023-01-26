@@ -106,6 +106,24 @@
                 </methods>
             </class>
 
+            <!--
+                Illegal code as they do call reateInjectionTarget(null); and not on the real bean.
+            -->
+            <class name="org.jboss.cdi.tck.tests.full.extensions.alternative.metadata.interceptor.AlternativeMetadataInterceptorInjectionTargetTest" >
+                <methods>
+                    <exclude name=".*"/>
+                </methods>
+            </class>
+
+            <!--
+                Test wrongly assumes that Annotated must implement equals().
+            -->
+            <class name="org.jboss.cdi.tck.tests.full.context.passivating.dependency.builtin.BuiltinBeanPassivationDependencyTest" >
+                <methods>
+                    <exclude name="testInjectionPoint"/>
+                </methods>
+            </class>
+
 
 
             <!-- Tests broken in the CDI-2.0 TCK: -->
