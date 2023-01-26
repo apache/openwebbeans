@@ -88,6 +88,16 @@
                 </methods>
             </class>
 
+            <!--
+                The test asserts something which is not defined in the spec.
+            -->
+            <class name="org.jboss.cdi.tck.tests.full.extensions.beanManager.unmanaged.UnmanagedInstanceTest" >
+                <methods>
+                    <exclude name="testNonContextualInstanceIsIntercepted"/>
+                </methods>
+            </class>
+
+
 
             <!-- Tests broken in the CDI-2.0 TCK: -->
 
