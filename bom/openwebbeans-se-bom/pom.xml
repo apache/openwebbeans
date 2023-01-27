@@ -51,30 +51,29 @@
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-spi</artifactId>
             <version>${project.version}</version>
-            <classifier>jakarta</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.geronimo.specs</groupId>
+                    <groupId>jakarta.*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
+
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-impl</artifactId>
             <version>${project.version}</version>
-            <classifier>jakarta</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.geronimo.specs</groupId>
+                    <groupId>jakarta.*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
@@ -83,14 +82,13 @@
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-se</artifactId>
             <version>${project.version}</version>
-            <classifier>jakarta</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.geronimo.specs</groupId>
+                    <groupId>jakarta.*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>

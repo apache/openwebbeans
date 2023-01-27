@@ -37,14 +37,13 @@
       <groupId>org.apache.openwebbeans</groupId>
       <artifactId>openwebbeans-spi</artifactId>
       <version>${project.version}</version>
-      <classifier>jakarta</classifier>
       <exclusions>
         <exclusion>
           <groupId>org.apache.openwebbeans</groupId>
           <artifactId>*</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.geronimo.specs</groupId>
+          <groupId>jakarta.*</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -53,14 +52,13 @@
       <groupId>org.apache.openwebbeans</groupId>
       <artifactId>openwebbeans-impl</artifactId>
       <version>${project.version}</version>
-      <classifier>jakarta</classifier>
       <exclusions>
         <exclusion>
           <groupId>org.apache.openwebbeans</groupId>
           <artifactId>*</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.geronimo.specs</groupId>
+          <groupId>jakarta.*</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -69,14 +67,13 @@
       <groupId>org.apache.openwebbeans</groupId>
       <artifactId>openwebbeans-el22</artifactId>
       <version>${project.version}</version>
-      <classifier>jakarta</classifier>
       <exclusions>
         <exclusion>
           <groupId>org.apache.openwebbeans</groupId>
           <artifactId>*</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.geronimo.specs</groupId>
+          <groupId>jakarta.*</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -85,14 +82,13 @@
       <groupId>org.apache.openwebbeans</groupId>
       <artifactId>openwebbeans-web</artifactId>
       <version>${project.version}</version>
-      <classifier>jakarta</classifier>
       <exclusions>
         <exclusion>
           <groupId>org.apache.openwebbeans</groupId>
           <artifactId>*</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.geronimo.specs</groupId>
+          <groupId>jakarta.*</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>

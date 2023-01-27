@@ -80,28 +80,26 @@ under the License.
         <dependencySet>
             <outputDirectory>api</outputDirectory>
             <includes>
-                <include>org.apache.geronimo.specs:geronimo-atinject_1.0_spec:jar</include>
-                <include>org.apache.geronimo.specs:geronimo-jcdi_2.0_spec:jar</include>
-                <include>org.apache.geronimo.specs:geronimo-interceptor_1.2_spec:jar</include>
-                <include>org.apache.geronimo.specs:geronimo-annotation_1.3_spec:jar</include>
-                <include>org.apache.geronimo.specs:geronimo-el_2.2_spec:jar</include>
+                <include>jakarta.annotation:jakarta.annotation-api:jar</include>
+                <include>jakarta.inject:jakarta.inject:jar</include>
+                <include>jakarta.enterprise:jakarta.enterprise.cdi-api:jar</include>
+                <include>jakarta.interceptor:jakarta.interceptor:jar</include>
+                <include>jakarta.el:jakarta.el:jar</include>
             </includes>
         </dependencySet>
 
         <dependencySet>
             <outputDirectory>plugins</outputDirectory>
             <includes>
-                <include>org.apache.openwebbeans:openwebbeans-resource</include>
                 <include>org.apache.openwebbeans:openwebbeans-jsf</include>
                 <include>org.apache.openwebbeans:openwebbeans-jms</include>
                 <include>org.apache.openwebbeans:openwebbeans-ejb</include>
                 <include>org.apache.openwebbeans:openwebbeans-ee</include>
                 <include>org.apache.openwebbeans:openwebbeans-ee-common</include>
                 <include>org.apache.openwebbeans:openwebbeans-el22</include>
-                <include>org.apache.openwebbeans:openwebbeans-resource</include>
                 <include>org.apache.openwebbeans:openwebbeans-osgi</include>
                 <include>org.apache.openwebbeans:openwebbeans-web</include>
-                <include>org.apache.openwebbeans:openwebbeans-tomcat7</include>
+                <include>org.apache.openwebbeans:openwebbeans-tomcat</include>
             </includes>
 
         </dependencySet>

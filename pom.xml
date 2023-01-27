@@ -74,17 +74,19 @@
         <httpclient.version>4.5.14</httpclient.version>
         <xbean.version>4.22</xbean.version>
         <arquillian.version>1.7.0.Alpha13</arquillian.version>
-
-<!-- OLD remove: -->
-        <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
-        <jetty.version>9.4.12.v20180830</jetty.version>
         <cdi.tck.version>4.0.7</cdi.tck.version>
 
-        <osgi.servlet.range>2.4</osgi.servlet.range>
-        <osgi.el.range>2.2</osgi.el.range>
-        <osgi.faces.range>2.0</osgi.faces.range>
+        <osgi.servlet.range>4.0</osgi.servlet.range>
+        <osgi.el.range>4.0</osgi.el.range>
+        <osgi.faces.range>4.0</osgi.faces.range>
+
 
         <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
+
+        <!-- OLD remove: -->
+        <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
+        <jetty.version>9.4.12.v20180830</jetty.version>
+
     </properties>
     
     <mailingLists>
@@ -303,7 +305,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>5.1.8</version>
                     <executions>
                         <execution>
                             <id>bundle-manifest</id>
@@ -742,12 +744,12 @@
         <module>webbeans-jms</module>
         <module>webbeans-tck</module>
         <module>webbeans-jsf</module>
-<!--X TODO re-enable
-        <module>webbeans-jetty9</module>
         <module>webbeans-osgi</module>
-        <module>samples</module>
         <module>distribution</module>
         <module>bom</module>
+<!--X TODO re-enable
+        <module>webbeans-jetty9</module>
+        <module>samples</module>
 -->
     </modules>
 
@@ -881,24 +883,18 @@
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>4.2.0</version>
+                <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
             
 
+<!--
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jpa_2.0_spec</artifactId>
                 <version>${geronimo_jpa.version}</version>
             </dependency>
-
-
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jsp_2.1_spec</artifactId>
-                <version>${geronimo_jsp.version}</version>
-            </dependency>
-
+-->
 
             <!--  this is used for TCK tests        -->
             <dependency>
@@ -940,25 +936,7 @@
 
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
-                <artifactId>openwebbeans-resource</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-ejb</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- CDI Testing Framework -->
-            <dependency>
-                <groupId>org.apache.openwebbeans.test</groupId>
-                <artifactId>cditest</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.openwebbeans.test</groupId>
-                <artifactId>cditest-owb</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
