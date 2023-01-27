@@ -20,7 +20,7 @@ package org.apache.webbeans.sample.bean;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import javax.faces.context.FacesContext;
+import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpSession;
 
 import org.apache.webbeans.sample.bindings.LoggedInUser;

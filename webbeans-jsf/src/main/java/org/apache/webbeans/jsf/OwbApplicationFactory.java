@@ -20,8 +20,8 @@ package org.apache.webbeans.jsf;
 
 import org.apache.webbeans.config.WebBeansContext;
 
-import javax.faces.application.Application;
-import javax.faces.application.ApplicationFactory;
+import jakarta.faces.application.Application;
+import jakarta.faces.application.ApplicationFactory;
 
 public class OwbApplicationFactory extends ApplicationFactory
 {
@@ -65,7 +65,7 @@ public class OwbApplicationFactory extends ApplicationFactory
     }
 
     /* (non-Javadoc)
-     * @see javax.faces.application.ApplicationFactory#getWrapped()
+     * @see jakarta.faces.application.ApplicationFactory#getWrapped()
      */
     @Override
     public ApplicationFactory getWrapped()

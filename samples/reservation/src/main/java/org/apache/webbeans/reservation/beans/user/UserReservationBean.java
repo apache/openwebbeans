@@ -31,8 +31,8 @@ import jakarta.enterprise.context.ConversationScoped;
 import jakarta.enterprise.inject.Default;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import javax.faces.component.html.HtmlDataTable;
-import javax.faces.model.SelectItem;
+import jakarta.faces.component.html.HtmlDataTable;
+import jakarta.faces.model.SelectItem;
 
 import org.apache.webbeans.reservation.controller.admin.AdminController;
 import org.apache.webbeans.reservation.controller.user.UserController;

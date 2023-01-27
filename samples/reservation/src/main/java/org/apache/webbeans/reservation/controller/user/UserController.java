@@ -26,7 +26,7 @@ import java.util.Set;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.RequestScoped;
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 import jakarta.inject.Inject;
 import javax.persistence.EntityManager;
 

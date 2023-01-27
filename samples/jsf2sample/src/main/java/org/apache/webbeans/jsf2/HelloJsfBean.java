@@ -19,9 +19,9 @@
 package org.apache.webbeans.jsf2;
 
 import jakarta.enterprise.context.RequestScoped;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.ActionListener;
+import jakarta.faces.event.AbortProcessingException;
+import jakarta.faces.event.ActionEvent;
+import jakarta.faces.event.ActionListener;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 

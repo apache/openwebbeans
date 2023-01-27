@@ -52,24 +52,6 @@
         <url>https://github.com/apache/openwebbeans</url>
     </scm>
 
-<!-- Should not be needed anymore
-    <repositories>
-        <repository>
-            <id>jboss-public-repository-group</id>
-            <name>JBoss Public Maven Repository Group</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
--->
-
     <issueManagement>
         <system>jira</system>
         <url>https://issues.apache.org/jira/browse/OWB</url>
@@ -87,23 +69,15 @@
         <jakarta.jms-api.version>3.0.0</jakarta.jms-api.version>
 
         <tomcat.version>10.1.5</tomcat.version>
-
+        <myfaces.version>4.0.0-RC4</myfaces.version>
 
         <httpclient.version>4.5.14</httpclient.version>
         <xbean.version>4.22</xbean.version>
         <arquillian.version>1.7.0.Alpha13</arquillian.version>
 
 <!-- OLD remove: -->
-        <geronimo_jaxws.version>1.2</geronimo_jaxws.version>
-        <geronimo_servlet.version>1.0</geronimo_servlet.version>
-        <geronimo_ejb.version>1.0.2</geronimo_ejb.version>
-        <geronimo_jpa.version>1.1</geronimo_jpa.version>
-        <geronimo_jta.version>1.1.1</geronimo_jta.version>
-        <geronimo_jsp.version>1.0.1</geronimo_jsp.version>
-        <geronimo_validation.version>1.1</geronimo_validation.version>
         <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
         <jetty.version>9.4.12.v20180830</jetty.version>
-        <myfaces.version>2.3.6</myfaces.version>
         <cdi.tck.version>4.0.7</cdi.tck.version>
 
         <osgi.servlet.range>2.4</osgi.servlet.range>
@@ -111,9 +85,6 @@
         <osgi.faces.range>2.0</osgi.faces.range>
 
         <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
-
-        <!-- tck artifacts use a http:// repo we should disable to build with mvn 3.8<jboss-public-repository>false</jboss-public-repository> -->
-        <jboss-public-repository>false</jboss-public-repository>
     </properties>
     
     <mailingLists>
@@ -770,12 +741,11 @@
         <module>webbeans-ee</module>
         <module>webbeans-jms</module>
         <module>webbeans-tck</module>
+        <module>webbeans-jsf</module>
 <!--X TODO re-enable
         <module>webbeans-jetty9</module>
-        <module>webbeans-jsf</module>
         <module>webbeans-osgi</module>
         <module>samples</module>
-        <module>webbeans-tck-jakarta</module>
         <module>distribution</module>
         <module>bom</module>
 -->
@@ -867,11 +837,6 @@
                 <artifactId>geronimo-servlet_3.0_spec</artifactId>
                 <version>${geronimo_servlet.version}</version>
             </dependency>
-
-
-
-
-
 
             <dependency>
                 <groupId>org.apache.myfaces.core</groupId>

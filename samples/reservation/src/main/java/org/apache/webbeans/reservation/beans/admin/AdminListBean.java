@@ -26,7 +26,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.inject.Default;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import javax.faces.component.html.HtmlDataTable;
+import jakarta.faces.component.html.HtmlDataTable;
 
 import org.apache.webbeans.reservation.controller.admin.AdminController;
 import org.apache.webbeans.reservation.entity.Hotel;

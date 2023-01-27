@@ -23,9 +23,9 @@ import java.util.Map;
 import jakarta.enterprise.context.ContextNotActiveException;
 
 import jakarta.enterprise.context.Conversation;
-import javax.faces.application.ViewHandler;
-import javax.faces.application.ViewHandlerWrapper;
-import javax.faces.context.FacesContext;
+import jakarta.faces.application.ViewHandler;
+import jakarta.faces.application.ViewHandlerWrapper;
+import jakarta.faces.context.FacesContext;
 
 import org.apache.webbeans.config.WebBeansContext;
 

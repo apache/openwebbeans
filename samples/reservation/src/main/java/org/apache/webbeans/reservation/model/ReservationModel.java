@@ -20,7 +20,7 @@ package org.apache.webbeans.reservation.model;
 
 import java.util.Date;
 
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 
 public class ReservationModel
 {

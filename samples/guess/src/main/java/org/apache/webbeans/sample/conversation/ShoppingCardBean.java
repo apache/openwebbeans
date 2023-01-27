@@ -25,7 +25,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Default;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import javax.faces.application.FacesMessage;
+import jakarta.faces.application.FacesMessage;
 
 import org.apache.webbeans.sample.model.conversation.ConversationModel;
 import org.apache.webbeans.sample.util.FacesMessageUtil;

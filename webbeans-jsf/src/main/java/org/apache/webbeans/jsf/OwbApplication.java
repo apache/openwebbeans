@@ -19,8 +19,8 @@
 package org.apache.webbeans.jsf;
 
 import jakarta.el.ExpressionFactory;
-import javax.faces.application.Application;
-import javax.faces.application.ApplicationWrapper;
+import jakarta.faces.application.Application;
+import jakarta.faces.application.ApplicationWrapper;
 
 import org.apache.webbeans.config.WebBeansContext;
 
@@ -37,7 +37,7 @@ public class OwbApplication extends ApplicationWrapper
 
 
     /* (non-Javadoc)
-     * @see javax.faces.application.Application#getExpressionFactory()
+     * @see jakarta.faces.application.Application#getExpressionFactory()
      */
     @Override
     public ExpressionFactory getExpressionFactory()

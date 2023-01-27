@@ -112,7 +112,7 @@
                     <artifactId>cdi-api</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>javax.faces</groupId>
+                    <groupId>jakarta.faces</groupId>
                     <artifactId>jsf-api</artifactId>
                 </exclusion>
                 <exclusion>

@@ -18,9 +18,9 @@
  */
 package org.apache.webbeans.jsf;
 
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import jakarta.faces.component.UIViewRoot;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpSession;
 
 import org.apache.webbeans.util.Asserts;

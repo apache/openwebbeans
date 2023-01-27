@@ -26,7 +26,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.Conversation;
 import jakarta.enterprise.context.ConversationScoped;
 import jakarta.enterprise.inject.Produces;
-import javax.faces.component.UIData;
+import jakarta.faces.component.UIData;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 

@@ -28,7 +28,7 @@ import jakarta.enterprise.inject.Default;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.enterprise.inject.Produces;
-import javax.faces.application.FacesMessage;
+import jakarta.faces.application.FacesMessage;
 
 import org.apache.webbeans.sample.bindings.AppScopeBinding;
 import org.apache.webbeans.sample.bindings.LoggedInUser;

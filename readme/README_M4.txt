@@ -199,7 +199,7 @@ New Feature
     * [OWB-137] - implement BusyConversationException use case
     * [OWB-138] - implement NonexistentConversationException use case
     * [OWB-226] - create a way to dynamically add Extensions to our tests
-    * [OWB-229] - add support for the JSF2 javax.faces.bean.ViewScoped annotation
+    * [OWB-229] - add support for the JSF2 jakarta.faces.bean.ViewScoped annotation
     * [OWB-230] - Enable/Disable Configuration of JSF2 Extensions
     * [OWB-277] - Owb on Google App Engine
 
