@@ -25,7 +25,7 @@ import jakarta.el.ELException;
 import jakarta.el.MethodExpression;
 import jakarta.el.MethodInfo;
 
-public class    WrappedMethodExpression extends MethodExpression
+public class WrappedMethodExpression extends MethodExpression
 {
     private final MethodExpression delegate;
 
