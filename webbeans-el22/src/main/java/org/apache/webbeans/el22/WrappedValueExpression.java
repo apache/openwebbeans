@@ -22,14 +22,13 @@ import jakarta.el.ELContext;
 import jakarta.el.ELException;
 import jakarta.el.ValueExpression;
 import jakarta.el.ValueReference;
-
 import org.apache.webbeans.el.ELContextStore;
 
 public class WrappedValueExpression extends ValueExpression
 {
     private static final long serialVersionUID = 1L;
 
-    private ValueExpression valueExpression;
+    private final ValueExpression valueExpression;
     
     public WrappedValueExpression(ValueExpression valueExpression)
     {
@@ -62,11 +61,11 @@ public class WrappedValueExpression extends ValueExpression
     @Override
     public Object getValue(ELContext context) throws NullPointerException, ELException
     {
-        Object value = null;
+        final Object value;
         try
         {
            value = valueExpression.getValue(context);
-            
+
         }
         finally
         {
@@ -98,7 +97,7 @@ public class WrappedValueExpression extends ValueExpression
     {
         if (arg0 instanceof WrappedValueExpression)
         {
-            return valueExpression.equals(WrappedValueExpression.class.cast(arg0).valueExpression);
+            return valueExpression.equals(((WrappedValueExpression) arg0).valueExpression);
         }
         return valueExpression.equals(arg0);
     }

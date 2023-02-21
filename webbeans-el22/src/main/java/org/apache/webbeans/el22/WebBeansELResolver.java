@@ -33,6 +33,7 @@ import java.beans.FeatureDescriptor;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * JSF or JSP expression language a.k.a EL resolver.
@@ -53,7 +54,7 @@ import java.util.Set;
  */
 public class WebBeansELResolver extends ELResolver
 {
-    private WebBeansContext webBeansContext;
+    private final WebBeansContext webBeansContext;
 
     public WebBeansELResolver()
     {
@@ -94,52 +95,94 @@ public class WebBeansELResolver extends ELResolver
     @SuppressWarnings({"unchecked","deprecation"})
     public Object getValue(ELContext context, Object base, Object property) throws ELException
     {
-        BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
-        //we only check root beans
+        final BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
+
         // Check if the OWB actually got used in this application
-        if (base != null || !beanManager.isInUse())
+        if (!beanManager.isInUse())
         {
             return null;
         }
 
         //Name of the bean
-        String beanName = (String) property;
+        final String beanName = (String) property;
 
-        //Local store, create if not exist
-        ELContextStore elContextStore = ELContextStore.getInstance(true);
+        // Local store, create if not exist
+        final ELContextStore elContextStore = ELContextStore.getInstance(true);
 
-        Object contextualInstance = elContextStore.findBeanByName(beanName);
-
+        // Already available in the cache. Let's return it
+        final Object contextualInstance = elContextStore.findBeanByName(beanName);
         if(contextualInstance != null)
         {
             context.setPropertyResolved(true);
-
             return contextualInstance;
         }
 
-        //Get beans
-        Set<Bean<?>> beans = beanManager.getBeans(beanName);
+        // check if it's a recursive call to handle dotted based names
+        if (base instanceof WrappedValueExpressionNode)
+        {
+            final String baseBeanName = ((WrappedValueExpressionNode) base).getFqBeanName();
+            return findDottedName(context, baseBeanName, beanManager, elContextStore, beanName);
+        }
 
-        //Found?
+        // Get bean candidates
+        final Set<Bean<?>> beans = beanManager.getBeans(beanName);
+
+        // Found?
         if(beans != null && !beans.isEmpty())
         {
-            //Managed bean
-            Bean<?> bean = beanManager.resolve(beans);
-
-            if(bean.getScope().equals(Dependent.class))
-            {
-                contextualInstance = getDependentContextualInstance(beanManager, elContextStore, context, bean);
-            }
-            else
-            {
-                // now we check for NormalScoped beans
-                contextualInstance = getNormalScopedContextualInstance(beanManager, elContextStore, context, bean, beanName);
-            }
+            return getBeanWithScope(context, beanManager, beanName, elContextStore, beans);
         }
-        return contextualInstance;
+        else
+        {
+            // Fallback for TCK because CDI allows CDI beans to contain dots like @Named("magic.golden.fish")
+            return findDottedName(context, null, beanManager, elContextStore, beanName);
+        }
+
     }
 
-    protected Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context, Bean<?> bean, String beanName)
+    private Object getBeanWithScope(final ELContext context, final BeanManagerImpl beanManager, final String beanName,
+                                    final ELContextStore elContextStore, final Set<Bean<?>> beans)
+    {
+        // Managed bean
+        final Bean<?> bean = beanManager.resolve(beans);
+
+        if(bean.getScope().equals(Dependent.class))
+        {
+            return getDependentContextualInstance(beanManager, elContextStore, context, bean);
+        }
+        else
+        {
+            // now we check for NormalScoped beans
+            return getNormalScopedContextualInstance(beanManager, elContextStore, context, bean, beanName);
+        }
+    }
+
+    private Object findDottedName(final ELContext context, final Object base, final BeanManagerImpl beanManager,
+                                  final ELContextStore elContextStore, final String beanName)
+    {
+
+        final String fqBeanName = base == null ? beanName : base + "." + beanName;
+        final Set<Bean<?>> anyBeanName = beanManager.getBeans().stream()
+                                                    .filter(b -> b.getName() != null)
+                                                    .filter(b -> b.getName().startsWith(fqBeanName))
+                                                    .collect(Collectors.toSet());
+
+        // more than one bean with the same beginning or name not matching
+        if (anyBeanName.size() >= 1 && !fqBeanName.equals(anyBeanName.iterator().next().getName()))
+        {
+            context.setPropertyResolved(true);
+            return new WrappedValueExpressionNode(fqBeanName);
+        }
+        // looks like a good candidate
+        else if (anyBeanName.size() == 1)
+        {
+            return getBeanWithScope(context, beanManager, beanName, elContextStore, anyBeanName);
+        }
+        return null;
+    }
+
+    protected Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context,
+                                                       Bean<?> bean, String beanName)
     {
         CreationalContext<?> creationalContext = manager.createCreationalContext(bean);
         Object contextualInstance = manager.getReference(bean, Object.class, creationalContext);

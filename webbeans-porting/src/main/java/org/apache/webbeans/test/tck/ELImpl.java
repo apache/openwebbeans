@@ -46,9 +46,10 @@ public class ELImpl implements EL
     {
     }
     
-    public static ELResolver getELResolver()
+    public static ELResolver getELResolver(final BeanManager beanManager)
     {
         CompositeELResolver composite = new CompositeELResolver();
+        composite.add(beanManager.getELResolver());
         composite.add(new BeanELResolver());
         composite.add(new ArrayELResolver());
         composite.add(new MapELResolver());
@@ -60,12 +61,19 @@ public class ELImpl implements EL
     }
     
     public static class ELContextImpl extends ELContext
-    {        
+    {
+
+        private final BeanManager beanManager;
+
+        public ELContextImpl(final BeanManager beanManager)
+        {
+            this.beanManager = beanManager;
+        }
 
         @Override
         public ELResolver getELResolver()
         {
-            return ELImpl.getELResolver();
+            return ELImpl.getELResolver(beanManager);
         }
 
         @Override
@@ -104,7 +112,7 @@ public class ELImpl implements EL
 
     public ELContext createELContext(BeanManager beanManager)
     {   
-        ELContext context = new ELContextImpl();
+        ELContext context = new ELContextImpl(beanManager);
 
         return context;
     }
