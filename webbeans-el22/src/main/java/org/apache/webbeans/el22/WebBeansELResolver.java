@@ -167,16 +167,16 @@ public class WebBeansELResolver extends ELResolver
                                                     .filter(b -> b.getName().startsWith(fqBeanName))
                                                     .collect(Collectors.toSet());
 
+        // looks like a good candidate
+        if (anyBeanName.size() == 1 && fqBeanName.equals(anyBeanName.iterator().next().getName()))
+        {
+            return getBeanWithScope(context, beanManager, beanName, elContextStore, anyBeanName);
+        }
         // more than one bean with the same beginning or name not matching
-        if (anyBeanName.size() >= 1 && !fqBeanName.equals(anyBeanName.iterator().next().getName()))
+        else if (!anyBeanName.isEmpty())
         {
             context.setPropertyResolved(true);
             return new WrappedValueExpressionNode(fqBeanName);
-        }
-        // looks like a good candidate
-        else if (anyBeanName.size() == 1)
-        {
-            return getBeanWithScope(context, beanManager, beanName, elContextStore, anyBeanName);
         }
         return null;
     }

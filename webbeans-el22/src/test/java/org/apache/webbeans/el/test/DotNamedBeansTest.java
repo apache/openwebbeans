@@ -21,6 +21,7 @@ package org.apache.webbeans.el.test;
 import jakarta.el.ELContext;
 import jakarta.el.ELResolver;
 import jakarta.el.FunctionMapper;
+import jakarta.el.PropertyNotFoundException;
 import jakarta.el.ValueExpression;
 import jakarta.el.VariableMapper;
 import jakarta.enterprise.context.Dependent;
@@ -55,6 +56,22 @@ public class DotNamedBeansTest extends AbstractUnitTest
 
     @Test
     public void testIntermediateNode() throws Exception
+    {
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+
+        classes.add(GoldenFish.class);
+        classes.add(BlueGoldenFish.class);
+
+        startContainer(classes);
+        final Object node = getBeanManager().getELResolver().getValue(new MockELContext(), null, "magic");
+        Assert.assertNotNull(node);
+        Assert.assertTrue(node instanceof WrappedValueExpressionNode);
+
+        shutDownContainer();
+    }
+
+    @Test
+    public void testUniqueIntermediateNode() throws Exception
     {
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
 
@@ -109,6 +126,21 @@ public class DotNamedBeansTest extends AbstractUnitTest
         shutDownContainer();
     }
 
+    @Test
+    public void testNoMatch() throws Exception
+    {
+        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+
+        classes.add(Dog.class);
+
+        startContainer(classes);
+
+        Assert.assertThrows(PropertyNotFoundException.class,
+                            () -> evaluateValueExpression(getBeanManager(), "#{magic.golden.fish}", GoldenFish.class));
+
+        shutDownContainer();
+    }
+
     public static <T> T evaluateValueExpression(final BeanManager beanManager, final String expression, final Class<T> expectedType)
     {
         final WrappedExpressionFactory wrappedExpressionFactory = new WrappedExpressionFactory(new ExpressionFactoryImpl());
@@ -149,4 +181,10 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Dependent
     public static class BlueGoldenFish {
     }
+
+    @Named("dog")
+    @Dependent
+    public static class Dog {
+    }
+
 }
