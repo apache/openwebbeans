@@ -89,16 +89,7 @@
                     <exclude name="testMultipleLifecycleInterceptors"/>
                 </methods>
             </class>
-
-            <!--
-                The test asserts something which is not defined in the spec.
-            -->
-            <class name="org.jboss.cdi.tck.tests.full.extensions.beanManager.unmanaged.UnmanagedInstanceTest" >
-                <methods>
-                    <exclude name="testNonContextualInstanceIsIntercepted"/>
-                </methods>
-            </class>
-
+            
             <!--
                 The spec says nowhere that they must be invoked in exactly that order.
             -->

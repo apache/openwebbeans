@@ -187,6 +187,12 @@ public class BeanManagerImpl implements BeanManager, Referenceable
 
     private AnnotatedElementFactory annotatedElementFactory;
 
+    /**
+     * A cache for bean classes which get created 'on the fly' by manually calling createInjectionTarget without a bean.
+     */
+    private ConcurrentMap<Class<?>, Bean> unmanagedClassBeans = new ConcurrentHashMap<>();
+
+
     private final WebBeansContext webBeansContext;
 
     /**
@@ -214,7 +220,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
      * We don't need to take special care about classloader
      * hierarchies, because each cl has other classes.
      */
-    private static Map<Class<? extends Annotation>, Boolean> isScopeTypeNormalCache =
+    private Map<Class<? extends Annotation>, Boolean> isScopeTypeNormalCache =
         new ConcurrentHashMap<>();
 
     /**
@@ -256,6 +262,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public ErrorStack getErrorStack()
     {
         return errorStack;
+    }
+
+    public ConcurrentMap<Class<?>, Bean> getUnmanagedClassBeans()
+    {
+        return unmanagedClassBeans;
     }
 
     /**

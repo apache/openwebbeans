@@ -19,9 +19,9 @@
     <test name="JSR-346 TCK">
 
         <classes>
-            <class name="org.jboss.cdi.tck.interceptors.tests.contract.lifecycleCallback.bindings.LifecycleInterceptorDefinitionTest" >
+            <class name="org.jboss.cdi.tck.tests.full.extensions.beanManager.unmanaged.UnmanagedInstanceTest" >
                 <methods>
-                    <include name=".*"/>
+                    <include name="testNonContextualInstanceIsIntercepted"/>
                 </methods>
             </class>
 
