@@ -91,16 +91,6 @@
             </class>
 
             <!--
-                This is just the most backward breaking change I've seen in years.
-                Not going to implement it!
-            -->
-            <class name="org.jboss.cdi.tck.tests.deployment.discovery.EmptyBeansXmlDiscoveryTest" >
-                <methods>
-                    <exclude name=".*"/>
-                </methods>
-            </class>
-
-            <!--
                 The test asserts something which is not defined in the spec.
             -->
             <class name="org.jboss.cdi.tck.tests.full.extensions.beanManager.unmanaged.UnmanagedInstanceTest" >

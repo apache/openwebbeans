@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
+import org.apache.webbeans.spi.BeanArchiveService;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -203,6 +204,18 @@ public class OpenWebBeansConfiguration
      * cannot properly handle Java8 (mostly due to older Eclipse JDT versions).
      */
     public static final String GENERATOR_JAVA_VERSION = "org.apache.webbeans.generator.javaVersion";
+
+
+    /**
+     * Default bean discovery mode for empty beans.xml
+     * There was a really wicked change in the CDI-4.0 specification which will break many applications.
+     * They switched the bean-discovery-mode of an empty beans.xml file (or a beans.xml without any version)
+     * from ALL to ANNOTATED (Despite warnings that his is totally backward incompatible and could easily have been avoided).
+     *
+     * The default in OWB is still ALL, but it can be configured to any other bean-discovery-mode with this config switch
+     */
+    public static final String DEFAULT_BEAN_DISCOVERY_MODE = "org.apache.webbeans.defaultBeanDiscoveryMode";
+
 
 
     /**Default configuration files*/
@@ -597,5 +610,13 @@ public class OpenWebBeansConfiguration
             }
         }
         return proxyReservedPackages;
+    }
+
+    /**
+     * @see #DEFAULT_BEAN_DISCOVERY_MODE
+     */
+    public BeanArchiveService.BeanDiscoveryMode getDefaultBeanDiscoveryMode()
+    {
+        return BeanArchiveService.BeanDiscoveryMode.valueOf(getProperty(OpenWebBeansConfiguration.DEFAULT_BEAN_DISCOVERY_MODE));
     }
 }

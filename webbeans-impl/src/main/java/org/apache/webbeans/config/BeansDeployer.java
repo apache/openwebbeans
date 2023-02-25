@@ -196,7 +196,8 @@ public class BeansDeployer
         skipNoClassDefFoundTriggers = this.webBeansContext.getOpenWebBeansConfiguration().isSkipNoClassDefFoundErrorTriggers();
 
         defaultBeanArchiveInformation = new DefaultBeanArchiveInformation("default");
-        defaultBeanArchiveInformation.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
+
+        defaultBeanArchiveInformation.setBeanDiscoveryMode(webBeansContext.getOpenWebBeansConfiguration().getDefaultBeanDiscoveryMode());
     }
 
     /**

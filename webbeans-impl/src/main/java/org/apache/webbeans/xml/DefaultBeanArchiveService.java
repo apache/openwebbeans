@@ -33,6 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.webbeans.config.OWBLogConst;
+import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.exception.WebBeansException;
@@ -55,6 +56,8 @@ public class DefaultBeanArchiveService implements BeanArchiveService
     private static final String META_INF_BEANS_XML = "/META-INF/beans.xml";
 
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeanArchiveService.class);
+
+    private WebBeansContext webBeansContext;
 
     /**
      * Contains a map from the URL externalForm to the stored BeanArchiveInformation
@@ -294,7 +297,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             if (firstVal < 0)
             {
                 // this means the stream is empty
-                bdaInfo.setBeanDiscoveryMode(BeanDiscoveryMode.ALL);
+                bdaInfo.setBeanDiscoveryMode(getWebBeansContext().getOpenWebBeansConfiguration().getDefaultBeanDiscoveryMode());
             }
             else
             {
@@ -345,6 +348,17 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         }
 
         return bdaInfo;
+    }
+
+    private WebBeansContext getWebBeansContext()
+    {
+        // lazy init to avoid setup issues
+        if (webBeansContext == null)
+        {
+                webBeansContext = WebBeansContext.currentInstance();
+        }
+
+        return webBeansContext;
     }
 
     private void readBeanChildren(DefaultBeanArchiveInformation bdaInfo, Element webBeansRoot, String beansXmlLocation)
