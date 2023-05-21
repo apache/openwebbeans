@@ -274,7 +274,7 @@ public final class BeanCacheKey
     private static class AnnotationComparator implements Comparator<Annotation>
     {
 
-        // Notice: Sorting is a bit costly, but the use of this code is very rar.
+        // Notice: Sorting is a bit costly, but the use of this code is very rare.
         @Override
         public int compare(Annotation annotation1, Annotation annotation2)
         {
@@ -295,7 +295,9 @@ public final class BeanCacheKey
             Method[] member1 = type1.getDeclaredMethods();
             Method[] member2 = type2.getDeclaredMethods();
 
-            // TBD: the order of the list of members seems to be deterministic
+            // Sort the arrsys because the order of the list of members is not deterministic.
+            Arrays.sort(member1, new MethodComparator());
+            Arrays.sort(member2, new MethodComparator());
 
             int i = 0;
             int j = 0;
@@ -399,5 +401,12 @@ public final class BeanCacheKey
             this.qualifierAt = qualifierAt;
             this.qualifierAts = qualifierAts;
         }
+    }
+}
+
+class MethodComparator implements Comparator<Method> {
+    @Override
+    public int compare(Method m1, Method m2) {
+        return m1.toString().compareTo(m2.toString());
     }
 }
