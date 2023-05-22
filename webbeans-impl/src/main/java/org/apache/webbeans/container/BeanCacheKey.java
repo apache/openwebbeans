@@ -295,7 +295,9 @@ public final class BeanCacheKey
             Method[] member1 = type1.getDeclaredMethods();
             Method[] member2 = type2.getDeclaredMethods();
 
-            // TBD: the order of the list of members seems to be deterministic
+            // Sort the arrays because the order of the list of members is not deterministic.
+            Arrays.sort(member1, Comparator.comparing(Method::toString));
+            Arrays.sort(member2, Comparator.comparing(Method::toString));
 
             int i = 0;
             int j = 0;
