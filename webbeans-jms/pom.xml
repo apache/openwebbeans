@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0</version>
     </parent>
     <artifactId>openwebbeans-jms</artifactId>
     <name>JMS plugin</name>
