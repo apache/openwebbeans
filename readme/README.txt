@@ -4,25 +4,22 @@ Apache OpenWebBeans README
 
 Welcome!
 
-Thanks for downloading and using Apache OpenWebBeans.
-In short OWB
-This document is a "Getting Started Guide" for the latest release OWB.
+Thanks for downloading and using Apache OpenWebBeans (OWB).
+
+This document is a "Getting Started Guide" for the latest Apache OpenWebBeans release.
 
 --------------------------------
 What is Apache OpenWebBeans?
 --------------------------------
-OpenWebBeans is an Apache License V 2.0 licensed implementation of the JSR-365,
-Contexts and Dependency Injection 2.0 specification.
+OpenWebBeans is an Apache License V 2.0 licensed implementation of the Jakarta Contexts and Dependency Injection 4.0 specification.
 
-CDI-2.0 is backward compatible to JSR-346 CDI-1.2 and JSR-299 CDI-1.0.
+CDI-4.0 is mostly backward compatible to JSR-365 CDI-2.0, JSR-346 CDI-1.2 and JSR-299 CDI-1.0 but uses the jakarta.* package names instead of javax.*
 
 Our project's web page can be found at:
 https://openwebbeans.apache.org
 
-We also support the Jakarta EE specifications by providing shaded libraries.
-
-The latest Java Version we support is Java-16.
-The minimum Java Version is Java-8.
+The latest Java Version we support is Java-21.
+The minimum Java Version is Java-11.
 
 
 --------------------------------
@@ -46,8 +43,7 @@ OpenWebBeans Release Features
 * @Alternative support
 * OSGi environment support with an own plugable bundle ClassPath scanner
 * plugable SecurityManager integration doubles speed if no SecurityManager is being used
-* support for direct CDI usage in tomcat-8, tomcat-9 and other Servlet environments
-
+* support for direct CDI usage in Tomcat and other Servlet environments
 
 
 Noteable differences to CDI spec behaviour
@@ -63,6 +59,38 @@ only effective for this very bean archive but for the whole BeanManager in contr
 of the Application. This is especially the case for <alternatives>, <decorators> and
 <interceptors>! An Alternative, Interceptor or Decorator enabled in one BDA is active
 for the whole Application.
+
+
+
+
+-------------------------------------------
+Release Notes - OpenWebBeans - Version 4.0.0
+-------------------------------------------
+Bug
+    [OWB-1368] - Maven artifacts with Jakarta classifier requires the artifacts without classifier
+    [OWB-1418] - @Priority on @Alternative @Stereotype enables the bean
+    [OWB-1423] - openwebbeans-impl-jakarta is using old javax namespace
+    [OWB-1425] - Interceptors not being called on UnmanagedInstance
+    [OWB-1426] - Missing bean types for indirectly implemented interfaces
+
+Epic
+    [OWB-1417] - Implement CDI-4.0 spec
+
+New Feature
+    [OWB-1427] - Support for dotted bean names with EL
+
+Improvement
+    [OWB-1428] - make default bean-discovery-mode configurable
+
+Task
+    [OWB-1088] - fix samples with java 8 and update to tomcat7/8
+
+TCK Challenge
+    [OWB-1419] - org.jboss.cdi.tck.interceptors.tests.bindings.aroundConstruct.ConstructorInterceptionTest
+    [OWB-1420] - org.jboss.cdi.tck.interceptors.tests.contract.lifecycleCallback.bindings.LifecycleInterceptorDefinitionTest
+    [OWB-1421] - org.jboss.cdi.tck.interceptors.tests.bindings.overriding.InterceptorBindingOverridingTest
+    [OWB-1422] - org.jboss.cdi.tck.tests.interceptors.definition.InterceptorDefinitionTest
+    [OWB-1424] - org.jboss.cdi.tck.tests.full.context.passivating.dependency.builtin.BuiltinBeanPassivationDependencyTestorg.jboss.cdi.tck.tests.full.context.passivating.dependency.builtin.BuiltinBeanPassivationDependencyTest
 
 
 -------------------------------------------
