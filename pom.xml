@@ -442,12 +442,10 @@
 
                                     <!-- Checks for Headers                              -->
                                     <!-- See http://checkstyle.sf.net/config_header.html -->
-<!--X disabled for now
                                     <module name="Header">
-                                        <property name="headerFile" value="${checkstyle.header.file}"/>
+                                        <property name="header" value="/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements. See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership. The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * &amp;quot;License&amp;quot;); you may not use this file except in compliance\n * with the License. You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * &amp;quot;AS IS&amp;quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied. See the License for the\n * specific language governing permissions and limitations\n * under the License.\n"/>
                                         <property name="fileExtensions" value="java"/>
                                     </module>
--->
 
                                     <!-- Checks for Size Violations.                    -->
                                     <!-- See http://checkstyle.sf.net/config_sizes.html -->
@@ -602,15 +600,6 @@
                     <consoleOutput>true</consoleOutput>
                     <excludes>**/Unsafe*</excludes> <!-- we abuse of switch and checkstyle is broken for it -->
                 </configuration>
-                <!--
-                                <dependencies>
-                                    <dependency>
-                                        <groupId>org.apache.openwebbeans.build-tools</groupId>
-                                        <artifactId>checkstyle-rules</artifactId>
-                                        <version>4.0-SNAPSHOT</version>
-                                    </dependency>
-                                </dependencies>
-                -->
             </plugin>
 
             <plugin>
