@@ -293,7 +293,9 @@ public final class BeanCacheKey
             }
 
             Method[] member1 = type1.getDeclaredMethods();
+            Arrays.sort(member1, (m1, m2) -> m1.getName().compareTo(m2.getName()));
             Method[] member2 = type2.getDeclaredMethods();
+            Arrays.sort(member2, (m1, m2) -> m1.getName().compareTo(m2.getName()));
 
             // TBD: the order of the list of members seems to be deterministic
 
