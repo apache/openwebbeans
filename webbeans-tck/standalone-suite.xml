@@ -226,6 +226,20 @@
                 </methods>
             </class>
 
+            <!-- https://github.com/jakartaee/cdi-tck/issues/468 -->
+            <class name="org.jboss.cdi.tck.tests.interceptors.definition.inheritance.InterceptorBindingInheritanceTest">
+                <methods>
+                    <exclude name=".*"/>
+                </methods>
+            </class>
+            <!-- same as above #468. comparing a proxy with a contextual instance is a bad idea -->
+            <class name="org.jboss.cdi.tck.interceptors.tests.contract.invocationContext.InvocationContextTest">
+                <methods>
+                    <exclude name="testGetTargetMethod"/>
+                </methods>
+            </class>
+
+
         </classes>
 
 
