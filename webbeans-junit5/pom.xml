@@ -92,6 +92,9 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <failIfNoTests>true</failIfNoTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>

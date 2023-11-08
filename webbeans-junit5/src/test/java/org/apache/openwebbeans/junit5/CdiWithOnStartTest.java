@@ -16,9 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openwebbeans.junit5.reusable;
+package org.apache.openwebbeans.junit5;
 
-import org.apache.openwebbeans.junit5.Cdi;
 import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
