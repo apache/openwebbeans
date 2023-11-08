@@ -18,8 +18,7 @@
  */
 package org.apache.webbeans.component;
 
-import java.lang.reflect.Type;
-
+import jakarta.enterprise.inject.spi.BeanContainer;
 import jakarta.enterprise.inject.spi.BeanManager;
 
 import org.apache.webbeans.config.WebBeansContext;
@@ -33,7 +32,8 @@ public class BeanManagerBean extends BuiltInOwbBean<BeanManager>
     {
         super(webBeansContext,
               WebBeansType.MANAGER,
-              new BeanAttributesImpl<>(CollectionUtil.<Type>unmodifiableSet(BeanManager.class, Object.class), AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET),
+              new BeanAttributesImpl<>(CollectionUtil.unmodifiableSet(BeanManager.class, BeanContainer.class, Object.class),
+                                       AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET),
               BeanManager.class,
               new SimpleProducerFactory<>(new BeanManagerProducer(webBeansContext)));
     }
