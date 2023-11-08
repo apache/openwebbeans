@@ -46,7 +46,7 @@ public class ValidatingInjectionTargetFactory<T> extends InjectionTargetFactoryI
     public InjectionTarget<T> createInjectionTarget(Bean<T> bean)
     {
         final AnnotatedType<T> annotatedType = getAnnotatedType();
-        final InjectionTargetImpl<T> injectionTarget =  (InjectionTargetImpl<T>) super.createInjectionTarget(bean);
+        final InjectionTarget<T> injectionTarget =  super.createInjectionTarget(bean);
         final Set<InjectionPoint> injectionPoints = injectionTarget.getInjectionPoints();
         try
         {
@@ -72,7 +72,10 @@ public class ValidatingInjectionTargetFactory<T> extends InjectionTargetFactoryI
                 });
             }
 
-            injectionTarget.defineInterceptorStack(bean, annotatedType, getWebBeansContext());
+            if (injectionTarget instanceof InjectionTargetImpl)
+            {
+                ((InjectionTargetImpl) injectionTarget).defineInterceptorStack(bean, annotatedType, getWebBeansContext());
+            }
         }
 
         return injectionTarget;
