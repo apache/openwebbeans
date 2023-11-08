@@ -88,6 +88,7 @@
         <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
         <jetty.version>9.4.12.v20180830</jetty.version>
 
+        <surefire.version>3.2.2</surefire.version>
     </properties>
     
     <mailingLists>
@@ -300,7 +301,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.2.0</version>
                 </plugin>
 
                 <plugin>
@@ -380,16 +381,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.2</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
@@ -416,7 +416,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>verify-style</id>
@@ -538,6 +538,7 @@
                                         <module name="NeedBraces" />
                                         <module name="LeftCurly">
                                             <property name="option" value="nl" />
+                                            <property name="tokens" value=" ANNOTATION_DEF,CLASS_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,LITERAL_CASE,LITERAL_CATCH,LITERAL_DEFAULT,LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_FOR,LITERAL_IF,LITERAL_SWITCH,LITERAL_SYNCHRONIZED,LITERAL_TRY,LITERAL_WHILE,METHOD_DEF,OBJBLOCK,STATIC_INIT"/>
                                         </module>
                                         <module name="RightCurly">
                                             <property name="option" value="alone" />

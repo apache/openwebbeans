@@ -256,7 +256,8 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     public Iterator<T> iterator()
     {
         final Iterator<Bean<?>> beans = resolveBeans().iterator();
-        return new Iterator<T>() {
+        return new Iterator<T>()
+        {
             @Override
             public boolean hasNext()
             {
