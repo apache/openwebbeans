@@ -59,22 +59,22 @@
     </issueManagement>
 
     <properties>
-        <jakarta.atinject-api.version>2.0.0</jakarta.atinject-api.version>
-        <jakarta.cdi-api.version>4.0.0</jakarta.cdi-api.version>
+        <jakarta.atinject-api.version>2.0.1</jakarta.atinject-api.version>
+        <jakarta.cdi-api.version>4.0.1</jakarta.cdi-api.version>
         <jakarta.interceptor-api.version>2.0.0</jakarta.interceptor-api.version>
-        <jakarta.annotation-api.version>2.0.0</jakarta.annotation-api.version>
+        <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
         <jakarta.el-api.version>4.0.0</jakarta.el-api.version>
-        <jakarta.transaction-api.version>2.0.0</jakarta.transaction-api.version>
-        <jakarta.validation-api.version>3.0.0</jakarta.validation-api.version>
-        <jakarta.ejb-api.version>4.0.0</jakarta.ejb-api.version>
+        <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
+        <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
+        <jakarta.ejb-api.version>4.0.1</jakarta.ejb-api.version>
         <jakarta.jms-api.version>3.0.0</jakarta.jms-api.version>
 
         <tomcat.version>10.1.5</tomcat.version>
-        <myfaces.version>4.0.0-RC4</myfaces.version>
+        <myfaces.version>4.0.1</myfaces.version>
 
         <httpclient.version>4.5.14</httpclient.version>
         <xbean.version>4.24</xbean.version>
-        <arquillian.version>1.7.0.Alpha13</arquillian.version>
+        <arquillian.version>1.7.1.Final</arquillian.version>
         <cdi.tck.version>4.0.12</cdi.tck.version>
 
         <osgi.servlet.range>4.0</osgi.servlet.range>
@@ -810,25 +810,6 @@
                 <artifactId>jakarta.ejb-api</artifactId>
                 <version>${jakarta.ejb-api.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-ejb_3.1_spec</artifactId>
-                <version>${geronimo_ejb.version}</version>
-            </dependency>
-
-
-            <!-- OLD REMOVE -->
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jaxws_2.2_spec</artifactId>
-                <version>${geronimo_jaxws.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-servlet_3.0_spec</artifactId>
-                <version>${geronimo_servlet.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>org.apache.myfaces.core</groupId>
@@ -877,15 +858,6 @@
                 <scope>provided</scope>
             </dependency>
             
-
-<!--
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jpa_2.0_spec</artifactId>
-                <version>${geronimo_jpa.version}</version>
-            </dependency>
--->
-
             <!--  this is used for TCK tests        -->
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
