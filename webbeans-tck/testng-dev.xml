@@ -19,7 +19,7 @@
     <test name="JSR-346 TCK">
 
         <classes>
-            <class name="org.jboss.cdi.tck.interceptors.tests.contract.invocationContext.InvocationContextTest" >
+            <class name="org.jboss.cdi.tck.tests.definition.bean.types.ManagedBeanTypesTest" >
                 <methods>
 <!--
                     <include name="testNonContextualInstanceIsIntercepted"/>
