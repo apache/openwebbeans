@@ -72,7 +72,8 @@ Improvement
     [OWB-1432] - ClassCastException in ValidatingInjectionTargetFactory
     [OWB-1433] - upgrade maven plugins and set Java version to 11
     [OWB-1434] - upgrade various dependencies to more recent versions
-
+    [OWB-1435] - upgrade to apache parent 30
+    
 
 -------------------------------------------
 Release Notes - OpenWebBeans - Version 4.0.0
