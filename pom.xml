@@ -89,7 +89,7 @@
         <jetty.version>9.4.12.v20180830</jetty.version>
 
         <surefire.version>3.2.2</surefire.version>
-        <maven-javadoc.version>3.1.1</maven-javadoc.version>
+        <maven-javadoc.version>3.5.0</maven-javadoc.version>
     </properties>
     
     <mailingLists>
@@ -656,14 +656,8 @@
                 <version>${maven-javadoc.version}</version>
                 <configuration>
                     <quiet>true</quiet>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                    <source>8</source>
-                    <links>
-                        <link>http://download.oracle.com/javaee/7/api/</link>
-                        <link>http://download.oracle.com/javase/8/docs/api/</link>
-                        <link>http://myfaces.apache.org/core22/myfaces-api/apidocs/</link>
-                        <link>http://docs.oracle.com/javase/8/docs/api/</link>
-                    </links>
+                    <source>11</source>
+                    <doclint>none</doclint>
                 </configuration>
             </plugin>
 
@@ -695,14 +689,8 @@
                 <version>${maven-javadoc.version}</version>
                 <configuration>
                     <quiet>true</quiet>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                    <source>8</source>
-                    <links>
-                        <link>http://download.oracle.com/javaee/7/api/</link>
-                        <link>http://download.oracle.com/javase/8/docs/api/</link>
-                        <link>http://myfaces.apache.org/core22/myfaces-api/apidocs/</link>
-                        <link>http://docs.oracle.com/javase/8/docs/api/</link>
-                    </links>
+                    <source>11</source>
+                    <doclint>none</doclint>
                 </configuration>
                 <reportSets>
                     <reportSet>
