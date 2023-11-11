@@ -30,7 +30,7 @@
     <artifactId>openwebbeans</artifactId>
     <name>Apache OpenWebBeans</name>
     <packaging>pom</packaging>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.1</version>
 
     <url>openwebbeans.apache.org</url>
 
@@ -50,7 +50,7 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/openwebbeans.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/openwebbeans.git</developerConnection>
         <url>https://github.com/apache/openwebbeans</url>
-      <tag>HEAD</tag>
+      <tag>openwebbeans-4.0.1</tag>
   </scm>
 
     <issueManagement>
@@ -444,8 +444,8 @@
                                     <!-- Checks for Headers                              -->
                                     <!-- See http://checkstyle.sf.net/config_header.html -->
                                     <module name="Header">
-                                        <property name="header" value="/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements. See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership. The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * &amp;quot;License&amp;quot;); you may not use this file except in compliance\n * with the License. You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * &amp;quot;AS IS&amp;quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied. See the License for the\n * specific language governing permissions and limitations\n * under the License.\n"/>
-                                        <property name="fileExtensions" value="java"/>
+                                        <property name="header" value="/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements. See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership. The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * &amp;quot;License&amp;quot;); you may not use this file except in compliance\n * with the License. You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * &amp;quot;AS IS&amp;quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied. See the License for the\n * specific language governing permissions and limitations\n * under the License.\n" />
+                                        <property name="fileExtensions" value="java" />
                                     </module>
 
                                     <!-- Checks for Size Violations.                    -->
@@ -539,7 +539,7 @@
                                         <module name="NeedBraces" />
                                         <module name="LeftCurly">
                                             <property name="option" value="nl" />
-                                            <property name="tokens" value=" ANNOTATION_DEF,CLASS_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,LITERAL_CASE,LITERAL_CATCH,LITERAL_DEFAULT,LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_FOR,LITERAL_IF,LITERAL_SWITCH,LITERAL_SYNCHRONIZED,LITERAL_TRY,LITERAL_WHILE,METHOD_DEF,OBJBLOCK,STATIC_INIT"/>
+                                            <property name="tokens" value=" ANNOTATION_DEF,CLASS_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,LITERAL_CASE,LITERAL_CATCH,LITERAL_DEFAULT,LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_FOR,LITERAL_IF,LITERAL_SWITCH,LITERAL_SYNCHRONIZED,LITERAL_TRY,LITERAL_WHILE,METHOD_DEF,OBJBLOCK,STATIC_INIT" />
                                         </module>
                                         <module name="RightCurly">
                                             <property name="option" value="alone" />
