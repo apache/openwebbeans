@@ -64,6 +64,17 @@ for the whole Application.
 
 
 -------------------------------------------
+Release Notes - OpenWebBeans - Version 4.0.1
+-------------------------------------------
+Improvement
+    [OWB-1430] - BeanManagerBean should implement BeanContainer
+    [OWB-1431] - upgrade xbean to 4.24
+    [OWB-1432] - ClassCastException in ValidatingInjectionTargetFactory
+    [OWB-1433] - upgrade maven plugins and set Java version to 11
+    [OWB-1434] - upgrade various dependencies to more recent versions
+
+
+-------------------------------------------
 Release Notes - OpenWebBeans - Version 4.0.0
 -------------------------------------------
 Bug
