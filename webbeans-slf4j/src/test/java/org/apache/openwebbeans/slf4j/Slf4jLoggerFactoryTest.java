@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import static java.lang.String.format;
+
 public class Slf4jLoggerFactoryTest {
     @Test
     public void ensureLogGoesOnSlf4j() {
@@ -65,7 +67,7 @@ public class Slf4jLoggerFactoryTest {
             System.setErr(original);
         }
         assertEquals(
-                "[main] INFO " + getClass().getName() + " - test log\n",
+                format("[main] INFO %s - test log%s", getClass().getName(), System.lineSeparator()),
                 new String(buffer.toByteArray(), StandardCharsets.UTF_8));
     }
 }
