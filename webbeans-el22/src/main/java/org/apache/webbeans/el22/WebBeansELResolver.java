@@ -18,21 +18,22 @@
  */
 package org.apache.webbeans.el22;
 
-import org.apache.webbeans.component.OwbBean;
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.container.BeanManagerImpl;
-import org.apache.webbeans.el.ELContextStore;
-
 import jakarta.el.ELContext;
 import jakarta.el.ELException;
 import jakarta.el.ELResolver;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.Bean;
+import org.apache.webbeans.component.OwbBean;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.container.BeanManagerImpl;
+import org.apache.webbeans.el.ELContextStore;
+
 import java.beans.FeatureDescriptor;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
@@ -55,17 +56,19 @@ import java.util.stream.Collectors;
 public class WebBeansELResolver extends ELResolver
 {
     private final WebBeansContext webBeansContext;
+    private Set<String> dotNamedBeansNegativeCache;
 
     public WebBeansELResolver()
     {
         webBeansContext = WebBeansContext.getInstance();
+        dotNamedBeansNegativeCache = new CopyOnWriteArraySet<>();
     }
     
     /**
      * {@inheritDoc}
      */
     @Override
-    public Class<?> getCommonPropertyType(ELContext arg0, Object arg1)
+    public Class<?> getCommonPropertyType(ELContext context, Object base)
     {
         return null;
     }
@@ -74,7 +77,7 @@ public class WebBeansELResolver extends ELResolver
      * {@inheritDoc}
      */
     @Override
-    public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext arg0, Object arg1)
+    public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base)
     {
         return null;
     }
@@ -83,7 +86,7 @@ public class WebBeansELResolver extends ELResolver
      * {@inheritDoc}
      */    
     @Override
-    public Class<?> getType(ELContext arg0, Object arg1, Object arg2) throws ELException
+    public Class<?> getType(ELContext context, Object base, Object property) throws ELException
     {
         return null;
     }
@@ -95,9 +98,15 @@ public class WebBeansELResolver extends ELResolver
     @SuppressWarnings({"unchecked","deprecation"})
     public Object getValue(ELContext context, Object base, Object property) throws ELException
     {
-        final BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
+        // we only check root beans
+        // or if its wrapped because of dot-names
+        if (base != null && !(base instanceof WrappedValueExpressionNode))
+        {
+            return null;
+        }
 
         // Check if the OWB actually got used in this application
+        final BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
         if (!beanManager.isInUse())
         {
             return null;
@@ -160,25 +169,33 @@ public class WebBeansELResolver extends ELResolver
     private Object findDottedName(final ELContext context, final Object base, final BeanManagerImpl beanManager,
                                   final ELContextStore elContextStore, final String beanName)
     {
-
         final String fqBeanName = base == null ? beanName : base + "." + beanName;
-        final Set<Bean<?>> anyBeanName = beanManager.getBeans().stream()
-                                                    .filter(b -> b.getName() != null)
-                                                    .filter(b -> b.getName().startsWith(fqBeanName))
-                                                    .collect(Collectors.toSet());
+        if (dotNamedBeansNegativeCache.contains(fqBeanName))
+        {
+            return null;
+        }
 
-        // looks like a good candidate
+        final Set<Bean<?>> anyBeanName = beanManager.getBeans().stream()
+                .filter(b -> b.getName() != null)
+                .filter(b -> b.getName().equals(fqBeanName) || b.getName().startsWith(fqBeanName + "."))
+                .collect(Collectors.toSet());
+
+        // no exact and no startsWith match
+        if (anyBeanName.isEmpty())
+        {
+            dotNamedBeansNegativeCache.add(fqBeanName);
+            return null;
+        }
+
+        // exact match
         if (anyBeanName.size() == 1 && fqBeanName.equals(anyBeanName.iterator().next().getName()))
         {
-            return getBeanWithScope(context, beanManager, beanName, elContextStore, anyBeanName);
+            return getBeanWithScope(context, beanManager, fqBeanName, elContextStore, anyBeanName);
         }
-        // more than one bean with the same beginning or name not matching
-        else if (!anyBeanName.isEmpty())
-        {
-            context.setPropertyResolved(true);
-            return new WrappedValueExpressionNode(fqBeanName);
-        }
-        return null;
+
+        // more than one bean with the same beginning
+        context.setPropertyResolved(true);
+        return new WrappedValueExpressionNode(fqBeanName);
     }
 
     protected Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context,
@@ -242,7 +259,7 @@ public class WebBeansELResolver extends ELResolver
      * {@inheritDoc}
      */    
     @Override
-    public boolean isReadOnly(ELContext arg0, Object arg1, Object arg2) throws ELException
+    public boolean isReadOnly(ELContext context, Object base, Object property) throws ELException
     {
         return false;
     }
@@ -251,7 +268,7 @@ public class WebBeansELResolver extends ELResolver
      * {@inheritDoc}
      */    
     @Override
-    public void setValue(ELContext arg0, Object arg1, Object arg2, Object arg3) throws ELException
+    public void setValue(ELContext context, Object base, Object property, Object value) throws ELException
     {
 
     }
