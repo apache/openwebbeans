@@ -67,7 +67,7 @@
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.ejb-api.version>4.0.1</jakarta.ejb-api.version>
-        <jakarta.jms-api.version>3.0.0</jakarta.jms-api.version>
+        <jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
 
         <tomcat.version>10.1.18</tomcat.version>
         <myfaces.version>4.0.1</myfaces.version>
