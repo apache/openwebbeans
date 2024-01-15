@@ -89,7 +89,7 @@
         <jetty.version>9.4.12.v20180830</jetty.version>
 
         <surefire.version>3.2.2</surefire.version>
-        <maven-javadoc.version>3.5.0</maven-javadoc.version>
+        <maven-javadoc.version>3.6.3</maven-javadoc.version>
     </properties>
     
     <mailingLists>
