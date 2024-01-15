@@ -310,12 +310,15 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         }
         else
         {
-            CreationalContextImpl<?> creationalContext = creationalContexts.remove(instance);
-            if (creationalContext == null)
+            if (creationalContexts != null)
             {
-                throw new IllegalArgumentException("instance " + instance + " not produced with this Instance<?>");
+                CreationalContextImpl<?> creationalContext = creationalContexts.remove(instance);
+                if (creationalContext == null)
+                {
+                    throw new IllegalArgumentException("instance " + instance + " not produced with this Instance<?>");
+                }
+                creationalContext.destroyDependent(instance);
             }
-            creationalContext.destroyDependent(instance);
         }
     }
 
