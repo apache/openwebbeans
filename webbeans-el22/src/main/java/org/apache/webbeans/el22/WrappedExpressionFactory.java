@@ -34,29 +34,31 @@ public class WrappedExpressionFactory extends ExpressionFactory
     }
     
     @Override
-    public Object coerceToType(Object arg0, Class<?> arg1) throws ELException
+    public <T> T coerceToType(Object obj, Class<T> targetType) throws ELException
     {
-        return expressionFactory.coerceToType(arg0, arg1);
+        return expressionFactory.coerceToType(obj, targetType);
     }
 
     @Override
-    public MethodExpression createMethodExpression(ELContext arg0, String arg1, Class<?> arg2, Class<?>[] arg3) throws ELException, NullPointerException
+    public MethodExpression createMethodExpression(ELContext context, String expression,
+                                                   Class<?> expectedReturnType, Class<?>[] expectedParamTypes) throws ELException, NullPointerException
     {
-        return new WrappedMethodExpression(expressionFactory.createMethodExpression(arg0, arg1, arg2, arg3));
+        return new WrappedMethodExpression(
+                expressionFactory.createMethodExpression(context, expression, expectedReturnType, expectedParamTypes));
     }
 
     @Override
-    public ValueExpression createValueExpression(Object arg0, Class<?> arg1)
+    public ValueExpression createValueExpression(Object instance, Class<?> expectedType)
     {
-        ValueExpression wrapped = expressionFactory.createValueExpression(arg0, arg1);
+        ValueExpression wrapped = expressionFactory.createValueExpression(instance, expectedType);
         
         return new WrappedValueExpression(wrapped);
     }
 
     @Override
-    public ValueExpression createValueExpression(ELContext arg0, String arg1, Class<?> arg2) throws NullPointerException, ELException
+    public ValueExpression createValueExpression(ELContext context, String expression, Class<?> expectedType) throws NullPointerException, ELException
     {   
-        ValueExpression wrapped = expressionFactory.createValueExpression(arg0, arg1, arg2);
+        ValueExpression wrapped = expressionFactory.createValueExpression(context, expression, expectedType);
                 
         return new WrappedValueExpression(wrapped);
     }
