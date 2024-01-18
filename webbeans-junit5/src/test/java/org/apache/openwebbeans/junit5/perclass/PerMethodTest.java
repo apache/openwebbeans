@@ -24,12 +24,15 @@ import org.apache.webbeans.container.InjectableBeanManager;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExecutableInvoker;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstances;
 
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -37,6 +40,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.Optional.of;
@@ -297,6 +301,11 @@ class PerMethodTest
                 }
 
                 @Override
+                public <T> Optional<T> getConfigurationParameter(String s, Function<String, T> function) {
+                    return extensionContext.getConfigurationParameter(s, function);
+                }
+
+                @Override
                 public void publishReportEntry(final Map<String, String> map)
                 {
                     extensionContext.publishReportEntry(map);
@@ -318,6 +327,16 @@ class PerMethodTest
                 public Store getStore(final Namespace namespace)
                 {
                     return extensionContext.getStore(namespace);
+                }
+
+                @Override
+                public ExecutionMode getExecutionMode() {
+                    return extensionContext.getExecutionMode();
+                }
+
+                @Override
+                public ExecutableInvoker getExecutableInvoker() {
+                    return extensionContext.getExecutableInvoker();
                 }
             });
             super.beforeEach(extensionContext);
