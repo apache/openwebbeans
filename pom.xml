@@ -417,7 +417,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>verify-style</id>
@@ -453,6 +453,11 @@
                                     <module name="FileLength">
                                         <property name="max" value="3500" />
                                         <property name="fileExtensions" value="java" />
+                                    </module>
+
+                                    <module name="LineLength">
+                                        <property name="max" value="180" />
+                                        <property name="ignorePattern" value="@version|@see" />
                                     </module>
 
                                     <!-- Checks for whitespace                               -->
@@ -516,10 +521,7 @@
                                         <module name="UnusedImports" />
 
 
-                                        <module name="LineLength">
-                                            <property name="max" value="180" />
-                                            <property name="ignorePattern" value="@version|@see" />
-                                        </module>
+
                                         <module name="MethodLength">
                                             <property name="max" value="250" />
                                         </module>
