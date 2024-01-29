@@ -59,6 +59,10 @@
     </issueManagement>
 
     <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <minimalJavaBuildVersion>${maven.compiler.source}</minimalJavaBuildVersion>
+
         <jakarta.atinject-api.version>2.0.1</jakarta.atinject-api.version>
         <jakarta.cdi-api.version>4.0.1</jakarta.cdi-api.version>
         <jakarta.interceptor-api.version>2.1.0</jakarta.interceptor-api.version>
@@ -80,7 +84,6 @@
         <osgi.servlet.range>4.0</osgi.servlet.range>
         <osgi.el.range>4.0</osgi.el.range>
         <osgi.faces.range>4.0</osgi.faces.range>
-
 
         <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
 
@@ -407,8 +410,9 @@
                 <version>3.3.0</version>
                 <executions>
                     <execution>
+                        <id>attach-sources</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
