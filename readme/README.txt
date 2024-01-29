@@ -64,6 +64,18 @@ for the whole Application.
 
 
 -------------------------------------------
+Release Notes - OpenWebBeans - Version 4.0.2
+-------------------------------------------
+
+Bug
+    [OWB-1436] - org.apache.webbeans.el22.WrappedValueExpressionNode'does not have the property 'xxx'
+    [OWB-1437] - InstanceImpl#destroy might lead to a NPE
+
+Improvement
+    [OWB-1434] - upgrade various dependencies to more recent versions
+
+
+-------------------------------------------
 Release Notes - OpenWebBeans - Version 4.0.1
 -------------------------------------------
 Improvement
