@@ -829,6 +829,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     /**
      * {@inheritDoc}
      */
+    @Override
     public BeanAttributes<?> createBeanAttributes(AnnotatedMember<?> member)
     {
         if (member instanceof AnnotatedField)
@@ -845,11 +846,13 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
     }
 
+    @Override
     public InjectionPoint createInjectionPoint(AnnotatedField<?> field)
     {
         return webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, field, false);
     }
 
+    @Override
     public InjectionPoint createInjectionPoint(AnnotatedParameter<?> parameter)
     {
         InjectionPoint injectionPoint = webBeansContext.getInjectionPointFactory().buildInjectionPoint(null, parameter, false);
@@ -870,21 +873,25 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return injectionPoint;
     }
 
+    @Override
     public <X> ProducerFactory<X> getProducerFactory(AnnotatedField<? super X> field, Bean<X> bean)
     {
         return new FieldProducerFactory<>(field, bean, webBeansContext);
     }
 
+    @Override
     public <X> ProducerFactory<X> getProducerFactory(AnnotatedMethod<? super X> method, Bean<X> bean)
     {
         return new MethodProducerFactory<>(method, bean, webBeansContext);
     }
 
+    @Override
     public <X> InjectionTargetFactory<X> getInjectionTargetFactory(AnnotatedType<X> type)
     {
         return new ValidatingInjectionTargetFactory<>(type, webBeansContext);
     }
 
+    @Override
     public <T> Bean<T> createBean(BeanAttributes<T> attributes, Class<T> type, InjectionTargetFactory<T> factory)
     {
         AnnotatedType annotatedType = InjectionTargetFactoryImpl.class.isInstance(factory) ?
@@ -1113,21 +1120,25 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return AnnotationUtil.hasAnnotation(annotationType.getDeclaredAnnotations(), Stereotype.class);
     }
 
+    @Override
     public boolean areInterceptorBindingsEquivalent(Annotation annotation1, Annotation annotation2)
     {
         return AnnotationUtil.isCdiAnnotationEqual(annotation1, annotation2);
     }
 
+    @Override
     public boolean areQualifiersEquivalent(Annotation annotation1, Annotation annotation2)
     {
         return AnnotationUtil.isCdiAnnotationEqual(annotation1, annotation2);
     }
 
+    @Override
     public int getInterceptorBindingHashCode(Annotation annotation)
     {
         return AnnotationUtil.getCdiAnnotationHashCode(annotation);
     }
 
+    @Override
     public int getQualifierHashCode(Annotation annotation)
     {
         return AnnotationUtil.getCdiAnnotationHashCode(annotation);
@@ -1146,7 +1157,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return BeanAttributesBuilder.forContext(webBeansContext).newBeanAttibutes(type).build();
     }
 
-
+    @Override
     public <T, X> Bean<T> createBean(BeanAttributes<T> attributes, Class<X> type, ProducerFactory<X> factory)
     {
         return new ProducerAwareInjectionTargetBean<>(
