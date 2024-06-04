@@ -161,4 +161,12 @@ public class ProcessAnnotatedTypeImpl<X> extends EventBase implements ProcessAnn
             modifiedAnnotatedType = false;
         }
     }
+
+    @Override
+    public String toString()
+    {
+        return "ProcessAnnotatedTypeImpl{" +
+            "annotatedType=" + annotatedType.getJavaClass().getName() +
+            '}';
+    }
 }
