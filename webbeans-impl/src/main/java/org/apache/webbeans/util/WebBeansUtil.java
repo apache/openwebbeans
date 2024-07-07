@@ -1799,4 +1799,24 @@ public final class WebBeansUtil
             return hashCache;
         }
     }
+
+    public static Class<?> resolveReturnType(Set<Type> types)
+    {
+        Class<?> resolved = Object.class;
+        for (Type type : types)
+        {
+            Class<?> clazz = ClassUtil.getClazz(type);
+            if (clazz == null)
+            {
+                continue;
+            }
+
+            if (resolved.isAssignableFrom(clazz))
+            {
+                resolved = clazz;
+            }
+        }
+
+        return resolved;
+    }
 }

@@ -55,6 +55,7 @@ import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.inject.instance.InstanceImpl;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.GenericsUtil;
+import org.apache.webbeans.util.WebBeansUtil;
 
 import static java.util.stream.Collectors.joining;
 
@@ -402,12 +403,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
 
         public ConstructedBean()
         {
-            //X TODO calculate return type from the typeClosures properly
-            this.returnType = beanClass != null ? Class.class.cast(beanClass) : (typeClosures.isEmpty() ? null :
-                    Class.class.cast(typeClosures.stream().filter(Class.class::isInstance).findFirst()
-                                                 .filter(it -> it != Object.class)
-                                                 .orElse(Object.class)));
-
+            returnType = (Class<T>) WebBeansUtil.resolveReturnType(typeClosures);
             dependent = !webBeansContext.getBeanManagerImpl().isNormalScope(scope);
 
             if (createWithCallback == null && produceWithCallback == null)

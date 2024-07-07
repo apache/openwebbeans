@@ -33,6 +33,8 @@ import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.enterprise.inject.spi.InjectionTarget;
 import jakarta.enterprise.inject.spi.PassivationCapable;
 import jakarta.enterprise.inject.spi.Producer;
+import org.apache.webbeans.util.WebBeansUtil;
+
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -79,6 +81,8 @@ public abstract class AbstractOwbBean<T>
     
     protected final WebBeansContext webBeansContext;
 
+    protected final Class<T> returnType;
+
     protected AbstractOwbBean(WebBeansContext webBeansContext,
                               WebBeansType webBeansType,
                               BeanAttributes<T> beanAttributes,
@@ -88,6 +92,8 @@ public abstract class AbstractOwbBean<T>
         this.webBeansType = webBeansType;
         this.beanClass = beanClass;
         this.webBeansContext = webBeansContext;
+
+        returnType = (Class<T>) WebBeansUtil.resolveReturnType(beanAttributes.getTypes());
     }
 
     /**
@@ -272,12 +278,11 @@ public abstract class AbstractOwbBean<T>
      * This basically determines the class which will get created.
      * 
      * @return type of the producer method
-     * @see #getBeanClass()
      */
     @Override
     public Class<T> getReturnType()
     {
-        return (Class<T>) getBeanClass();
+        return returnType;
     }
     
     /**
