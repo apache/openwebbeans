@@ -73,7 +73,7 @@
         <jakarta.ejb-api.version>4.0.1</jakarta.ejb-api.version>
         <jakarta.jms-api.version>3.0.0</jakarta.jms-api.version>
 
-        <tomcat.version>10.1.18</tomcat.version>
+        <tomcat.version>10.1.25</tomcat.version>
         <myfaces.version>4.0.2</myfaces.version>
 
         <httpclient.version>4.5.14</httpclient.version>
