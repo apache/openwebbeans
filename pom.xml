@@ -64,7 +64,7 @@
         <minimalJavaBuildVersion>${maven.compiler.source}</minimalJavaBuildVersion>
 
         <jakarta.atinject-api.version>2.0.1</jakarta.atinject-api.version>
-        <jakarta.cdi-api.version>4.0.1</jakarta.cdi-api.version>
+        <jakarta.cdi-api.version>4.1.0</jakarta.cdi-api.version>
         <jakarta.interceptor-api.version>2.1.0</jakarta.interceptor-api.version>
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
         <jakarta.el-api.version>5.0.1</jakarta.el-api.version>
