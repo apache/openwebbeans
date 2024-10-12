@@ -20,7 +20,6 @@
 package org.apache.webbeans.test.managed;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -34,19 +33,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.Produces;
-import jakarta.enterprise.inject.Typed;
-import jakarta.enterprise.inject.literal.NamedLiteral;
 import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.inject.spi.InterceptionFactory;
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.inject.Named;
-import jakarta.inject.Qualifier;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InterceptorBinding;
 import jakarta.interceptor.InvocationContext;
 
-import org.apache.webbeans.test.discovery.InterceptorAnnotatedDiscoveryTest;
 import org.junit.Assert;
 
 import org.apache.webbeans.config.WebBeansContext;

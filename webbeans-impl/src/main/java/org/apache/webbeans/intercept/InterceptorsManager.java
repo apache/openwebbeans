@@ -199,6 +199,7 @@ public class InterceptorsManager
         Asserts.nullCheckForClass(interceptorClazz, "interceptorClazz can not be null");
 
         return configuredInterceptorClasses.contains(interceptorClazz)
+                || additionalInterceptorClasses.contains(interceptorClazz)
                 || priorityInterceptors.contains(interceptorClazz);
     }
 
