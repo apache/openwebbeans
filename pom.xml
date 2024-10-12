@@ -78,7 +78,7 @@
 
         <httpclient.version>4.5.14</httpclient.version>
         <xbean.version>4.25</xbean.version>
-        <arquillian.version>1.8.0.Final</arquillian.version>
+        <arquillian.version>1.8.1.Final</arquillian.version>
         <cdi.tck.version>4.0.13</cdi.tck.version>
 
         <osgi.servlet.range>4.0</osgi.servlet.range>
