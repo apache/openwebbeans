@@ -762,12 +762,6 @@
                 <groupId>jakarta.enterprise</groupId>
                 <artifactId>jakarta.enterprise.cdi-api</artifactId>
                 <version>${jakarta.cdi-api.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>jakarta.inject</groupId>
-                        <artifactId>jakarta.inject-api</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>

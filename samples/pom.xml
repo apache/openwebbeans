@@ -41,6 +41,11 @@ under the License.
                 <plugin>
                     <groupId>org.codehaus.cargo</groupId>
                     <artifactId>cargo-maven3-plugin</artifactId>
+                    <configuration>
+                        <configuration>
+
+                        </configuration>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

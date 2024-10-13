@@ -39,7 +39,7 @@ public class OwbTomcatPluginIT
     public void testTomcatRequest() throws Exception
     {
         DefaultHttpClient httpclient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://localhost:9081/owbtomcat7it/test.test");
+        HttpGet httpGet = new HttpGet("http://localhost:9081/owbTomcatIt/test.test");
 
         HttpResponse response = httpclient.execute(httpGet);
 

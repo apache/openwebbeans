@@ -39,16 +39,16 @@ public class OwbTomcatPluginIT
 
         {
             // Get the response
-            String response = getResponse("http://localhost:9082/owbtomcat7it/test.test");
+            String response = getResponse("http://localhost:9082/owbTomcatIt/test.test");
             Assert.assertEquals(":thumb_up:", response);
         }
         {
-            String response = getResponse("http://localhost:9082/owbtomcat7it/test.test?action=setRequest&val=3500");
+            String response = getResponse("http://localhost:9082/owbTomcatIt/test.test?action=setRequest&val=3500");
             Assert.assertEquals("3600", response);
         }
 
         {
-            String response = getResponse("http://localhost:9082/owbtomcat7it/test.test?action=setSession&val=500");
+            String response = getResponse("http://localhost:9082/owbTomcatIt/test.test?action=setSession&val=500");
             Assert.assertEquals("500", response);
         }
     }
