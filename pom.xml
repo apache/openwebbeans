@@ -73,7 +73,7 @@
         <jakarta.ejb-api.version>4.0.1</jakarta.ejb-api.version>
         <jakarta.jms-api.version>3.0.0</jakarta.jms-api.version>
 
-        <tomcat.version>10.1.25</tomcat.version>
+        <tomcat.version>10.1.31</tomcat.version>
         <myfaces.version>4.0.2</myfaces.version>
 
         <httpclient.version>4.5.14</httpclient.version>
@@ -322,6 +322,13 @@
                         </execution>
                     </executions>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.cargo</groupId>
+                    <artifactId>cargo-maven3-plugin</artifactId>
+                    <version>1.10.15</version>
+                </plugin>
+
             </plugins>
         </pluginManagement>
 
@@ -730,9 +737,9 @@
         <module>webbeans-osgi</module>
         <module>distribution</module>
         <module>bom</module>
+        <module>samples</module>
 <!--X TODO re-enable
         <module>webbeans-jetty9</module>
-        <module>samples</module>
 -->
     </modules>
 
