@@ -69,7 +69,7 @@
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
         <jakarta.el-api.version>5.0.1</jakarta.el-api.version>
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
-        <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
+        <jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
         <jakarta.ejb-api.version>4.0.1</jakarta.ejb-api.version>
         <jakarta.jms-api.version>3.0.0</jakarta.jms-api.version>
 
