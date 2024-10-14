@@ -35,8 +35,7 @@ import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.util.Nonbinding;
-import org.apache.webbeans.test.interceptors.interceptorbean.BigBrotherInterceptorBean;
-import org.apache.webbeans.test.interceptors.interceptorbean.BigBrothered;
+
 
 public class WatchExtension implements Extension
 {

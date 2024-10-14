@@ -21,7 +21,6 @@ package org.apache.webbeans.portable;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
-import org.apache.webbeans.exception.WebBeansCreationException;
 import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.InjectableConstructor;
 import org.apache.webbeans.inject.InjectableField;
@@ -140,16 +139,20 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         // no more needed
         interceptorInfo.getClassCdiInterceptors().clear();
 
-        InterceptorResolutionService.BusinessMethodInterceptorInfo constructorInterceptorInfo =
-                                interceptorInfo.getConstructorInterceptorInfos().get(getConstructor().getJavaMember());
-        Interceptor<?>[] constructorEjbInterceptorArray = constructorInterceptorInfo == null ?
-                                            null : constructorInterceptorInfo.getEjbInterceptors();
-        List<Interceptor<?>> constructorEjbInterceptors = constructorEjbInterceptorArray == null ?
-                                            Collections.<Interceptor<?>>emptyList() : asList(constructorEjbInterceptorArray);
-        aroundConstructInterceptors = getLifecycleInterceptors(
+        final AnnotatedConstructor<T> ct = getConstructor();
+        if (ct != null)
+        {
+            InterceptorResolutionService.BusinessMethodInterceptorInfo constructorInterceptorInfo =
+                interceptorInfo.getConstructorInterceptorInfos().get(ct.getJavaMember());
+            Interceptor<?>[] constructorEjbInterceptorArray = constructorInterceptorInfo == null ?
+                null : constructorInterceptorInfo.getEjbInterceptors();
+            List<Interceptor<?>> constructorEjbInterceptors = constructorEjbInterceptorArray == null ?
+                Collections.<Interceptor<?>>emptyList() : asList(constructorEjbInterceptorArray);
+            aroundConstructInterceptors = getLifecycleInterceptors(
                 constructorEjbInterceptors,
                 interceptorInfo.getConstructorCdiInterceptors(),
                 InterceptionType.AROUND_CONSTRUCT);
+        }
     }
 
     @Override
@@ -395,7 +398,8 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         Constructor<T> defaultConstructor = getDefaultConstructor();
         if (defaultConstructor == null)
         {
-            throw new WebBeansCreationException("No default constructor for " + annotatedType.getJavaClass().getName());
+            // sometimes there is no default ct nor any injection point ct
+            return null;
         }
         return new AnnotatedConstructorImpl<>(webBeansContext, defaultConstructor, annotatedType);
     }

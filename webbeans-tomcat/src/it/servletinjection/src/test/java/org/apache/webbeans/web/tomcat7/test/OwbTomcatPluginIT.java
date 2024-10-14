@@ -56,5 +56,4 @@ public class OwbTomcatPluginIT
         Assert.assertNotNull(response);
         Assert.assertEquals("Got " + builder.toString(), 200, response.getStatusLine().getStatusCode());
     }
-
 }

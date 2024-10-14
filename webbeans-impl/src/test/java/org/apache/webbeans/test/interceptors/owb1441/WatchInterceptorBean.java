@@ -29,15 +29,13 @@ import jakarta.enterprise.inject.spi.Interceptor;
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.interceptor.InvocationContext;
 import org.apache.webbeans.annotation.DefaultLiteral;
-import org.apache.webbeans.test.interceptors.interceptorbean.BigBrotherInterceptor;
-import org.apache.webbeans.test.interceptors.interceptorbean.BigBrothered;
 
 public class WatchInterceptorBean implements Interceptor<WatchInterceptor>
 {
     // it's good performance practice to keep the sets static as they are requested tons of times!
     public static final Set<Type> TYPES = Set.of(WatchInterceptor.class);
     public static final Set<Annotation> QUALIFIERS = Set.of(DefaultLiteral.INSTANCE);
-    public static final Set<Annotation> INTERCEPTOR_BINDINGS = Set.of(new AnnotationLiteral<BigBrothered>() {});
+    public static final Set<Annotation> INTERCEPTOR_BINDINGS = Set.of(new AnnotationLiteral<Watched>() {});
 
     public WatchInterceptorBean(int totallyUselessParamJustToNotHaveADefaultCt)
     {

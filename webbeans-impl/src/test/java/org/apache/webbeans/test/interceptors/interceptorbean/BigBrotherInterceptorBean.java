@@ -75,7 +75,7 @@ public class BigBrotherInterceptorBean implements Interceptor<BigBrotherIntercep
     @Override
     public BigBrotherInterceptor create(CreationalContext<BigBrotherInterceptor> creationalContext)
     {
-        return new BigBrotherInterceptor();
+        return new BigBrotherInterceptor(42);
     }
 
     @Override

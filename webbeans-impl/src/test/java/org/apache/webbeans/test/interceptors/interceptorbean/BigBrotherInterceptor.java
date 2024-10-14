@@ -26,6 +26,12 @@ public class BigBrotherInterceptor
 {
     private static boolean observed = false;
 
+
+    public BigBrotherInterceptor(int totallyUselessParamJustToNotHaveADefaultCt)
+    {
+        // all fine ;)
+    }
+
     public Object invoke(InvocationContext context) throws Exception
     {
         System.out.println("Big Brother is watching you " + context.getMethod());

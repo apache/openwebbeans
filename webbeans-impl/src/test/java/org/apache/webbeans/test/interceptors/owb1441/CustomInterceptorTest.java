@@ -18,9 +18,6 @@ package org.apache.webbeans.test.interceptors.owb1441;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.webbeans.test.AbstractUnitTest;
-import org.apache.webbeans.test.interceptors.interceptorbean.BigBrotherInterceptor;
-import org.apache.webbeans.test.interceptors.interceptorbean.BigBrothered;
-import org.apache.webbeans.test.interceptors.interceptorbean.BigBrotheredExtension;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -47,7 +44,7 @@ public class CustomInterceptorTest extends AbstractUnitTest
     }
 
     @ApplicationScoped
-    @BigBrothered
+    @Watched
     public static class LittleJohnDoe
     {
         public void makeACoffee() {
