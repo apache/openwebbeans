@@ -67,8 +67,12 @@
 
   <repositories>
     <repository>
-      <id>gradle-m2</id>
+      <id>gradle-plugins</id>
       <url>https://plugins.gradle.org/m2/</url>
+    </repository>
+    <repository>
+      <id>gradle</id>
+      <url>https://repo.gradle.org/gradle/libs-releases/</url>
     </repository>
   </repositories>
 </project>
