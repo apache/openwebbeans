@@ -942,7 +942,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-project-info-reports-plugin</artifactId>
-                        <version>2.9</version>
+                        <version>3.7.0</version>
                         <reportSets>
                             <reportSet>
                                 <reports>
