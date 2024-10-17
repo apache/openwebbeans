@@ -90,8 +90,8 @@ public class LoginWindow extends JPanel
         btnLogin = new JButton("Login");
         add(btnLogin);
         
-        btnLogin.addActionListener(new ActionListener(){
-
+        btnLogin.addActionListener(new ActionListener()
+        {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -115,8 +115,8 @@ public class LoginWindow extends JPanel
         
         btnCancel = new JButton("Cancel");
         
-        btnCancel.addActionListener(new ActionListener(){
-
+        btnCancel.addActionListener(new ActionListener()
+        {
             @Override
             public void actionPerformed(ActionEvent e)
             {
