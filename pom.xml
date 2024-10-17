@@ -77,7 +77,7 @@
         <myfaces.version>4.0.2</myfaces.version>
 
         <httpclient.version>4.5.14</httpclient.version>
-        <xbean.version>4.25</xbean.version>
+        <xbean.version>4.26</xbean.version>
         <arquillian.version>1.8.1.Final</arquillian.version>
         <cdi.tck.version>4.0.13</cdi.tck.version>
 
