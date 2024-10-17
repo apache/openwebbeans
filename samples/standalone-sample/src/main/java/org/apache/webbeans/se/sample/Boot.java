@@ -79,8 +79,8 @@ public class Boot
         frame.setTitle("OWB @ Java-SE");
         frame.add(loginWindow,BorderLayout.CENTER);        
         frame.setLocation(400, 300);        
-        frame.addWindowListener(new WindowAdapter(){
-
+        frame.addWindowListener(new WindowAdapter()
+        {
             @Override
             public void windowClosed(WindowEvent e)
             {
