@@ -32,7 +32,7 @@
     <dependency>
       <groupId>org.gradle</groupId>
       <artifactId>gradle-core</artifactId>
-      <version>3.5.1</version>
+      <version>6.1.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
