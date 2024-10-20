@@ -23,6 +23,7 @@ updates:
       interval: "monthly"
     ignore:
       dependency-name: "*"
+    open-pull-requests-limit: 0
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
