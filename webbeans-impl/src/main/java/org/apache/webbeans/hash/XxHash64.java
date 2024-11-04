@@ -74,21 +74,10 @@ public final class XxHash64
 
             do
             {
-                v1 += input.getLong(off) * PRIME64_2;
-                v1 = Long.rotateLeft(v1, 31);
-                v1 *= PRIME64_1;
-
-                v2 += input.getLong(off + 8) * PRIME64_2;
-                v2 = Long.rotateLeft(v2, 31);
-                v2 *= PRIME64_1;
-
-                v3 += input.getLong(off + 16) * PRIME64_2;
-                v3 = Long.rotateLeft(v3, 31);
-                v3 *= PRIME64_1;
-
-                v4 += input.getLong(off + 24) * PRIME64_2;
-                v4 = Long.rotateLeft(v4, 31);
-                v4 *= PRIME64_1;
+                v1 = processChunk(input, off, v1);
+                v2 = processChunk(input, off + 8, v2);
+                v3 = processChunk(input, off + 16, v3);
+                v4 = processChunk(input, off + 24, v4);
 
                 off += 32;
                 remaining -= 32;
@@ -100,29 +89,10 @@ public final class XxHash64
                     + Long.rotateLeft(v3, 12)
                     + Long.rotateLeft(v4, 18);
 
-            v1 *= PRIME64_2;
-            v1 = Long.rotateLeft(v1, 31);
-            v1 *= PRIME64_1;
-            hash ^= v1;
-            hash = hash * PRIME64_1 + PRIME64_4;
-
-            v2 *= PRIME64_2;
-            v2 = Long.rotateLeft(v2, 31);
-            v2 *= PRIME64_1;
-            hash ^= v2;
-            hash = hash * PRIME64_1 + PRIME64_4;
-
-            v3 *= PRIME64_2;
-            v3 = Long.rotateLeft(v3, 31);
-            v3 *= PRIME64_1;
-            hash ^= v3;
-            hash = hash * PRIME64_1 + PRIME64_4;
-
-            v4 *= PRIME64_2;
-            v4 = Long.rotateLeft(v4, 31);
-            v4 *= PRIME64_1;
-            hash ^= v4;
-            hash = hash * PRIME64_1 + PRIME64_4;
+            hash = finalizeHash(hash, v1);
+            hash = finalizeHash(hash, v2);
+            hash = finalizeHash(hash, v3);
+            hash = finalizeHash(hash, v4);
         }
         else
         {
@@ -133,12 +103,7 @@ public final class XxHash64
 
         while (remaining >= 8)
         {
-            long k1 = input.getLong(off);
-            k1 *= PRIME64_2;
-            k1 = Long.rotateLeft(k1, 31);
-            k1 *= PRIME64_1;
-            hash ^= k1;
-            hash = Long.rotateLeft(hash, 27) * PRIME64_1 + PRIME64_4;
+            hash = processRemaining(input, off, hash, 8);
             off += 8;
             remaining -= 8;
         }
@@ -160,6 +125,33 @@ public final class XxHash64
         }
 
         return finalize(hash);
+    }
+
+    private static long processChunk(ByteBuffer input, int offset, long value)
+    {
+        value += input.getLong(offset) * PRIME64_2;
+        value = Long.rotateLeft(value, 31);
+        value *= PRIME64_1;
+        return value;
+    }
+
+    private static long finalizeHash(long hash, long value)
+    {
+        value *= PRIME64_2;
+        value = Long.rotateLeft(value, 31);
+        value *= PRIME64_1;
+        hash ^= value;
+        return hash * PRIME64_1 + PRIME64_4;
+    }
+
+    private static long processRemaining(ByteBuffer input, int offset, long hash, int length)
+    {
+        long k1 = input.getLong(offset);
+        k1 *= PRIME64_2;
+        k1 = Long.rotateLeft(k1, 31);
+        k1 *= PRIME64_1;
+        hash ^= k1;
+        return Long.rotateLeft(hash, 27) * PRIME64_1 + PRIME64_4;
     }
 
     private static long finalize(long hash)
