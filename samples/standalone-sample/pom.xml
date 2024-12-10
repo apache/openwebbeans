@@ -29,16 +29,16 @@ under the License.
     <artifactId>standalone-sample</artifactId>
     <name>OpenWebBeans Java SE Sample</name>
     <packaging>jar</packaging>
-    <description>Java SE Sample</description>
+    <description>
+        Java SE Sample
+        A standalone sample for showcasing the use of Apache OpenWebBeans in a Swing application.
+        Start the application with the main method in org.apache.webbeans.se.sample.Boot.class
+    </description>
 
     <properties>
         <deploy.skip>true</deploy.skip>
     </properties>
 
-    <description>
-        A standalone sample for showcasing the use of Apache OpenWebBeans in a Swing application.
-        Start the application with the main method in org.apache.webbeans.se.sample.Boot.class
-    </description>
 
     <dependencies>
 
