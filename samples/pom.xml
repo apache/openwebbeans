@@ -139,12 +139,12 @@ under the License.
     <modules>
         <module>standalone-sample</module>
         <module>guess</module>
-<!--
         <module>conversation-sample</module>
         <module>jsf2sample</module>
-        <module>reservation</module>
-        <module>tomcat7-sample</module>
--->
+        <!--
+            <module>reservation</module>
+            <module>tomcat7-sample</module>
+        -->
     </modules>
 
     <profiles>

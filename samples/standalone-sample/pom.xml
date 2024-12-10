@@ -35,6 +35,11 @@ under the License.
         <deploy.skip>true</deploy.skip>
     </properties>
 
+    <description>
+        A standalone sample for showcasing the use of Apache OpenWebBeans in a Swing application.
+        Start the application with the main method in org.apache.webbeans.se.sample.Boot.class
+    </description>
+
     <dependencies>
 
         <dependency>

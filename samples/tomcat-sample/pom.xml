@@ -18,18 +18,18 @@ under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <description>Sample Tomcat7 Application</description>
+    <description>Sample Tomcat Application</description>
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>samples</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.openwebbeans.samples</groupId>
-    <artifactId>tomcat7-sample</artifactId>
+    <artifactId>tomcat-sample</artifactId>
     <packaging>war</packaging>
-    <name>Tomcat 7 Sample</name>
+    <name>Tomcat Sample</name>
 
     <!--
      How to start the sample.

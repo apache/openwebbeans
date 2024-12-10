@@ -22,7 +22,7 @@ under the License.
     <parent>
         <artifactId>samples</artifactId>
         <groupId>org.apache.openwebbeans</groupId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -41,12 +41,6 @@ under the License.
         <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-resource</artifactId>
             <version>${project.version}</version>
         </dependency>
         
@@ -108,22 +102,21 @@ under the License.
             <artifactId>openwebbeans-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <!-- JSTL -->
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-        </dependency>                
-                
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>jsf2sample</finalName>
         <plugins>
             <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven3-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
