@@ -28,11 +28,10 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.model.SelectItem;
 import jakarta.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
-import org.apache.webbeans.reservation.bindings.EntityManagerQualifier;
 import org.apache.webbeans.reservation.bindings.intercep.Transactional;
 import org.apache.webbeans.reservation.entity.Hotel;
 import org.apache.webbeans.reservation.entity.Reservation;
@@ -42,7 +41,7 @@ import org.apache.webbeans.reservation.model.ReservationModel;
 @RequestScoped
 public class UserController
 {
-    private @Inject @EntityManagerQualifier EntityManager entityManager;
+    private @Inject EntityManager entityManager;
     
     private @Inject @ApplicationLog Log logger;
 

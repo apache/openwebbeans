@@ -22,19 +22,18 @@ import jakarta.inject.Inject;
 import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
-import org.apache.webbeans.reservation.bindings.EntityManagerQualifier;
 import org.apache.webbeans.reservation.bindings.intercep.Transactional;
 
 @Interceptor
 @Transactional
 public class TransactionalInterceptor
 {
-    private @Inject @EntityManagerQualifier EntityManager entityManager;
+    private @Inject EntityManager entityManager;
     
     private @Inject @ApplicationLog Log logger; 
     

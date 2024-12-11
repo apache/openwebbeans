@@ -25,13 +25,12 @@ import java.util.Set;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
-import org.apache.webbeans.reservation.bindings.EntityManagerQualifier;
 import org.apache.webbeans.reservation.bindings.intercep.Transactional;
 import org.apache.webbeans.reservation.entity.Hotel;
 import org.apache.webbeans.reservation.entity.Reservation;
@@ -46,7 +45,7 @@ public class AdminController
 {
     private @Inject @ApplicationLog Log logger;
     
-    private @Inject @EntityManagerQualifier EntityManager entityManager;
+    private @Inject EntityManager entityManager;
     
     @Transactional
     public void createNewHotel(String name, int star, String city, String country)

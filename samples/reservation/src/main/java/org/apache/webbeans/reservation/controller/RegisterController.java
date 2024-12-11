@@ -20,12 +20,11 @@ package org.apache.webbeans.reservation.controller;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.webbeans.reservation.bindings.ApplicationLog;
-import org.apache.webbeans.reservation.bindings.EntityManagerQualifier;
 import org.apache.webbeans.reservation.bindings.intercep.Transactional;
 import org.apache.webbeans.reservation.controller.api.IRegisterController;
 import org.apache.webbeans.reservation.entity.User;
@@ -39,7 +38,7 @@ public class RegisterController implements IRegisterController
 {
     private @Inject @ApplicationLog Log logger;
     
-    private @Inject @EntityManagerQualifier EntityManager entityManager;
+    private @Inject EntityManager entityManager;
 
     /**
      * Register the user.

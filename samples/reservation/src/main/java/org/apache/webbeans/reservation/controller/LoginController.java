@@ -25,12 +25,11 @@ import java.util.logging.Logger;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.apache.commons.validator.GenericValidator;
 import org.apache.webbeans.reservation.bindings.DatabaseLogin;
-import org.apache.webbeans.reservation.bindings.EntityManagerQualifier;
 import org.apache.webbeans.reservation.bindings.intercep.Transactional;
 import org.apache.webbeans.reservation.controller.api.ILoginController;
 import org.apache.webbeans.reservation.entity.User;
@@ -43,7 +42,7 @@ public class LoginController implements ILoginController
     private Logger logger = Logger.getLogger(LoginController.class.getName());
     
     /**Injection of the request scope entity manager*/
-    private @Inject @EntityManagerQualifier EntityManager entityManager;
+    private @Inject EntityManager entityManager;
 
     /**
      * Returns true if user exist else false

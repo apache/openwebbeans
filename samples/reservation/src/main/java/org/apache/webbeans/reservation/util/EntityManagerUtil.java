@@ -18,29 +18,33 @@
  */
 package org.apache.webbeans.reservation.util;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 @RequestScoped
 public class EntityManagerUtil
 {
-    private @PersistenceContext(unitName="reservation") EntityManager entityManager;
-    
-    public EntityManagerUtil()
+    private EntityManagerFactory emf;
+
+    @PostConstruct
+    void init()
     {
-        
+        emf = Persistence.createEntityManagerFactory("reservation");
     }
     
-    @Produces @RequestScoped @org.apache.webbeans.reservation.bindings.EntityManagerQualifier
+    @Produces
+    @RequestScoped
     public EntityManager createEntityManager()
     {        
-        return entityManager;
+        return emf.createEntityManager();
     }
     
-    public void dispose(@Disposes @org.apache.webbeans.reservation.bindings.EntityManagerQualifier EntityManager entityManager)
+    public void dispose(@Disposes EntityManager entityManager)
     {
         entityManager.close();        
     }

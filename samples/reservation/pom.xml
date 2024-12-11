@@ -34,7 +34,8 @@ under the License.
 
     <properties>
         <deploy.skip>true</deploy.skip>
-        <openjpa.version>2.4.2</openjpa.version>
+        <openjpa.version>4.0.1</openjpa.version>
+        <jakarta.persistence-api.version>3.0.0</jakarta.persistence-api.version>
     </properties>
 
     <!--
@@ -64,10 +65,10 @@ under the License.
         </dependency>
 
         <!-- CDI and atinject APIs -->
-            <dependency>
-                <groupId>jakarta.enterprise</groupId>
-                <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>jakarta.inject</groupId>
             <artifactId>jakarta.inject-api</artifactId>
@@ -107,13 +108,6 @@ under the License.
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
-        <!-- pseudo PersistenceContext injection -->
-        <dependency>
-            <groupId>org.apache.openwebbeans</groupId>
-            <artifactId>openwebbeans-resource</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
 
         <!-- JSF Plugin -->
         <dependency>
@@ -123,11 +117,19 @@ under the License.
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-el22</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
         <!-- OpenJPA -->
+
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>${jakarta.persistence-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>

@@ -35,8 +35,7 @@ under the License.
     Start the samples with
     $> mvn cargo:run
 
-    To debug an application please activate the 'cargoDebug' profile and attach to port 8000
-
+    To debug an application please activate the 'cargoDebug' profile and attach to port 8000:
     $> mvn cargo:run -PcargoDebug
     -->
 
@@ -141,8 +140,8 @@ under the License.
         <module>guess</module>
         <module>conversation-sample</module>
         <module>jsf2sample</module>
+        <module>reservation</module>
         <!--
-            <module>reservation</module>
             <module>tomcat7-sample</module>
         -->
     </modules>
@@ -152,7 +151,7 @@ under the License.
             <id>cargoDebug</id>
             <properties>
                 <cargo.debug.args>
-                    -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -Xnoagent
+                    -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent
                 </cargo.debug.args>
             </properties>
         </profile>
