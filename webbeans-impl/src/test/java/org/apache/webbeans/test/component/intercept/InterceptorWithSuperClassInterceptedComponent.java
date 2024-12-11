@@ -19,7 +19,6 @@
 package org.apache.webbeans.test.component.intercept;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;

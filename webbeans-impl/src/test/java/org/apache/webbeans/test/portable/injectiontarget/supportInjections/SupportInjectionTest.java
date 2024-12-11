@@ -18,9 +18,6 @@
  */
 package org.apache.webbeans.test.portable.injectiontarget.supportInjections;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.InjectionTarget;

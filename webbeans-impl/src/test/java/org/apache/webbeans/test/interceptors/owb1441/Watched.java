@@ -21,7 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.apache.webbeans.test.interceptors.interceptorbean.BigBrotheredExtension;
 
 /**
  * Test interceptor annotation
