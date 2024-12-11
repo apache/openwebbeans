@@ -64,6 +64,24 @@ for the whole Application.
 
 
 -------------------------------------------
+Release Notes - OpenWebBeans - Version 4.0.3
+-------------------------------------------
+
+Bug
+    [OWB-1441] - Adding a User-defined Interceptor Bean via CDI Extension fails due to missing no-arg constructor
+    [OWB-1443] - InterceptorsManager doesn't acknowledge custom Interceptor Beans as enabled
+    [OWB-1447] - jakarta apis leak as dependencies
+
+Improvement
+    [OWB-1438] - Synthetic InjectionPoint for CDI.current() and similar usages
+    [OWB-1439] - enhance scan exclude list with new jakarta api jars
+    [OWB-1440] - make errors in ProcessAnnotatedType more verbose
+    [OWB-1444] - upgrade arquillian from 1.8.0 to 1.8.1
+    [OWB-1445] - upgrde to apache parent-33
+    [OWB-1446] - move from tomcat7-maven-plugin to cargo
+
+
+-------------------------------------------
 Release Notes - OpenWebBeans - Version 4.0.2
 -------------------------------------------
 
