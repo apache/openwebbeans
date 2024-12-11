@@ -22,7 +22,7 @@ under the License.
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>4.0.3-SNAPSHOT</version>
+        <version>4.0.3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -42,7 +42,7 @@ under the License.
     <properties>
         <deploy.skip>false</deploy.skip>
         <tomcat.port>8080</tomcat.port>
-        <cargo.debug.args></cargo.debug.args>
+        <cargo.debug.args />
     </properties>
 
     <build>
