@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>openwebbeans-osgi</artifactId>
