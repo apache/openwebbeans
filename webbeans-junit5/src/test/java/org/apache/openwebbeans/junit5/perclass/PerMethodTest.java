@@ -180,7 +180,7 @@ class PerMethodTest
                                         @Override
                                         public boolean disableDiscovery()
                                         {
-                                            return false;
+                                            return true;
                                         }
 
                                         @Override
