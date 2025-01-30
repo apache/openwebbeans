@@ -1737,7 +1737,6 @@ public class BeansDeployer
         catch (Exception e)
         {
             logger.info("Error occurred: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
