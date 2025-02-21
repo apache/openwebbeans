@@ -90,7 +90,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
      * We store this information since not all containers and storages do support
      * new URL(...).
      */
-    private final Map<String, URL> beanDeploymentUrls = new HashMap<>();
+    protected final Map<String, URL> beanDeploymentUrls = new HashMap<>();
 
     /**
      * for having proper scan mode 'SCOPED' support we need to know which bean class

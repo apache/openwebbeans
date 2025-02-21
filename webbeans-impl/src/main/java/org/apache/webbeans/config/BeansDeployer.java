@@ -108,7 +108,6 @@ import jakarta.enterprise.inject.spi.Interceptor;
 import jakarta.enterprise.inject.spi.ObserverMethod;
 import jakarta.enterprise.inject.spi.Producer;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -116,8 +115,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1759,34 +1756,6 @@ public class BeansDeployer
         }
 
         logger.fine("Deploying configurations from XML has ended successfully.");
-
-        try
-        {
-            final URL url = new URL("openwebbeans", null, 0, "cdi-standalone", new URLStreamHandler()
-            {
-                @Override
-                protected URLConnection openConnection(URL u) throws IOException
-                {
-                    return null;
-                }
-            });
-
-            final BeanArchiveInformation beanArchiveInformation = beanArchiveService.getBeanArchiveInformation(url);
-            if (beanArchiveInformation != null)
-            {
-                configureDecorators(url, beanArchiveInformation.getDecorators());
-                configureInterceptors(url, beanArchiveInformation.getInterceptors());
-                configureAlternatives(url, beanArchiveInformation.getAlternativeClasses(), false);
-                configureAlternatives(url, beanArchiveInformation.getAlternativeStereotypes(), true);
-                configureAllowProxying(url, beanArchiveInformation.getAllowProxyingClasses());
-            }
-
-            logger.fine("Deploying embedded configurations has ended successfully.");
-        }
-        catch (Exception e)
-        {
-            logger.info("Error occurred: " + e.getMessage());
-        }
     }
 
     private void configureAlternatives(URL bdaLocation, List<String> alternatives, boolean isStereotype)
