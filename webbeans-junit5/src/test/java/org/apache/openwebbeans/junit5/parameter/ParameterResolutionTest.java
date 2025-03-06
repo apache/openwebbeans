@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-@Cdi(classes = MyService.class)
+@Cdi(classes = MyService.class, disableDiscovery = true)
 class ParameterResolutionTest
 {
     @Inject MyService service;
