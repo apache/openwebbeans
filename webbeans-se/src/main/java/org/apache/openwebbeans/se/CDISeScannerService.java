@@ -37,6 +37,8 @@ import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -216,5 +218,18 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
             }
             return accepts;
         }
+    }
+
+    @Override
+    public Set<URL> getBeanXmls()
+    {
+        final Set<URL> result = new HashSet<>(super.getBeanXmls());
+        final URL embeddedUrl = beanDeploymentUrls.get(CDISeBeanArchiveService.EMBEDDED_URL);
+        if (embeddedUrl != null)
+        {
+            result.add(embeddedUrl);
+        }
+
+        return result;
     }
 }
