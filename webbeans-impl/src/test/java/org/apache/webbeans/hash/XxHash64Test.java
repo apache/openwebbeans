@@ -18,15 +18,38 @@
  */
 package org.apache.webbeans.hash;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class XxHash64Test
 {
     @Test
-    public void sanityCheck()
+    public void testApplyWithString()
     {
         assertEquals(3728699739546630719L, XxHash64.apply("foo"));
+    }
+
+    @Test
+    public void testApplyWithByteBuffer()
+    {
+        ByteBuffer buffer = ByteBuffer.wrap("foo".getBytes(StandardCharsets.UTF_8));
+        assertEquals(3728699739546630719L, XxHash64.apply(buffer));
+    }
+
+    @Test
+    public void testApplyWithEmptyString()
+    {
+        assertEquals(-1205034819632174695L, XxHash64.apply(""));
+    }
+
+    @Test
+    public void testApplyWithEmptyByteBuffer()
+    {
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[0]);
+        assertEquals(-1205034819632174695L, XxHash64.apply(buffer));
     }
 }
