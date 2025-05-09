@@ -23,6 +23,7 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.exception.ProxyGenerationException;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.intercept.InterceptorResolutionService;
+import org.apache.webbeans.portable.AnnotatedTypeImpl;
 import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.xbean.asm9.ClassWriter;
@@ -39,12 +40,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * Generate a dynamic subclass which has exactly 1 delegation point instance
- * which get's set in the Constructor of the proxy.
+ * which gets set in the Constructor of the proxy.
  * Any non-intercepted or decorated method will get delegated natively,
  * All intercepted and decorated methods will get invoked via an InvocationHandler chain.
  *
@@ -67,7 +69,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * We need this to prevent filling up the ClassLoaders by
      */
     private ConcurrentMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<>();
-    private ConcurrentMap<AnnotatedType<?>, Class<?>> cachedProxyClassesByAt = new ConcurrentHashMap<>();
+    private ConcurrentMap<AnnotationTypeKey, Class<?>> cachedProxyClassesByAt = new ConcurrentHashMap<>();
 
 
     public InterceptorDecoratorProxyFactory(WebBeansContext webBeansContext)
@@ -191,7 +193,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         Class<T> proxyClass = createProxyClass(
                 classLoader, at.getJavaClass(),
                 intercepted.toArray(new Method[intercepted.size()]), others.toArray(new Method[others.size()]));
-        cachedProxyClassesByAt.put(at, proxyClass);
+        cachedProxyClassesByAt.put(new AnnotationTypeKey(at), proxyClass);
         return proxyClass;
     }
 
@@ -224,7 +226,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
     public <T> Class<T> getCachedProxyClass(InterceptorResolutionService.BeanInterceptorInfo interceptorInfo,
                                             AnnotatedType<T> at, ClassLoader classLoader)
     {
-        Class<T> value = (Class<T>) cachedProxyClassesByAt.get(at);
+        Class<T> value = (Class<T>) cachedProxyClassesByAt.get(new AnnotationTypeKey(at));
         if (value == null)
         {
             value = createProxyClass(interceptorInfo, at, classLoader);
@@ -613,5 +615,54 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         mv.visitEnd();
     }
 
+    public static class AnnotationTypeKey<T> {
+        private final AnnotatedType<T> annotatedType;
+
+
+        public AnnotationTypeKey(final AnnotatedType<T> annotatedType)
+        {
+            Asserts.assertNotNull(annotatedType, "annotatedType");
+            this.annotatedType = annotatedType;
+        }
+
+        @Override
+        public final boolean equals(final Object o)
+        {
+            if (!(o instanceof AnnotationTypeKey))
+            {
+                return false;
+            }
+
+            final AnnotatedType<?> at = ((AnnotationTypeKey<?>) o).annotatedType;
+            if (annotatedType == at)
+            {
+                return true;
+            }
+
+            if (annotatedType.equals(at))
+            {
+                return true;
+            }
+
+            if (annotatedType.getJavaClass() == at.getJavaClass())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            if (annotatedType instanceof AnnotatedTypeImpl)
+            {
+                final var at = (AnnotatedTypeImpl<T>) annotatedType;
+                return at.getJavaClass().hashCode();
+
+            }
+            return Objects.hashCode(annotatedType);
+        }
+    }
 
 }
