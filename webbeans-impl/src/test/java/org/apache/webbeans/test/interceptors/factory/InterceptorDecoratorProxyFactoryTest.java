@@ -28,11 +28,15 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
 import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.intercept.InterceptorResolutionService;
+import org.apache.webbeans.portable.AnnotatedTypeImpl;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
 import org.apache.webbeans.test.interceptors.factory.beans.ClassInterceptedClass;
@@ -41,14 +45,18 @@ import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 import org.apache.webbeans.test.interceptors.factory.beans.TonsOfMethodsInterceptedClass;
+import org.apache.webbeans.util.Asserts;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.test.util.CustomBaseType;
 import org.apache.webbeans.test.util.CustomType;
 import org.apache.webbeans.test.util.ExtendedSpecificClass;
 import org.apache.webbeans.test.util.GenericInterface;
 import org.apache.webbeans.test.util.SpecificClass;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertSame;
 
 
 /**
@@ -56,6 +64,39 @@ import org.junit.Test;
  */
 public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 {
+
+    @Test
+    public void testEnsureOneProxyPerAT()
+    {
+        // we take a fresh URLClassLoader to not blur the test classpath with synthetic classes.
+        ClassLoader classLoader = new URLClassLoader(new URL[0]);
+
+        final WebBeansContext context = WebBeansContext.currentInstance();
+        final InterceptorDecoratorProxyFactory factory = context.getInterceptorDecoratorProxyFactory();
+
+        // create first annotated type and it's associated proxy
+        final var at = new AnnotatedTypeImpl<DummyBean>(context, context.getBeanManagerImpl().createAnnotatedType(DummyBean.class));
+        final var configurator = new AnnotatedTypeConfiguratorImpl<DummyBean>(context, at);
+        final AnnotatedTypeImpl<DummyBean> newAnnotatedType = configurator.getNewAnnotatedType();
+        final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo = context.getInterceptorResolutionService()
+                   .calculateInterceptorInfo(newAnnotatedType.getTypeClosure(), Collections.emptySet(), newAnnotatedType, true);
+        final Class<DummyBean> subClass = factory.getCachedProxyClass(interceptorInfo, newAnnotatedType, classLoader);
+
+        Asserts.assertNotNull(subClass);
+
+        // create second annotated type and it's associated proxy
+        final var at2 = new AnnotatedTypeImpl<DummyBean>(context, context.getBeanManagerImpl().createAnnotatedType(DummyBean.class));
+        final var configurator2 = new AnnotatedTypeConfiguratorImpl<DummyBean>(context, at2);
+        final AnnotatedTypeImpl<DummyBean> newAnnotatedType2 = configurator2.getNewAnnotatedType();
+        final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo2 = context.getInterceptorResolutionService()
+                   .calculateInterceptorInfo(newAnnotatedType2.getTypeClosure(), Collections.emptySet(), newAnnotatedType2, true);
+        final Class<DummyBean> subClass2 = factory.getCachedProxyClass(interceptorInfo2, newAnnotatedType2, classLoader);
+
+        Asserts.assertNotNull(subClass2);
+
+        // the 2 proxy instances should be the same and the cache in the factory should be filed in with one proxy only
+        assertSame(subClass, subClass2);
+    }
 
     @Test
     public void testSimpleProxyCreation() throws Exception
