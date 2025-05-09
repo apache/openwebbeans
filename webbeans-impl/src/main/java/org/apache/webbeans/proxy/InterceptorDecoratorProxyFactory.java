@@ -615,7 +615,8 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         mv.visitEnd();
     }
 
-    public static class AnnotationTypeKey<T> {
+    public static class AnnotationTypeKey<T>
+    {
         private final AnnotatedType<T> annotatedType;
 
 
