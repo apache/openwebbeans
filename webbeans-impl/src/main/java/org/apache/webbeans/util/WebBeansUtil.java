@@ -52,6 +52,7 @@ import org.apache.webbeans.config.OwbWildcardTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.container.InterceptionFactoryImpl;
 import org.apache.webbeans.context.control.ActivateRequestContextInterceptorBean;
 import org.apache.webbeans.context.control.RequestContextControllerBean;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
@@ -167,6 +168,8 @@ public final class WebBeansUtil
     private final ConcurrentMap<Type, Boolean> noTypeVariables = new ConcurrentHashMap<>();
     private final ConcurrentMap<EventCacheKey, Boolean> validEventType = new ConcurrentHashMap<>();
     private final ConcurrentMap<Type, Boolean> notContainerEvents = new ConcurrentHashMap<>();
+
+    private final InterceptionFactoryImpl.InterceptionFactoryCache interceptionFactoryCache = new InterceptionFactoryImpl.InterceptionFactoryCache();
 
     private InstanceBean instanceBean;
     private EventBean eventBean;
@@ -1745,6 +1748,11 @@ public final class WebBeansUtil
         {
             throw new WebBeansConfigurationException(bean.getBeanClass() + " must be an Interceptor");
         }
+    }
+
+    public InterceptionFactoryImpl.InterceptionFactoryCache getInterceptionFactoryCache()
+    {
+        return interceptionFactoryCache;
     }
 
     public InterceptionFactoryBean getInterceptionFactoryBean()

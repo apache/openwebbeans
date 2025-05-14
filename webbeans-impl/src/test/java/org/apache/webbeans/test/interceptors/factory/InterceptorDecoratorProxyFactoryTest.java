@@ -18,10 +18,36 @@
  */
 package org.apache.webbeans.test.interceptors.factory;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.InterceptionFactory;
+import jakarta.inject.Qualifier;
+import org.apache.webbeans.annotation.EmptyAnnotationLiteral;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.exception.WebBeansException;
+import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
+import org.apache.webbeans.proxy.InterceptorHandler;
+import org.apache.webbeans.proxy.OwbInterceptorProxy;
+import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
+import org.apache.webbeans.test.interceptors.factory.beans.ClassInterceptedClass;
+import org.apache.webbeans.test.interceptors.factory.beans.TonsOfMethodsInterceptedClass;
+import org.apache.webbeans.test.util.CustomBaseType;
+import org.apache.webbeans.test.util.CustomType;
+import org.apache.webbeans.test.util.ExtendedSpecificClass;
+import org.apache.webbeans.test.util.GenericInterface;
+import org.apache.webbeans.test.util.SpecificClass;
+import org.apache.webbeans.util.ClassUtil;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -31,24 +57,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.webbeans.config.WebBeansContext;
-import org.apache.webbeans.exception.WebBeansException;
-import org.apache.webbeans.test.AbstractUnitTest;
-import org.apache.webbeans.test.component.intercept.webbeans.TransactionalInterceptor;
-import org.apache.webbeans.test.interceptors.factory.beans.ClassInterceptedClass;
-import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
-
-import org.apache.webbeans.proxy.InterceptorHandler;
-import org.apache.webbeans.proxy.OwbInterceptorProxy;
-import org.apache.webbeans.test.interceptors.factory.beans.TonsOfMethodsInterceptedClass;
-import org.apache.webbeans.util.ClassUtil;
-import org.apache.webbeans.test.util.CustomBaseType;
-import org.apache.webbeans.test.util.CustomType;
-import org.apache.webbeans.test.util.ExtendedSpecificClass;
-import org.apache.webbeans.test.util.GenericInterface;
-import org.apache.webbeans.test.util.SpecificClass;
-import org.junit.Assert;
-import org.junit.Test;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
 
 /**
@@ -56,6 +69,35 @@ import org.junit.Test;
  */
 public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 {
+
+    @ApplicationScoped
+    public static class IFProducer {
+        @Produces
+        public Runnable wrap1(final InterceptionFactory<Runnable> interceptionFactory) {
+            return interceptionFactory.createInterceptedInstance(() -> {});
+        }
+
+        @Produces
+        @SimpleQualifier
+        public Runnable wrap2(final InterceptionFactory<Runnable> interceptionFactory) {
+            interceptionFactory.configure().add(new EmptyAnnotationLiteral<SimpleQualifier>(){});
+            return interceptionFactory.createInterceptedInstance(() -> {});
+        }
+    }
+
+    @Test
+    public void testEnsureOneProxyPerAT() {
+        startContainer(IFProducer.class);
+        final var simpleQualifier = new EmptyAnnotationLiteral<SimpleQualifier>(){};
+        final var r11 = getInstance(Runnable.class);
+        final var r12 = getInstance(Runnable.class);
+        assertEquals(1, getWebBeansContext().getWebBeansUtil().getInterceptionFactoryCache().size());
+        final var r2 = getInstance(Runnable.class, simpleQualifier);
+        assertEquals(2, getWebBeansContext().getWebBeansUtil().getInterceptionFactoryCache().size());
+        assertSame(r11.getClass(), r12.getClass());
+        assertNotSame(r2.getClass(), r11.getClass());
+        assertSame(getInstance(Runnable.class, simpleQualifier).getClass(), r2.getClass());
+    }
 
     @Test
     public void testSimpleProxyCreation() throws Exception
@@ -244,5 +286,13 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
                 throw new WebBeansException(e);
             }
         }
+    }
+
+    @Target({ METHOD })
+    @Retention(RUNTIME)
+    @Documented
+    @Qualifier
+    public @interface SimpleQualifier
+    {
     }
 }

@@ -67,7 +67,6 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
      * We need this to prevent filling up the ClassLoaders by
      */
     private ConcurrentMap<Bean<?>, Class<?>> cachedProxyClasses = new ConcurrentHashMap<>();
-    private ConcurrentMap<AnnotatedType<?>, Class<?>> cachedProxyClassesByAt = new ConcurrentHashMap<>();
 
 
     public InterceptorDecoratorProxyFactory(WebBeansContext webBeansContext)
@@ -191,7 +190,6 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         Class<T> proxyClass = createProxyClass(
                 classLoader, at.getJavaClass(),
                 intercepted.toArray(new Method[intercepted.size()]), others.toArray(new Method[others.size()]));
-        cachedProxyClassesByAt.put(at, proxyClass);
         return proxyClass;
     }
 
@@ -219,17 +217,6 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
         }
 
         return clazz;
-    }
-
-    public <T> Class<T> getCachedProxyClass(InterceptorResolutionService.BeanInterceptorInfo interceptorInfo,
-                                            AnnotatedType<T> at, ClassLoader classLoader)
-    {
-        Class<T> value = (Class<T>) cachedProxyClassesByAt.get(at);
-        if (value == null)
-        {
-            value = createProxyClass(interceptorInfo, at, classLoader);
-        }
-        return value;
     }
 
     public <T> Class<T> getCachedProxyClass(Bean<T> bean)

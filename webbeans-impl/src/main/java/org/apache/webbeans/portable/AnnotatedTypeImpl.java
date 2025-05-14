@@ -209,7 +209,7 @@ public class AnnotatedTypeImpl<X>
     @Override
     public int hashCode() // enough, no need to create a hashcode from attributes
     {
-        return super.hashCode();
+        return getJavaClass().hashCode();
     }
 
     private State getState()
