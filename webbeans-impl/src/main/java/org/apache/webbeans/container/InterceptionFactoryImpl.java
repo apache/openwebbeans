@@ -83,7 +83,7 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
         InterceptorResolutionService.BeanInterceptorInfo interceptorInfo =
                 context.getInterceptorResolutionService()
                     .calculateInterceptorInfo(newAnnotatedType.getTypeClosure(), qualifiers, newAnnotatedType, !ignoreFinals);
-        Class<T> subClass = factory.getCachedProxyClass(interceptorInfo, newAnnotatedType, classLoader);
+        Class<T> subClass = factory.createProxyClass(interceptorInfo, newAnnotatedType, classLoader);
 
         Map<Interceptor<?>,Object> interceptorInstances  = context.getInterceptorResolutionService()
                 .createInterceptorInstances(interceptorInfo, creationalContext);
