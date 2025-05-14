@@ -20,28 +20,30 @@ package org.apache.webbeans.container;
 
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
+import org.apache.webbeans.configurator.TrackingAnnotatedTypeConfiguratorImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.intercept.InterceptorResolutionService;
-import org.apache.webbeans.portable.AnnotatedTypeImpl;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.util.WebBeansUtil;
 
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.InterceptionFactory;
-import javax.enterprise.inject.spi.Interceptor;
 import javax.enterprise.inject.spi.configurator.AnnotatedTypeConfigurator;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
+
+import static java.util.Optional.ofNullable;
 
 public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo: make it serializable*/
 {
     private final CreationalContextImpl<T> creationalContext;
-    private final AnnotatedTypeConfiguratorImpl<T> configurator;
     private final Set<Annotation> qualifiers;
     private final WebBeansContext context;
+    private final AnnotatedType<T> at;
+    private TrackingAnnotatedTypeConfiguratorImpl<T> configurator;
     private boolean ignoreFinals;
     private volatile boolean called;
 
@@ -49,9 +51,10 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
                                    Set<Annotation> qualifiers, CreationalContextImpl<T> cc)
     {
         this.context = context;
-        this.configurator = new AnnotatedTypeConfiguratorImpl<>(context, at);
+        this.configurator = null; // computed later
         this.qualifiers = qualifiers;
         this.creationalContext = cc;
+        this.at = at;
     }
 
     @Override
@@ -64,6 +67,12 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
     @Override
     public AnnotatedTypeConfigurator<T> configure()
     {
+        if (configurator == null)
+        {
+            // configurator = new AnnotatedTypeConfiguratorImpl<>(context, at);
+            AnnotatedTypeConfiguratorImpl<T> realConfig = new AnnotatedTypeConfiguratorImpl<>(context, at);
+            configurator = new TrackingAnnotatedTypeConfiguratorImpl<>(realConfig);
+        }
         return configurator;
     }
 
@@ -72,31 +81,42 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
     {
         check();
 
-        ClassLoader classLoader = originalInstance.getClass().getClassLoader();
-        if (classLoader == null)
+        final ClassLoader classLoader = ofNullable(originalInstance.getClass().getClassLoader())
+                .orElseGet(WebBeansUtil::getCurrentClassLoader);
+
+        AnnotatedType<T> newAnnotatedType = configurator == null ? at : configurator.getNewAnnotatedType();
+        newAnnotatedType.getTypeClosure(); // make sure the toString bellow is accurate
+        String passivationId = InterceptionFactory.class.getName() + ">>" + newAnnotatedType + "<<" + ignoreFinals;
+
+        // if configure() has not been called, we need to create a new configurator with the muted annotated type
+        if (configurator != null) // meaning app changed dynamically the annotated type configuration
         {
-            classLoader = WebBeansUtil.getCurrentClassLoader();
+            passivationId = passivationId + ">>" + configurator.getPassivationId();
         }
 
-        InterceptorDecoratorProxyFactory factory = context.getInterceptorDecoratorProxyFactory();
-        AnnotatedTypeImpl<T> newAnnotatedType = configurator.getNewAnnotatedType();
-        InterceptorResolutionService.BeanInterceptorInfo interceptorInfo =
-                context.getInterceptorResolutionService()
-                    .calculateInterceptorInfo(newAnnotatedType.getTypeClosure(), qualifiers, newAnnotatedType, !ignoreFinals);
-        Class<T> subClass = factory.createProxyClass(interceptorInfo, newAnnotatedType, classLoader);
+        InterceptorResolutionService interceptorResolutionService = context.getInterceptorResolutionService();
+        InterceptionFactoryCacheEntry cache = context
+                .getWebBeansUtil()
+                .getInterceptionFactoryCache()
+                .computeIfAbsent(passivationId, () -> {
+                    InterceptorResolutionService.BeanInterceptorInfo interceptorInfo =
+                            interceptorResolutionService
+                                    .calculateInterceptorInfo(newAnnotatedType.getTypeClosure(), qualifiers, newAnnotatedType, !ignoreFinals);
+                    InterceptorDecoratorProxyFactory factory = context.getInterceptorDecoratorProxyFactory();
+                    return new InterceptionFactoryCacheEntry(
+                            factory.createProxyClass(interceptorInfo, newAnnotatedType, classLoader),
+                            interceptorInfo);
+                });
 
-        Map<Interceptor<?>,Object> interceptorInstances  = context.getInterceptorResolutionService()
-                .createInterceptorInstances(interceptorInfo, creationalContext);
-
-        Map<Method, List<Interceptor<?>>> methodInterceptors =
-                context.getInterceptorResolutionService().createMethodInterceptors(interceptorInfo);
-
-        // this is a good question actually, should we even support it?
-        String passivationId = InterceptionFactory.class.getName() + ">>" + newAnnotatedType.toString();
-
-        return context.getInterceptorResolutionService().createProxiedInstance(
-                originalInstance, creationalContext, creationalContext, interceptorInfo, subClass,
-                methodInterceptors, passivationId, interceptorInstances, c -> false, (a, d) -> d);
+        Map<javax.enterprise.inject.spi.Interceptor<?>, Object> interceptorInstances  = interceptorResolutionService
+            .createInterceptorInstances(cache.interceptorInfo, creationalContext);
+        Map<java.lang.reflect.Method, java.util.List<javax.enterprise.inject.spi.Interceptor<?>>> methodInterceptors =
+            interceptorResolutionService.createMethodInterceptors(cache.interceptorInfo);
+        return interceptorResolutionService.createProxiedInstance(
+                originalInstance, creationalContext, creationalContext, cache.interceptorInfo,
+                (Class<? extends T>) cache.proxyClass,
+                methodInterceptors, passivationId, interceptorInstances,
+                c -> false, (a, d) -> d);
     }
 
     private void check()
@@ -116,6 +136,52 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
         if (!ok)
         {
             throw new IllegalStateException("createInterceptedInstance() can be called only once");
+        }
+    }
+
+    public static class InterceptionFactoryCache
+    {
+        private final Map<String, InterceptionFactoryCacheEntry> cache = new ConcurrentHashMap<>();
+
+        private InterceptionFactoryCacheEntry computeIfAbsent(
+                final String interceptionFactoryCacheKey, final Supplier<InterceptionFactoryCacheEntry> compute)
+        {
+            InterceptionFactoryCacheEntry entry = cache.get(interceptionFactoryCacheKey);
+            if (entry == null)
+            {
+                // we do not want to create twice a proxy class,
+                // "bottleneck" but quickly cached
+                // so "ok"ish
+                synchronized (this)
+                {
+                    entry = cache.get(interceptionFactoryCacheKey);
+                    if (entry == null)
+                    {
+                        entry = compute.get();
+                        cache.putIfAbsent(interceptionFactoryCacheKey, entry);
+                    }
+                }
+            }
+            return entry;
+        }
+
+        public int size()
+        {
+            return cache.size();
+        }
+    }
+
+    private static class InterceptionFactoryCacheEntry
+    {
+        private final Class<?> proxyClass;
+        private final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo;
+
+        private InterceptionFactoryCacheEntry(
+                final Class<?> proxyClass,
+                final InterceptorResolutionService.BeanInterceptorInfo interceptorInfo)
+        {
+            this.proxyClass = proxyClass;
+            this.interceptorInfo = interceptorInfo;
         }
     }
 }
