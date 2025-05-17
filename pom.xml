@@ -91,7 +91,7 @@
         <!-- jetty 9.4.13+ broke session persistence: https://github.com/eclipse/jetty.project/issues/3597 -->
         <jetty.version>9.4.12.v20180830</jetty.version>
         <myfaces.version>2.3.6</myfaces.version>
-        <xbean.version>4.21</xbean.version>
+        <xbean.version>4.27</xbean.version>
         <arquillian.version>1.7.0.Alpha10</arquillian.version>
         <cdi.tck.version>2.0.5.Final</cdi.tck.version>
         <httpclient.version>4.5.13</httpclient.version>
