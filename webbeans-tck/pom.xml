@@ -31,25 +31,13 @@
     <packaging>jar</packaging>
     <description>All TCK tests for the Apache OpenWebBeans Implementation</description>
 
-    <dependencyManagement>
-        <dependencies>
-            <!--X
-                        <dependency>
-                            <groupId>org.jboss.arquillian</groupId>
-                            <artifactId>arquillian-bom</artifactId>
-                            <version>${arquillian.version}</version>
-                            <type>pom</type>
-                            <scope>import</scope>
-                        </dependency>
-            -->
-        </dependencies>
-    </dependencyManagement>
+    <properties>
+        <jakarta.interceptor-api.version>2.2.0</jakarta.interceptor-api.version>
+    </properties>
 
     <dependencies>
 
         <!-- Those dependencies are required for standalone TCK testing -->
-
-
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>

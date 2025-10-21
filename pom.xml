@@ -65,7 +65,10 @@
 
         <jakarta.atinject-api.version>2.0.1</jakarta.atinject-api.version>
         <jakarta.cdi-api.version>4.1.0</jakarta.cdi-api.version>
+
+        <!-- attention, in CDI-4.1 the min required version is interceptors-2.1, but the TCK requires interceptors-2.2 :( -->
         <jakarta.interceptor-api.version>2.1.0</jakarta.interceptor-api.version>
+
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <jakarta.el-api.version>6.0.0</jakarta.el-api.version>
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
