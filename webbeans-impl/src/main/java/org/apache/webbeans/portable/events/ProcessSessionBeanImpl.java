@@ -18,10 +18,13 @@
  */
 package org.apache.webbeans.portable.events;
 
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.ProcessSessionBean;
 import jakarta.enterprise.inject.spi.SessionBeanType;
+import jakarta.enterprise.invoke.Invoker;
+import jakarta.enterprise.invoke.InvokerBuilder;
 
 /**
  * Implementation of {@link ProcessSessionBean}.
@@ -78,6 +81,13 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     {
         checkState();
         return annotatedBeanClass;
+    }
+
+    @Override
+    public InvokerBuilder<Invoker<Object, ?>> createInvoker(AnnotatedMethod<? super Object> method)
+    {
+        //X TODO plus new InvokerBuilderImpl
+        return null;
     }
 
 }

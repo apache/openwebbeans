@@ -1298,6 +1298,27 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return elAdaptor.getOwbWrappedExpressionFactory(expressionFactory);
     }
 
+    @Override
+    public Collection<Context> getContexts(Class<? extends Annotation> scopeType)
+    {
+        //X TODO
+        return List.of();
+    }
+
+    @Override
+    public boolean isMatchingBean(Set<Type> beanTypes, Set<Annotation> beanQualifiers, Type requiredType, Set<Annotation> requiredQualifiers)
+    {
+        //X TODO
+        return false;
+    }
+
+    @Override
+    public boolean isMatchingEvent(Type specifiedType, Set<Annotation> specifiedQualifiers, Type observedEventType, Set<Annotation> observedEventQualifiers)
+    {
+        //X TODO
+        return false;
+    }
+
     public void addAdditionalQualifier(Class<? extends Annotation> qualifier)
     {
         if (!additionalQualifiers.contains(qualifier))

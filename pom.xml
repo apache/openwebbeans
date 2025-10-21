@@ -59,15 +59,15 @@
     </issueManagement>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <minimalJavaBuildVersion>${maven.compiler.source}</minimalJavaBuildVersion>
 
         <jakarta.atinject-api.version>2.0.1</jakarta.atinject-api.version>
-        <jakarta.cdi-api.version>4.0.1</jakarta.cdi-api.version>
+        <jakarta.cdi-api.version>4.1.0</jakarta.cdi-api.version>
         <jakarta.interceptor-api.version>2.1.0</jakarta.interceptor-api.version>
-        <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
-        <jakarta.el-api.version>5.0.1</jakarta.el-api.version>
+        <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
+        <jakarta.el-api.version>6.0.0</jakarta.el-api.version>
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.ejb-api.version>4.0.1</jakarta.ejb-api.version>
@@ -79,7 +79,7 @@
         <httpclient.version>4.5.14</httpclient.version>
         <xbean.version>4.27</xbean.version>
         <arquillian.version>1.8.1.Final</arquillian.version>
-        <cdi.tck.version>4.0.13</cdi.tck.version>
+        <cdi.tck.version>4.1.0</cdi.tck.version>
 
         <osgi.servlet.range>4.0</osgi.servlet.range>
         <osgi.el.range>4.0</osgi.el.range>
@@ -761,6 +761,11 @@
             <dependency>
                 <groupId>jakarta.enterprise</groupId>
                 <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                <version>${jakarta.cdi-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>jakarta.enterprise.cdi-el-api</artifactId>
                 <version>${jakarta.cdi-api.version}</version>
             </dependency>
 

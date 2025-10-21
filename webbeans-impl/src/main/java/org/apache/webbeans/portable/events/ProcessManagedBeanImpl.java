@@ -18,9 +18,12 @@
  */
 package org.apache.webbeans.portable.events;
 
+import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.ProcessManagedBean;
 
+import jakarta.enterprise.invoke.Invoker;
+import jakarta.enterprise.invoke.InvokerBuilder;
 import org.apache.webbeans.component.ManagedBean;
 
 /**
@@ -51,4 +54,10 @@ public class ProcessManagedBeanImpl<X> extends ProcessBeanImpl<X> implements Pro
         return annotatedBeanClass;
     }
 
+    @Override
+    public InvokerBuilder<Invoker<X, ?>> createInvoker(AnnotatedMethod<? super X> method)
+    {
+        //X TODO plus new InvokerBuilderImpl
+        return null;
+    }
 }

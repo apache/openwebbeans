@@ -21,6 +21,7 @@ package org.apache.webbeans.test.mock;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -387,5 +388,23 @@ public class MockManager implements BeanManager
     public <T extends Extension> T getExtension(Class<T> extensionClass)
     {
         return manager.getExtension(extensionClass);
+    }
+
+    @Override
+    public Collection<Context> getContexts(Class<? extends Annotation> scopeType)
+    {
+        return manager.getContexts(scopeType);
+    }
+
+    @Override
+    public boolean isMatchingBean(Set<Type> beanTypes, Set<Annotation> beanQualifiers, Type requiredType, Set<Annotation> requiredQualifiers)
+    {
+        return manager.isMatchingBean(beanTypes, beanQualifiers, requiredType, requiredQualifiers);
+    }
+
+    @Override
+    public boolean isMatchingEvent(Type specifiedType, Set<Annotation> specifiedQualifiers, Type observedEventType, Set<Annotation> observedEventQualifiers)
+    {
+        return manager.isMatchingEvent(specifiedType, specifiedQualifiers, observedEventType, observedEventQualifiers);
     }
 }
