@@ -18,12 +18,14 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import jakarta.inject.Provider;
 import jakarta.interceptor.InvocationContext;
@@ -127,5 +129,23 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
             return Constructor.class.cast(member);
         }
         return null;
+    }
+
+    @Override
+    public <T extends Annotation> T getInterceptorBinding(Class<T> annotationType)
+    {
+        return InvocationContext.super.getInterceptorBinding(annotationType);
+    }
+
+    @Override
+    public Set<Annotation> getInterceptorBindings()
+    {
+        return InvocationContext.super.getInterceptorBindings();
+    }
+
+    @Override
+    public <T extends Annotation> Set<T> getInterceptorBindings(Class<T> annotationType)
+    {
+        return InvocationContext.super.getInterceptorBindings(annotationType);
     }
 }

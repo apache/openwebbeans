@@ -31,10 +31,6 @@
     <packaging>jar</packaging>
     <description>All TCK tests for the Apache OpenWebBeans Implementation</description>
 
-    <properties>
-        <jakarta.interceptor-api.version>2.2.0</jakarta.interceptor-api.version>
-    </properties>
-
     <dependencies>
 
         <!-- Those dependencies are required for standalone TCK testing -->
