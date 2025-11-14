@@ -51,6 +51,7 @@ public class WithAnnotationTest extends AbstractUnitTest
 
         Assert.assertEquals(4, WithAnnotationExtension.scannedClasses);
         Assert.assertEquals(1, WithAnnotationExtension.one);
+        Assert.assertEquals(1, WithAnnotationExtension.extend);
     }
 
 
@@ -58,6 +59,7 @@ public class WithAnnotationTest extends AbstractUnitTest
     {
         public static int scannedClasses = 0;
         public static int one = 0;
+        public static int extend = 0;
 
         public void processClassess(@Observes @WithAnnotations(MyAnnoation.class) ProcessAnnotatedType pat)
         {
@@ -73,6 +75,12 @@ public class WithAnnotationTest extends AbstractUnitTest
         {
             one++;
         }
+
+        <T extends WithAnnotatedClass> void noIssueWithExtendGenericsOWB997(@Observes @WithAnnotations(MyAnnoation.class) ProcessAnnotatedType<T> pat)
+        {
+            extend++;
+        }
+
     }
 
     @Retention(RetentionPolicy.RUNTIME)

@@ -25,7 +25,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -747,19 +746,10 @@ public class NotificationManager
     {
         if(ClassUtil.isTypeVariable(observerTypeActualArg))
         {
-            TypeVariable<?> tv = (TypeVariable<?>)observerTypeActualArg;
-            Type tvBound = tv.getBounds()[0];
-            
-            if(tvBound instanceof Class)
+            if (Class.class.isInstance(beanClass) && GenericsUtil.isAssignableFrom(false, true, observerTypeActualArg, beanClass, new HashMap<>()))
             {
-                Class<?> clazzTvBound = (Class<?>)tvBound;
-                
-                if(Class.class.isInstance(beanClass) && clazzTvBound.isAssignableFrom(Class.class.cast(beanClass)))
-                {
-                    return true;
-                }                    
-            }            
-
+                return true;
+            }
         }
         else if(ClassUtil.isWildCardType(observerTypeActualArg))
         {
@@ -773,9 +763,9 @@ public class NotificationManager
                 return true;
             }
         }
-        else if (observerTypeActualArg instanceof ParameterizedType)
+        else if(observerTypeActualArg instanceof ParameterizedType)
         {
-            return GenericsUtil.isAssignableFrom(false, true, observerTypeActualArg, beanClass, new HashMap<>());
+            return GenericsUtil.isAssignableFrom(true, true, observerTypeActualArg, beanClass, new HashMap<>());
         }
         
         return false;
