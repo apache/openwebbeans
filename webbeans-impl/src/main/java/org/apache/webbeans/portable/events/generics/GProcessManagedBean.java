@@ -20,15 +20,15 @@ package org.apache.webbeans.portable.events.generics;
 
 import jakarta.enterprise.inject.spi.AnnotatedType;
 
-import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.InjectionTargetBean;
 import org.apache.webbeans.portable.events.ProcessManagedBeanImpl;
 
 @SuppressWarnings("unchecked")
 public class GProcessManagedBean extends ProcessManagedBeanImpl implements GenericBeanEvent
 {
-    public GProcessManagedBean(ManagedBean<?> bean,AnnotatedType<?> annotated)
+    public GProcessManagedBean(InjectionTargetBean<?> bean, AnnotatedType<?> annotated)
     {
-        super(bean,annotated);
+        super(bean, annotated);
     }
 
     @Override
