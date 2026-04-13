@@ -23,12 +23,14 @@ import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.InterceptionType;
 import jakarta.enterprise.inject.spi.Interceptor;
 import jakarta.interceptor.InvocationContext;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import jakarta.enterprise.inject.spi.BeanAttributes;
 import org.apache.webbeans.config.WebBeansContext;
@@ -275,10 +277,16 @@ public abstract class InterceptorBean<T> extends InjectionTargetBean<T> implemen
             wrapped.setParameters(parameters);
         }
 
-        // @Override
-        public Constructor getConstructor()
+        @Override
+        public Constructor<?> getConstructor()
         {
-            return null;
+            return wrapped.getConstructor();
+        }
+
+        @Override
+        public Set<Annotation> getInterceptorBindings()
+        {
+            return wrapped.getInterceptorBindings();
         }
     }
 

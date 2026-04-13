@@ -23,7 +23,9 @@ import org.apache.webbeans.util.ExceptionUtil;
 import jakarta.enterprise.inject.spi.InterceptionType;
 import jakarta.enterprise.inject.spi.Interceptor;
 import jakarta.inject.Provider;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.util.Set;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +37,10 @@ public class ConstructorInterceptorInvocationContext<T> extends InterceptorInvoc
     public ConstructorInterceptorInvocationContext(Provider<T> provider,
                                                    List<Interceptor<?>> aroundConstructInterceptors,
                                                    Map<Interceptor<?>, ?> interceptorInstances,
-                                                   Constructor<T> cons, Object[] parameters)
+                                                   Constructor<T> cons, Object[] parameters,
+                                                   Set<Annotation> interceptorBindings)
     {
-        super(provider, InterceptionType.AROUND_CONSTRUCT, aroundConstructInterceptors, interceptorInstances, cons, parameters);
+        super(provider, InterceptionType.AROUND_CONSTRUCT, aroundConstructInterceptors, interceptorInstances, cons, parameters, interceptorBindings);
     }
 
     public Object getNewInstance()

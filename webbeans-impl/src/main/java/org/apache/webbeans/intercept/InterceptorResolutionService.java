@@ -30,6 +30,7 @@ import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.portable.AnnotatedElementFactory;
+import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.InterceptorHandler;
 import org.apache.webbeans.util.AnnotationUtil;
 import org.apache.webbeans.util.Asserts;
@@ -134,7 +135,12 @@ public class InterceptorResolutionService
         }
 
         Set<Interceptor<?>> allUsedConstructorCdiInterceptors = new HashSet<>();
-        addCdiClassLifecycleInterceptors(annotatedType, classInterceptorBindings, allUsedCdiInterceptors, allUsedConstructorCdiInterceptors);
+        Set<Annotation> aroundConstructInterceptorBindings
+                = addCdiClassLifecycleInterceptors(annotatedType, classInterceptorBindings, allUsedCdiInterceptors, allUsedConstructorCdiInterceptors);
+
+        Set<Annotation> classLevelInterceptorBindings = classInterceptorBindings.isEmpty()
+                ? Collections.emptySet()
+                : Collections.unmodifiableSet(new LinkedHashSet<>(classInterceptorBindings));
 
         LinkedHashSet<Interceptor<?>> allUsedEjbInterceptors = new LinkedHashSet<>(); // we need to preserve the order!
         allUsedEjbInterceptors.addAll(classLevelEjbInterceptors);
@@ -244,12 +250,17 @@ public class InterceptorResolutionService
             }
         }
 
+        Set<Annotation> acBindings = aroundConstructInterceptorBindings != null
+                ? aroundConstructInterceptorBindings
+                : Collections.emptySet();
+        ClassInterceptorBindings cib = new ClassInterceptorBindings(classCdiInterceptors,
+                classLevelInterceptorBindings, acBindings);
         return new BeanInterceptorInfo(decorators, allUsedEjbInterceptors,
-                                       cdiInterceptors, cdiConstructorInterceptors,
-                                       selfInterceptorBean,
-                                       constructorInterceptorInfos, businessMethodInterceptorInfos,
-                                       nonInterceptedMethods, lifecycleMethodInterceptorInfos,
-                                       classCdiInterceptors);
+                cdiInterceptors, cdiConstructorInterceptors,
+                selfInterceptorBean,
+                constructorInterceptorInfos, businessMethodInterceptorInfos,
+                nonInterceptedMethods, lifecycleMethodInterceptorInfos,
+                cib);
     }
 
     /**
@@ -272,10 +283,13 @@ public class InterceptorResolutionService
     }
 
 
-    private <T> void addCdiClassLifecycleInterceptors(AnnotatedType<T> annotatedType,
-                                                      Set<Annotation> classInterceptorBindings,
-                                                      Set<Interceptor<?>> allUsedCdiInterceptors,
-                                                      Set<Interceptor<?>> allUsedConstructorCdiInterceptors)
+    /**
+     * @return interceptor bindings used to resolve &#064;AroundConstruct interceptors, or {@code null} if none
+     */
+    private <T> Set<Annotation> addCdiClassLifecycleInterceptors(AnnotatedType<T> annotatedType,
+                                                                 Set<Annotation> classInterceptorBindings,
+                                                                 Set<Interceptor<?>> allUsedCdiInterceptors,
+                                                                 Set<Interceptor<?>> allUsedConstructorCdiInterceptors)
     {
         BeanManagerImpl beanManagerImpl = webBeansContext.getBeanManagerImpl();
 
@@ -287,6 +301,8 @@ public class InterceptorResolutionService
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.POST_CONSTRUCT, interceptorBindings));
             allUsedCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.PRE_DESTROY, interceptorBindings));
         }
+
+        Set<Annotation> aroundConstructBindings = null;
 
         AnnotatedConstructor<?> constructorToUse = webBeansContext.getWebBeansUtil().getInjectedConstructor(annotatedType);
         if (constructorToUse == null)
@@ -317,14 +333,17 @@ public class InterceptorResolutionService
             }
             if (!constructorAnnot.isEmpty())
             {
+                aroundConstructBindings = Collections.unmodifiableSet(new LinkedHashSet<>(constructorAnnot));
                 allUsedConstructorCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, AnnotationUtil.asArray(constructorAnnot)));
             }
         }
         else if (interceptorBindings != null)
         {
+            aroundConstructBindings = Collections.unmodifiableSet(new LinkedHashSet<>(classInterceptorBindings));
             allUsedConstructorCdiInterceptors.addAll(beanManagerImpl.resolveInterceptors(InterceptionType.AROUND_CONSTRUCT, interceptorBindings));
         }
         allUsedCdiInterceptors.addAll(allUsedConstructorCdiInterceptors);
+        return aroundConstructBindings;
     }
 
     /**
@@ -642,17 +661,21 @@ public class InterceptorResolutionService
 
 
         List<Interceptor<?>> methodInterceptors;
+        Set<Annotation> resolvedCdiBindings;
         if (hasMethodInterceptors || classLevelInterceptors == null)
         {
             methodInterceptors = webBeansContext.getBeanManagerImpl().resolveInterceptors(interceptionType, AnnotationUtil.asArray(cummulatedInterceptorBindings.values()));
             allUsedCdiInterceptors.addAll(methodInterceptors);
+            resolvedCdiBindings = new LinkedHashSet<>(cummulatedInterceptorBindings.values());
         }
         else
         {
             // if there is no explicit interceptor defined on the method, then we just take all the interceptors from the class
             methodInterceptors = classLevelInterceptors;
+            resolvedCdiBindings = new LinkedHashSet<>(classInterceptorBindings);
         }
 
+        methodInterceptorInfo.setCdiInterceptorBindings(resolvedCdiBindings);
         methodInterceptorInfo.setCdiInterceptors(methodInterceptors);
     }
 
@@ -802,6 +825,24 @@ public class InterceptorResolutionService
         return methodInterceptors;
     }
 
+    /**
+     * CDI interceptor bindings per business method for
+     * {@link jakarta.interceptor.InvocationContext#getInterceptorBindings()}.
+     */
+    public Map<Method, Set<Annotation>> createMethodInterceptorBindings(BeanInterceptorInfo interceptorInfo)
+    {
+        Map<Method, Set<Annotation>> map = new HashMap<>();
+        for (Map.Entry<Method, BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
+        {
+            Set<Annotation> bindings = miEntry.getValue().getCdiInterceptorBindings();
+            if (bindings != null && !bindings.isEmpty())
+            {
+                map.put(miEntry.getKey(), bindings);
+            }
+        }
+        return map;
+    }
+
     public <T> Map<Interceptor<?>, Object> createInterceptorInstances(BeanInterceptorInfo interceptorInfo,
                                                                       CreationalContextImpl<T> creationalContextImpl)
     {
@@ -835,7 +876,8 @@ public class InterceptorResolutionService
     public <T> T createProxiedInstance(T instance, CreationalContextImpl<T> creationalContextImpl,
                                        CreationalContext<T> creationalContext,
                                        BeanInterceptorInfo interceptorInfo,
-                                       Class<? extends T> proxyClass, Map<Method, List<Interceptor<?>>> methodInterceptors,
+                                       Class<? extends T> proxyClass,
+                                       MethodInterceptionPlan methodPlan,
                                        String passivationId, Map<Interceptor<?>, Object> interceptorInstances,
                                        Function<CreationalContextImpl<?>, Boolean> isDelegateInjection,
                                        BiFunction<T, List<Decorator<?>>, List<Decorator<?>>> filterDecorators)
@@ -847,6 +889,7 @@ public class InterceptorResolutionService
         }
 
         T delegate = instance;
+        InterceptorDecoratorProxyFactory proxyFactory = webBeansContext.getInterceptorDecoratorProxyFactory();
         if (interceptorInfo.getDecorators() != null && !isDelegateInjection.apply(creationalContextImpl))
         {
             List<Decorator<?>> decorators = filterDecorators.apply(instance, interceptorInfo.getDecorators());
@@ -858,13 +901,16 @@ public class InterceptorResolutionService
                 creationalContextImpl.putDelegate(delegate);
                 Object decoratorInstance = decorator.create(creationalContext);
                 instances.put(decorator, decoratorInstance);
-                delegate = webBeansContext.getInterceptorDecoratorProxyFactory().createProxyInstance(proxyClass, instance,
-                        new DecoratorHandler(interceptorInfo, decorators, instances, i - 1, instance, passivationId));
+                DecoratorHandler handler = new DecoratorHandler(interceptorInfo, decorators, instances, i - 1, instance,
+                        passivationId);
+                delegate = proxyFactory.createProxyInstance(proxyClass, instance, handler);
             }
         }
-        InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<>(instance, delegate, methodInterceptors, interceptorInstances, passivationId);
+        InterceptorHandler interceptorHandler = new DefaultInterceptorHandler<>(instance, delegate,
+                methodPlan.getMethodInterceptors(), methodPlan.getMethodInterceptorBindings(), interceptorInstances,
+                passivationId);
 
-        return webBeansContext.getInterceptorDecoratorProxyFactory().createProxyInstance(proxyClass, instance, interceptorHandler);
+        return proxyFactory.createProxyInstance(proxyClass, instance, interceptorHandler);
     }
 
 
@@ -882,18 +928,18 @@ public class InterceptorResolutionService
                                    Map<Method, BusinessMethodInterceptorInfo> businessMethodsInfo,
                                    List<Method> nonInterceptedMethods,
                                    Map<InterceptionType, LifecycleMethodInfo> lifecycleMethodInterceptorInfos,
-                                   List<Interceptor<?>> classCdiInterceptors)
+                                   ClassInterceptorBindings classInterceptorBindings)
         {
             this.decorators = decorators;
             this.ejbInterceptors = ejbInterceptors;
             this.cdiInterceptors = cdiInterceptors;
-            this.classCdiInterceptors = classCdiInterceptors;
             this.constructorCdiInterceptors = constructorCdiInterceptors;
             this.selfInterceptorBean = selfInterceptorBean;
             this.businessMethodsInfo = businessMethodsInfo;
             this.constructorInterceptorInfos = constructorInterceptorInfos;
             this.nonInterceptedMethods = nonInterceptedMethods;
             this.lifecycleMethodInterceptorInfos = lifecycleMethodInterceptorInfos;
+            this.classInterceptorBindings = classInterceptorBindings;
         }
 
         /**
@@ -909,10 +955,7 @@ public class InterceptorResolutionService
          */
         private List<Interceptor<?>> cdiInterceptors;
 
-        /**
-         * Class only interceptors (for lifecycle methods).
-         */
-        private List<Interceptor<?>> classCdiInterceptors;
+        private final ClassInterceptorBindings classInterceptorBindings;
 
         private final List<Interceptor<?>> constructorCdiInterceptors;
 
@@ -953,7 +996,7 @@ public class InterceptorResolutionService
 
         public List<Interceptor<?>> getClassCdiInterceptors()
         {
-            return classCdiInterceptors;
+            return classInterceptorBindings.getClassCdiInterceptors();
         }
 
         public LinkedHashSet<Interceptor<?>> getEjbInterceptors()
@@ -969,6 +1012,16 @@ public class InterceptorResolutionService
         public List<Interceptor<?>> getConstructorCdiInterceptors()
         {
             return constructorCdiInterceptors;
+        }
+
+        public Set<Annotation> getClassLevelInterceptorBindings()
+        {
+            return classInterceptorBindings.getClassLevelInterceptorBindings();
+        }
+
+        public Set<Annotation> getAroundConstructInterceptorBindings()
+        {
+            return classInterceptorBindings.getAroundConstructInterceptorBindings();
         }
 
         public SelfInterceptorBean<?> getSelfInterceptorBean()
@@ -1004,6 +1057,7 @@ public class InterceptorResolutionService
     {
         private Interceptor<?>[] ejbInterceptors;
         private Interceptor<?>[] cdiInterceptors;
+        private Set<Annotation> cdiInterceptorBindings;
         private LinkedHashMap<Decorator<?>, Method> methodDecorators;
 
         public BusinessMethodInterceptorInfo()
@@ -1028,6 +1082,23 @@ public class InterceptorResolutionService
         public Interceptor<?>[] getCdiInterceptors()
         {
             return cdiInterceptors;
+        }
+
+        public Set<Annotation> getCdiInterceptorBindings()
+        {
+            return cdiInterceptorBindings;
+        }
+
+        public void setCdiInterceptorBindings(Set<Annotation> bindings)
+        {
+            if (bindings == null || bindings.isEmpty())
+            {
+                this.cdiInterceptorBindings = null;
+            }
+            else
+            {
+                this.cdiInterceptorBindings = Collections.unmodifiableSet(new LinkedHashSet<>(bindings));
+            }
         }
 
         /**
@@ -1108,6 +1179,70 @@ public class InterceptorResolutionService
         public BusinessMethodInterceptorInfo getMethodInterceptorInfo()
         {
             return methodInterceptorInfo;
+        }
+    }
+
+    /**
+     * Class-scoped CDI interceptors and their effective interceptor bindings.
+     */
+    public static final class ClassInterceptorBindings
+    {
+        private final List<Interceptor<?>> classCdiInterceptors;
+        private final Set<Annotation> classLevelInterceptorBindings;
+        private final Set<Annotation> aroundConstructInterceptorBindings;
+
+        public ClassInterceptorBindings(List<Interceptor<?>> classCdiInterceptors,
+                                        Set<Annotation> classLevelInterceptorBindings,
+                                        Set<Annotation> aroundConstructInterceptorBindings)
+        {
+            this.classCdiInterceptors = classCdiInterceptors;
+            this.classLevelInterceptorBindings = classLevelInterceptorBindings;
+            this.aroundConstructInterceptorBindings = aroundConstructInterceptorBindings;
+        }
+
+        public List<Interceptor<?>> getClassCdiInterceptors()
+        {
+            return classCdiInterceptors;
+        }
+
+        public Set<Annotation> getClassLevelInterceptorBindings()
+        {
+            return classLevelInterceptorBindings;
+        }
+
+        public Set<Annotation> getAroundConstructInterceptorBindings()
+        {
+            return aroundConstructInterceptorBindings;
+        }
+    }
+
+    /**
+     * Business-method interceptors plus per-method CDI {@link jakarta.interceptor.InvocationContext} bindings.
+     */
+    public static final class MethodInterceptionPlan
+    {
+        private final Map<Method, List<Interceptor<?>>> methodInterceptors;
+        private final Map<Method, Set<Annotation>> methodInterceptorBindings;
+
+        public MethodInterceptionPlan(Map<Method, List<Interceptor<?>>> methodInterceptors,
+                                      Map<Method, Set<Annotation>> methodInterceptorBindings)
+        {
+            this.methodInterceptors = methodInterceptors != null
+                    ? methodInterceptors
+                    : Collections.emptyMap();
+            this.methodInterceptorBindings = methodInterceptorBindings != null
+                    ? methodInterceptorBindings
+                    : Collections.emptyMap();
+        }
+
+        public Map<Method, List<Interceptor<?>>> getMethodInterceptors()
+        {
+            return methodInterceptors;
+        }
+
+        public Map<Method, Set<Annotation>> getMethodInterceptorBindings()
+        {
+            return methodInterceptorBindings;
         }
     }
 
