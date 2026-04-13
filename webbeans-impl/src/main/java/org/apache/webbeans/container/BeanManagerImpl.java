@@ -19,7 +19,11 @@
 package org.apache.webbeans.container;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,12 +50,14 @@ import jakarta.enterprise.context.spi.Context;
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Default;
 import jakarta.enterprise.inject.InjectionException;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.Stereotype;
 import jakarta.enterprise.inject.Vetoed;
 import jakarta.enterprise.inject.spi.*;
+import jakarta.inject.Named;
 import jakarta.inject.Scope;
 import jakarta.interceptor.InterceptorBinding;
 import javax.naming.NamingException;
@@ -1308,15 +1314,94 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public boolean isMatchingBean(Set<Type> beanTypes, Set<Annotation> beanQualifiers, Type requiredType, Set<Annotation> requiredQualifiers)
     {
-        //X TODO
-        return false;
+        if (beanTypes == null)
+        {
+            throw new IllegalArgumentException("Null bean types");
+        }
+        if (beanQualifiers == null)
+        {
+            throw new IllegalArgumentException("Null bean qualifiers");
+        }
+        if (requiredType == null)
+        {
+            throw new IllegalArgumentException("Null bean type");
+        }
+        if (requiredQualifiers == null)
+        {
+            throw new IllegalArgumentException("Null required qualifiers");
+        }
+        validateAssignabilityQualifiers(beanQualifiers, "beanQualifiers annotation not a qualifier");
+        validateAssignabilityQualifiers(requiredQualifiers, "requiredQualifiers annotation not a qualifier");
+
+        Set<Type> legalBeanTypes = new HashSet<>();
+        legalBeanTypes.add(Object.class);
+        for (Type beanType : beanTypes)
+        {
+            if (!isIllegalBeanTypeForAssignability(beanType))
+            {
+                legalBeanTypes.add(beanType);
+            }
+        }
+
+        if (!matchesRequiredBeanType(requiredType, legalBeanTypes))
+        {
+            return false;
+        }
+
+        Set<Annotation> normalizedBeanQualifiers = normalizeBeanQualifiersForAssignability(beanQualifiers);
+        Set<Annotation> normalizedRequired = requiredQualifiers.isEmpty()
+                ? Collections.singleton(DefaultLiteral.INSTANCE)
+                : new HashSet<>(requiredQualifiers);
+
+        return hasAllQualifiers(normalizedBeanQualifiers, normalizedRequired);
     }
 
     @Override
     public boolean isMatchingEvent(Type specifiedType, Set<Annotation> specifiedQualifiers, Type observedEventType, Set<Annotation> observedEventQualifiers)
     {
-        //X TODO
-        return false;
+        if (specifiedType == null)
+        {
+            throw new IllegalArgumentException("Null event type");
+        }
+        if (specifiedQualifiers == null)
+        {
+            throw new IllegalArgumentException("Null specified qualifiers");
+        }
+        if (observedEventType == null)
+        {
+            throw new IllegalArgumentException("Null observed event type");
+        }
+        if (observedEventQualifiers == null)
+        {
+            throw new IllegalArgumentException("Null observed event qualifiers");
+        }
+        if (containsUnboundTypeVariable(specifiedType))
+        {
+            throw new IllegalArgumentException("Type variable in event type");
+        }
+        validateAssignabilityQualifiers(specifiedQualifiers, "A specifiedQualifiers annotation not a qualifier");
+        validateAssignabilityQualifiers(observedEventQualifiers, "An observedEventQualifiers annotation not a qualifier");
+
+        Class<?> eventClass = ClassUtil.getClazz(specifiedType);
+        Set<Type> eventTypeClosure = GenericsUtil.getTypeClosure(specifiedType, eventClass);
+        if (GenericsUtil.containTypeVariable(eventTypeClosure))
+        {
+            throw new IllegalArgumentException("Type variable in event type");
+        }
+
+        if (!matchesObservedEventType(observedEventType, eventTypeClosure))
+        {
+            return false;
+        }
+
+        Set<Annotation> normalizedEventQualifiers = new HashSet<>(specifiedQualifiers);
+        if (normalizedEventQualifiers.isEmpty())
+        {
+            normalizedEventQualifiers.add(DefaultLiteral.INSTANCE);
+        }
+        normalizedEventQualifiers.add(AnyLiteral.INSTANCE);
+
+        return hasAllQualifiers(normalizedEventQualifiers, observedEventQualifiers);
     }
 
     public void addAdditionalQualifier(Class<? extends Annotation> qualifier)
@@ -1548,6 +1633,195 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     public boolean isAfterBeanDiscovery()
     {
         return beanDiscoveryState == LifecycleState.DISCOVERY;
+    }
+
+    private void validateAssignabilityQualifiers(Set<Annotation> qualifiers, String failureMessage)
+    {
+        for (Annotation qualifier : qualifiers)
+        {
+            if (!isQualifier(qualifier.annotationType()))
+            {
+                throw new IllegalArgumentException(failureMessage);
+            }
+        }
+    }
+
+    private static boolean isIllegalBeanTypeForAssignability(Type beanType)
+    {
+        if (beanType instanceof Class<?>)
+        {
+            Class<?> c = (Class<?>) beanType;
+            if (c.isPrimitive())
+            {
+                return true;
+            }
+            if (c.isArray())
+            {
+                Class<?> ct = c.getComponentType();
+                while (ct.isArray())
+                {
+                    ct = ct.getComponentType();
+                }
+                return ct.isPrimitive();
+            }
+            return false;
+        }
+        if (beanType instanceof TypeVariable<?>)
+        {
+            return true;
+        }
+        if (beanType instanceof ParameterizedType)
+        {
+            ParameterizedType parameterizedType = (ParameterizedType) beanType;
+            for (Type typeArgument : parameterizedType.getActualTypeArguments())
+            {
+                if (typeArgument instanceof TypeVariable<?>)
+                {
+                    continue;
+                }
+                if (typeArgument instanceof WildcardType || isIllegalBeanTypeForAssignability(typeArgument))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (beanType instanceof GenericArrayType)
+        {
+            return isIllegalBeanTypeForAssignability(((GenericArrayType) beanType).getGenericComponentType());
+        }
+        return false;
+    }
+
+    private boolean matchesRequiredBeanType(Type requiredType, Set<Type> legalBeanTypes)
+    {
+        for (Type beanType : legalBeanTypes)
+        {
+            if (GenericsUtil.satisfiesDependency(false, false, requiredType, beanType, new HashMap<>())
+                    || GenericsUtil.satisfiesDependency(false, true, requiredType, beanType, new HashMap<>()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Set<Annotation> normalizeBeanQualifiersForAssignability(Set<Annotation> beanQualifiers)
+    {
+        Set<Annotation> normalized = new HashSet<>(beanQualifiers);
+        normalized.add(AnyLiteral.INSTANCE);
+        boolean onlyAnyOrNamed = true;
+        for (Annotation a : normalized)
+        {
+            Class<? extends Annotation> t = a.annotationType();
+            if (!Any.class.equals(t) && !Named.class.equals(t))
+            {
+                onlyAnyOrNamed = false;
+                break;
+            }
+        }
+        if (onlyAnyOrNamed)
+        {
+            normalized.add(DefaultLiteral.INSTANCE);
+        }
+        return normalized;
+    }
+
+    private boolean hasAllQualifiers(Set<Annotation> beanQualifiers, Set<Annotation> requiredQualifiers)
+    {
+        for (Annotation required : requiredQualifiers)
+        {
+            if (!containsEquivalentQualifier(beanQualifiers, required))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean containsEquivalentQualifier(Set<Annotation> beanQualifiers, Annotation required)
+    {
+        for (Annotation beanQ : beanQualifiers)
+        {
+            if (!required.annotationType().equals(beanQ.annotationType()))
+            {
+                continue;
+            }
+            AnnotatedType<? extends Annotation> at = additionalAnnotatedTypeQualifiers.get(beanQ.annotationType());
+            if (at == null)
+            {
+                if (AnnotationUtil.isCdiAnnotationEqual(beanQ, required))
+                {
+                    return true;
+                }
+            }
+            else if (AnnotationUtil.isCdiAnnotationEqual(at, beanQ, required))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsUnboundTypeVariable(Type type)
+    {
+        if (type instanceof TypeVariable<?>)
+        {
+            return true;
+        }
+        if (type instanceof ParameterizedType)
+        {
+            for (Type arg : ((ParameterizedType) type).getActualTypeArguments())
+            {
+                if (containsUnboundTypeVariable(arg))
+                {
+                    return true;
+                }
+            }
+        }
+        else if (type instanceof GenericArrayType)
+        {
+            return containsUnboundTypeVariable(((GenericArrayType) type).getGenericComponentType());
+        }
+        else if (type instanceof WildcardType)
+        {
+            WildcardType w = (WildcardType) type;
+            for (Type b : w.getUpperBounds())
+            {
+                if (containsUnboundTypeVariable(b))
+                {
+                    return true;
+                }
+            }
+            for (Type b : w.getLowerBounds())
+            {
+                if (containsUnboundTypeVariable(b))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean matchesObservedEventType(Type observedEventType, Set<Type> eventTypeClosure)
+    {
+        for (Type eventType : eventTypeClosure)
+        {
+            if (eventType instanceof ParameterizedType && observedEventType instanceof Class<?>)
+            {
+                if (GenericsUtil.isAssignableFrom(true, false, observedEventType,
+                        ((ParameterizedType) eventType).getRawType(), new HashMap<>()))
+                {
+                    return true;
+                }
+            }
+            if (GenericsUtil.isAssignableFrom(true, false, observedEventType, eventType, new HashMap<>()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private enum LifecycleState
