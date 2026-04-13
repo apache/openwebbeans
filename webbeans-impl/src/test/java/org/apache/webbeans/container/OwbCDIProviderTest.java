@@ -18,7 +18,9 @@
  */
 package org.apache.webbeans.container;
 
+import org.apache.webbeans.config.WebBeansFinder;
 import org.apache.webbeans.test.AbstractUnitTest;
+import org.apache.webbeans.util.WebBeansUtil;
 import org.junit.Test;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -77,6 +79,8 @@ public class OwbCDIProviderTest extends AbstractUnitTest
     @Test(expected = IllegalStateException.class)
     public void noImplicitStart()
     {
+        // Clears any container left by other tests in the same Surefire JVM (IDE often runs this method alone).
+        WebBeansFinder.clearInstances(WebBeansUtil.getCurrentClassLoader());
         CDI.current().getBeanManager();
     }
 
