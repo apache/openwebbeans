@@ -1006,7 +1006,16 @@ public final class WebBeansUtil
             }
         } // else activated implicitely
 
-        if (alternative)
+        // CDI 4+: @Alternative together with @Priority on the producer method/field selects the producer
+        // globally, even when the declaring bean class is not an @Alternative (see CDI spec 5.2.2).
+        boolean globalPriorityAlternativeProducer = AnnotationUtil.hasAnnotation(annotations, Alternative.class)
+                && AnnotationUtil.hasAnnotation(annotations, Priority.class);
+
+        if (globalPriorityAlternativeProducer)
+        {
+            producer.setEnabled(true);
+        }
+        else if (alternative)
         {
             // either the parent class is an enabled Alternative
             // or the stereotype directly on the producer field or method is an enabled Alternative
