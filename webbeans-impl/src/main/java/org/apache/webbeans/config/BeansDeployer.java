@@ -2054,13 +2054,13 @@ public class BeansDeployer
                     dbb.defineDecoratorRules();
                     DecoratorBean<T> decorator = dbb.getBean();
 
-                    //Fires ProcessBean
-                    ProcessBeanImpl<T> processBeanEvent = new GProcessBean(decorator, annotatedType);
+                    //Fires ProcessManagedBean (decorators are managed beans; enables createInvoker validation in the TCK)
+                    ProcessBeanImpl<T> processBeanEvent = new GProcessManagedBean(decorator, annotatedType);
                     webBeansContext.getBeanManagerImpl().fireEvent(processBeanEvent, true);
                     processBeanEvent.setStarted();
 
-                    webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessBean event observers for " +
-                        "interceptor beans. Look at logs for further details");
+                    webBeansContext.getWebBeansUtil().inspectDefinitionErrorStack("There are errors that are added by ProcessManagedBean event observers for " +
+                        "decorators. Look at logs for further details");
 
                     decoratorsManager.addDecorator(decorator);
                 }
