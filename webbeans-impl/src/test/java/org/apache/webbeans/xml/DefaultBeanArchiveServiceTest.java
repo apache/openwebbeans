@@ -77,6 +77,30 @@ public class DefaultBeanArchiveServiceTest
                 "", "4.0");
     }
 
+    @Test
+    public void parseJakartaEE41() throws IOException
+    {
+        assertBeansXml("" +
+                "<beans xmlns=\"https://jakarta.ee/xml/ns/jakartaee\"\n" +
+                "       version=\"4.1\" bean-discovery-mode=\"annotated\">\n" +
+                CONTENT +
+                "</beans>" +
+                "", "4.1");
+    }
+
+    /**
+     * CDI 4.1 default for {@code bean-discovery-mode} when the attribute is omitted.
+     */
+    @Test
+    public void parseJakartaEE41DefaultDiscoveryMode() throws IOException
+    {
+        assertBeansXml("" +
+                "<beans xmlns=\"https://jakarta.ee/xml/ns/jakartaee\" version=\"4.1\">\n" +
+                CONTENT +
+                "</beans>" +
+                "", "4.1");
+    }
+
     private void assertBeansXml(final String beansXml, final String version) throws IOException
     {
         try (final InputStream stream = new ByteArrayInputStream(beansXml.getBytes(StandardCharsets.UTF_8))) {

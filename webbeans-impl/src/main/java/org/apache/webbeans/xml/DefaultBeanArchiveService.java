@@ -321,7 +321,13 @@ public class DefaultBeanArchiveService implements BeanArchiveService
                     bdaInfo.setVersion(getTrimmedAttribute(webBeansRoot, "version"));
 
                     String beanDiscoveryMode = getTrimmedAttribute(webBeansRoot, "bean-discovery-mode");
-                    bdaInfo.setBeanDiscoveryMode(beanDiscoveryMode != null ? BeanDiscoveryMode.valueOf(beanDiscoveryMode.toUpperCase()) : null);
+                    BeanDiscoveryMode mode = beanDiscoveryMode != null ? BeanDiscoveryMode.valueOf(beanDiscoveryMode.toUpperCase()) : null;
+                    if (mode == null && isCdi41OrLater(bdaInfo.getVersion()))
+                    {
+                        // CDI 4.1+: default bean-discovery-mode is "annotated" when the attribute is omitted
+                        mode = BeanDiscoveryMode.ANNOTATED;
+                    }
+                    bdaInfo.setBeanDiscoveryMode(mode);
 
                     readBeanChildren(bdaInfo, webBeansRoot, beansXmlLocation);
                 }
@@ -601,14 +607,34 @@ public class DefaultBeanArchiveService implements BeanArchiveService
             DocumentBuilder documentBuilder = factory.newDocumentBuilder();
             documentBuilder.setErrorHandler(new WebBeansErrorHandler());
 
-            Element root = documentBuilder.parse(xmlStream).getDocumentElement();
-
-            return root;
+            return documentBuilder.parse(xmlStream).getDocumentElement();
         }
         catch (Exception e)
         {
             logger.log(Level.SEVERE, OWBLogConst.FATAL_0002, e);
             throw new WebBeansException(WebBeansLoggerFacade.getTokenString(OWBLogConst.EXCEPT_0013), e);
+        }
+    }
+
+    /**
+     * CDI 4.1+ defines default {@code bean-discovery-mode} as {@code annotated} when the attribute is omitted.
+     */
+    static boolean isCdi41OrLater(String version)
+    {
+        if (version == null)
+        {
+            return false;
+        }
+        String[] parts = version.split("\\.");
+        try
+        {
+            int major = Integer.parseInt(parts[0]);
+            int minor = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+            return major > 4 || major == 4 && minor >= 1;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
         }
     }
 
