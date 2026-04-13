@@ -21,10 +21,14 @@ package org.apache.webbeans.portable.events;
 import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.DeploymentException;
 import jakarta.enterprise.inject.spi.ProcessSessionBean;
 import jakarta.enterprise.inject.spi.SessionBeanType;
 import jakarta.enterprise.invoke.Invoker;
 import jakarta.enterprise.invoke.InvokerBuilder;
+
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.invoke.InvokerBuilderImpl;
 
 /**
  * Implementation of {@link ProcessSessionBean}.
@@ -86,8 +90,13 @@ public class ProcessSessionBeanImpl<X> extends ProcessBeanImpl<Object> implement
     @Override
     public InvokerBuilder<Invoker<Object, ?>> createInvoker(AnnotatedMethod<? super Object> method)
     {
-        //X TODO plus new InvokerBuilderImpl
-        return null;
+        checkState();
+        if (!(getBean() instanceof AbstractOwbBean))
+        {
+            throw new DeploymentException("Cannot create invoker for bean: " + getBean());
+        }
+        InvokerBuilderImpl.validateCreateInvoker(getBean(), annotatedBeanClass, method);
+        return new InvokerBuilderImpl<>((AbstractOwbBean<?>) getBean(), annotatedBeanClass, method);
     }
 
 }

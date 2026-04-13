@@ -20,11 +20,14 @@ package org.apache.webbeans.portable.events;
 
 import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.DeploymentException;
 import jakarta.enterprise.inject.spi.ProcessManagedBean;
 
 import jakarta.enterprise.invoke.Invoker;
 import jakarta.enterprise.invoke.InvokerBuilder;
-import org.apache.webbeans.component.ManagedBean;
+import org.apache.webbeans.component.AbstractOwbBean;
+import org.apache.webbeans.component.InjectionTargetBean;
+import org.apache.webbeans.invoke.InvokerBuilderImpl;
 
 /**
  * Implementation of {@link ProcessManagedBean}.
@@ -38,8 +41,8 @@ public class ProcessManagedBeanImpl<X> extends ProcessBeanImpl<X> implements Pro
     /**Annotated managed bean class*/
     private final AnnotatedType<X> annotatedBeanClass;
 
-    public ProcessManagedBeanImpl(ManagedBean<X> bean, AnnotatedType<X> annotatedType)
-    {        
+    public ProcessManagedBeanImpl(InjectionTargetBean<X> bean, AnnotatedType<X> annotatedType)
+    {
         super(bean, annotatedType);
         annotatedBeanClass = annotatedType;
     }
@@ -57,7 +60,12 @@ public class ProcessManagedBeanImpl<X> extends ProcessBeanImpl<X> implements Pro
     @Override
     public InvokerBuilder<Invoker<X, ?>> createInvoker(AnnotatedMethod<? super X> method)
     {
-        //X TODO plus new InvokerBuilderImpl
-        return null;
+        checkState();
+        if (!(getBean() instanceof AbstractOwbBean))
+        {
+            throw new DeploymentException("Cannot create invoker for bean: " + getBean());
+        }
+        InvokerBuilderImpl.validateCreateInvoker(getBean(), annotatedBeanClass, method);
+        return new InvokerBuilderImpl<>((AbstractOwbBean<?>) getBean(), annotatedBeanClass, method);
     }
 }
