@@ -51,6 +51,8 @@
                 <!-- Tests which do require a BuildCompatibleExtension and thus do not run with OWB-4.0 yet -->
                 <exclude name="org.jboss.cdi.tck.tests.build.compatible.*"></exclude>
                 <exclude name="org.jboss.cdi.tck.tests.full.extensions.lite.*"></exclude>
+                <!-- Invoker TCK (Lite): uses @BuildCompatibleExtension, InvokerFactory, synthetic InvokerHolder — not PE ProcessManagedBean.createInvoker -->
+                <exclude name="org.jboss.cdi.tck.tests.invokers.*"></exclude>
             </package>
 
             <package name="org.jboss.cdi.tck.interceptors.tests.*"/>
@@ -61,6 +63,15 @@
         <classes>
 
             <!-- Tests broken in the CDI-4.0 TCK: -->
+
+            <!--
+                Requires Build Compatible Extension (MetaAnnotations.addContext); OpenWebBeans does not implement BCE.
+            -->
+            <class name="org.jboss.cdi.tck.tests.beanContainer.BeanContainerTest">
+                <methods>
+                    <exclude name="testGetContexts"/>
+                </methods>
+            </class>
 
             <!--
                 Test wrongly assumes a specific ordering although both interceptors have priority 2000 and thus

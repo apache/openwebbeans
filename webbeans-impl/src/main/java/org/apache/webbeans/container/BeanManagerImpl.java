@@ -1307,8 +1307,31 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     @Override
     public Collection<Context> getContexts(Class<? extends Annotation> scopeType)
     {
-        //X TODO
-        return List.of();
+        Asserts.assertNotNull(scopeType, "scopeType");
+
+        List<Context> result = new ArrayList<>();
+
+        Context standardContext = webBeansContext.getContextsService().getCurrentContext(scopeType, false);
+        if (standardContext != null)
+        {
+            result.add(standardContext);
+        }
+
+        List<Context> registered = contextMap.get(scopeType);
+        if (registered != null && !registered.isEmpty())
+        {
+            result.addAll(registered);
+        }
+        else
+        {
+            Context singleRegistered = singleContextMap.get(scopeType);
+            if (singleRegistered != null)
+            {
+                result.add(singleRegistered);
+            }
+        }
+
+        return List.copyOf(result);
     }
 
     @Override

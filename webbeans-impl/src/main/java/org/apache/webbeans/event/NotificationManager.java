@@ -1064,6 +1064,11 @@ public class NotificationManager
             {
                 throw new WebBeansDeploymentException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
             }
+            else if (exc instanceof jakarta.enterprise.inject.spi.DeploymentException)
+            {
+                throw new WebBeansDeploymentException(
+                        "Error while sending SystemEvent to a CDI Extension! " + event.toString(), exc);
+            }
             else
             {
                 throw new WebBeansConfigurationException("Error while sending SystemEvent to a CDI Extension! " + event.toString(), e);
