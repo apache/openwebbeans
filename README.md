@@ -17,22 +17,22 @@ Jakarta CDI 4.1 implementation (Jakarta EE 11)
 Requires Java 17+
 
 ### owb_4.0.x
-![owb_4.0.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=4.0&color=cyan)
+![owb_4.0.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=4.0&color=cyan)  
 Jakarta CDI 4.0 implementation  
 Requires Java 11+
 
 ### owb_2.0.x
-![owb_2.0.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=2.0&color=cyan)
+![owb_2.0.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=2.0&color=cyan)  
 CDI 2.0 (JSR-365) implementation  
-Requires Java 8+. Uses a shaded version of ASM-8 (Java 11 support) for proxy generation.
+Requires Java 8+.
 
 ### owb_1.7.x
-![owb_1.7.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=1.7&color=cyan)
+![owb_1.7.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=1.7&color=cyan)  
 CDI 1.2 (JSR-346) implementation  
 Requires Java 7+.
 
 ### owb_1.2.x
-![owb_1.2.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=1.2&color=cyan)
+![owb_1.2.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=1.2&color=cyan)  
 CDI 1.0 (JSR-299) implementation  
 Requires Java 5+.
 
