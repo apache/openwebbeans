@@ -85,10 +85,9 @@ public class InjectionResolver
     private AlternativesManager alternativesManager;
     
     /**
-     * This Map contains all resolved beans via it's type and qualifiers.
-     * If a bean have resolved as not existing, the entry will contain <code>null</code> as value.
-     * The Long key is a hashCode, see
-     * {@link BeanCacheKey#BeanCacheKey(boolean, Type, String, java.util.function.Function, Annotation...)}
+     * Resolved beans by injection point type and qualifiers ({@link BeanCacheKey}).
+     * Filled after startup when the bean set is final. Misses are stored as
+     * {@link Collections#emptySet()} so repeated lookups avoid rescanning the deployment.
      */
     private Map<BeanCacheKey, Set<Bean<?>>> resolvedBeansByType = new ConcurrentHashMap<>();
 
@@ -500,8 +499,14 @@ public class InjectionResolver
             }
         }
 
-        if (!startup && !resolvedComponents.isEmpty())
+        if (!startup)
         {
+            if (resolvedComponents.isEmpty())
+            {
+                resolvedBeansByType.put(cacheKey, Collections.emptySet());
+                return Collections.emptySet();
+            }
+
             resolvedBeansByType.put(cacheKey, resolvedComponents);
 
             if (logger.isLoggable(Level.FINE))
