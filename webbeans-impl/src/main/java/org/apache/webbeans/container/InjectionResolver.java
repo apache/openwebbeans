@@ -421,6 +421,7 @@ public class InjectionResolver
         }
 
         resolvedComponents = new HashSet<>();
+        HashMap<Type, Integer> visitedForGenerics = new HashMap<>();
 
         boolean returnAll = injectionPointType.equals(Object.class) && currentQualifier;
 
@@ -455,10 +456,10 @@ public class InjectionResolver
                 {
                     for (Type componentApiType : component.getTypes())
                     {
-
+                        visitedForGenerics.clear();
                         if (GenericsUtil.satisfiesDependency(
                                 isDelegate, AbstractProducerBean.class.isInstance(component),
-                                injectionPointType, componentApiType, new HashMap<>()))
+                                injectionPointType, componentApiType, visitedForGenerics))
                         {
                             resolvedComponents.add(component);
                             break;
@@ -470,14 +471,17 @@ public class InjectionResolver
 
         if (!returnAll)
         {
+            // Main scan may have left state in visitedForGenerics; refinement uses the same map.
+            visitedForGenerics.clear();
+
             // Look for qualifiers
             resolvedComponents = findByQualifier(resolvedComponents, injectionPointType, qualifiers);
 
             // have an additional round of checks for assignability of parameterized types.
-            Set<Bean<?>> byParameterizedType = findByParameterizedType(resolvedComponents, injectionPointType, isDelegate);
+            Set<Bean<?>> byParameterizedType = findByParameterizedType(resolvedComponents, injectionPointType, isDelegate, visitedForGenerics);
             if (byParameterizedType.isEmpty())
             {
-                resolvedComponents = findByBeanType(resolvedComponents, injectionPointType, isDelegate);
+                resolvedComponents = findByBeanType(resolvedComponents, injectionPointType, isDelegate, visitedForGenerics);
             }
             else
             {
@@ -509,7 +513,11 @@ public class InjectionResolver
         return resolvedComponents;
     }
 
-    private Set<Bean<?>> findByBeanType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)
+    /**
+     * @param visited scratch map for {@link GenericsUtil#satisfiesDependency}; cleared before each call.
+     */
+    private Set<Bean<?>> findByBeanType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate,
+                                        Map<Type, Integer> visited)
     {
         if (allComponents == null || allComponents.isEmpty())
         {
@@ -517,13 +525,16 @@ public class InjectionResolver
             return allComponents;
         }
 
+        visited.clear();
+
         Set<Bean<?>> resolved = new HashSet<>();
         for (Bean<?> bean : allComponents)
         {
             boolean isProducer = AbstractProducerBean.class.isInstance(bean);
             for (Type type : bean.getTypes())
             {
-                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, type, new HashMap<>()))
+                visited.clear();
+                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, type, visited))
                 {
                     resolved.add(bean);
                 }
@@ -538,9 +549,15 @@ public class InjectionResolver
         return resolved;
     }
 
-    private Set<Bean<?>> findByParameterizedType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate)
+    /**
+     * @param visited scratch map for {@link GenericsUtil#satisfiesDependency}; cleared before each call.
+     */
+    private Set<Bean<?>> findByParameterizedType(Set<Bean<?>> allComponents, Type injectionPointType, boolean isDelegate,
+                                                 Map<Type, Integer> visited)
     {
         Bean<?> rawProducerBean = null;
+
+        visited.clear();
 
         Set<Bean<?>> resolvedComponents = new HashSet<>();
         for (Bean<?> component : allComponents)
@@ -548,8 +565,8 @@ public class InjectionResolver
             boolean isProducer = AbstractProducerBean.class.isInstance(component);
             for (Type componentApiType : component.getTypes())
             {
-
-                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, componentApiType, new HashMap<>()))
+                visited.clear();
+                if (GenericsUtil.satisfiesDependency(isDelegate, isProducer, injectionPointType, componentApiType, visited))
                 {
                     resolvedComponents.add(component);
                     break;
