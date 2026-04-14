@@ -117,6 +117,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -129,8 +130,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 import static java.util.Arrays.asList;
 import static org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
 import static org.apache.webbeans.spi.BeanArchiveService.BeanArchiveInformation;
@@ -1047,53 +1046,63 @@ public class BeansDeployer
     {
         Set<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans();
 
-        // Collect all producer method beans
-        // and sort them with subclasses first
-        // This is important as we can later go top-down and
-        // disable all 'overwritten' producer methods which must be
-        // further down in the list
-        List<ProducerMethodBean> producerMethodBeans = beans.stream()
-            .filter(ProducerMethodBean.class::isInstance)
-            .map(ProducerMethodBean.class::cast)
-            .collect(Collectors.toList());
-
-        checkSpecializedProducerMethodConditions(producerMethodBeans);
-
-        for (int i = 0; i < producerMethodBeans.size(); i++)
+        List<ProducerMethodBean<?>> producerMethodBeans = new ArrayList<>();
+        Map<String, List<ProducerMethodBean<?>>> byCreatorMethodName = new HashMap<>();
+        for (Bean<?> bean : beans)
         {
-            ProducerMethodBean<?> producerMethodBean = producerMethodBeans.get(i);
-            if (!producerMethodBean.isEnabled())
+            if (!(bean instanceof ProducerMethodBean))
             {
                 continue;
             }
+            ProducerMethodBean<?> pmb = (ProducerMethodBean<?>) bean;
+            producerMethodBeans.add(pmb);
+            byCreatorMethodName
+                    .computeIfAbsent(pmb.getCreatorMethod().getName(), k -> new ArrayList<>())
+                    .add(pmb);
+        }
 
-            for (int j = 0; j < producerMethodBeans.size(); j++)
+        checkSpecializedProducerMethodConditions(producerMethodBeans);
+
+        // Only producers sharing the same Java method name can specialize each other; compare within
+        // those buckets (not full n² over all producer methods). Disabling still requires the same
+        // erased parameter types as overriding / CDI producer specialization (so unrelated overloads stay).
+        for (List<ProducerMethodBean<?>> sameName : byCreatorMethodName.values())
+        {
+            int size = sameName.size();
+            for (int i = 0; i < size; i++)
             {
-                ProducerMethodBean<?> otherProducerMethodBean = producerMethodBeans.get(j);
-
-                if (i==j)
+                ProducerMethodBean<?> producerMethodBean = sameName.get(i);
+                if (!producerMethodBean.isEnabled())
                 {
-                    // makes no sense to compare with ourselves
                     continue;
                 }
 
-                if (!otherProducerMethodBean.isEnabled())
+                for (int j = 0; j < size; j++)
                 {
-                    // already disabled
-                    continue;
-                }
+                    ProducerMethodBean<?> otherProducerMethodBean = sameName.get(j);
 
-                if (producerMethodBean.getBeanClass().equals(otherProducerMethodBean.getBeanClass()))
-                {
-                    // must be another producerMethod from the same class. Probably different qualifier?
-                    continue;
-                }
+                    if (i == j)
+                    {
+                        // makes no sense to compare with ourselves
+                        continue;
+                    }
 
-                if (otherProducerMethodBean.getBeanClass().isAssignableFrom(producerMethodBean.getBeanClass()))
-                {
-                    // yikes we did hit a superclass!
+                    if (!otherProducerMethodBean.isEnabled())
+                    {
+                        // already disabled
+                        continue;
+                    }
 
-                    if (producerMethodBean.getCreatorMethod().getName().equals(otherProducerMethodBean.getCreatorMethod().getName()))
+                    if (producerMethodBean.getBeanClass().equals(otherProducerMethodBean.getBeanClass()))
+                    {
+                        // must be another producerMethod from the same class. Probably different qualifier?
+                        continue;
+                    }
+
+                    if (otherProducerMethodBean.getBeanClass().isAssignableFrom(producerMethodBean.getBeanClass())
+                            && Arrays.equals(
+                                    producerMethodBean.getCreatorMethod().getParameterTypes(),
+                                    otherProducerMethodBean.getCreatorMethod().getParameterTypes()))
                     {
                         // disable the other bean as it got 'specialized' with the current bean.
                         otherProducerMethodBean.setEnabled(false);
@@ -1107,7 +1116,7 @@ public class BeansDeployer
      * Verify that all conditions for Specialized producer methdods are met.
      * See spec section 3.3.3. Specializing a producer method
      */
-    private void checkSpecializedProducerMethodConditions(List<ProducerMethodBean> producerBeans)
+    private void checkSpecializedProducerMethodConditions(List<ProducerMethodBean<?>> producerBeans)
     {
         Set<String> methodsDisabledDueToSpecialization = new HashSet<>();
         for (ProducerMethodBean producerBean : producerBeans)
