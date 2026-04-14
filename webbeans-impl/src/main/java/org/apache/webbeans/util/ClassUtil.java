@@ -263,8 +263,9 @@ public final class ClassUtil
     /**
      * collect all non-private, non-static and non-abstract methods from the given class.
      * This method removes any overloaded methods from the list automatically.
-     * We also do skip bridge methods as they exist for and are handled solely
-     * by the JVM itself.
+     * We also skip JVM {@link Method#isBridge() bridge} methods by default; use
+     * {@link #getNonPrivateMethods(Class, boolean, boolean)} when a caller (e.g. normal-scope
+     * subclass proxies, OWB-1234/923) must list those signatures too.
      *
      * The returned Map contains the methods divided by the methodName as key in the map
      * following all the methods with the same methodName in a List.
@@ -277,6 +278,18 @@ public final class ClassUtil
      * @param excludeFinalMethods whether final classes should get excluded from the result
      */
     public static List<Method> getNonPrivateMethods(Class<?> topClass, boolean excludeFinalMethods)
+    {
+        return getNonPrivateMethods(topClass, excludeFinalMethods, false);
+    }
+
+    /**
+     * @param includeJvmBridgeMethods when {@code true} (classes only), after the usual collection
+     *        this method appends JVM bridge methods whose {@code name + JVM descriptor} is not
+     *        already present (descriptor alone is insufficient: e.g. {@code clone()} and a covariant
+     *        {@code getValue()} bridge can share {@code ()Ljava/lang/Object;}, OWB-923).
+     */
+    public static List<Method> getNonPrivateMethods(Class<?> topClass, boolean excludeFinalMethods,
+            boolean includeJvmBridgeMethods)
     {
         Map<String, List<Method>> methodMap = new HashMap<>();
         List<Method> allMethods = new ArrayList<>(10);
@@ -300,7 +313,80 @@ public final class ClassUtil
             }
         }
 
+        if (includeJvmBridgeMethods && !topClass.isAnnotation() && !topClass.isInterface())
+        {
+            appendJvmBridgeMethods(topClass, excludeFinalMethods, allMethods);
+        }
+
         return allMethods;
+    }
+
+    /**
+     * Bridges are merged in a second pass with JVM-level descriptor keys so a covariant-return
+     * bridge (e.g. {@code ()Ljava/lang/Object;}) is not dropped as an &quot;override&quot; of
+     * {@code ()Ljava/lang/String;} during single-pass name-based collection.
+     */
+    private static void appendJvmBridgeMethods(Class<?> topClass, boolean excludeFinalMethods, List<Method> allMethods)
+    {
+        // Name + JVM descriptor: covariant bridge getValue()Ljava/lang/Object; must not collide with
+        // Object.clone()Ljava/lang/Object; (same descriptor, different name — see OWB-923).
+        Set<String> signatureKeys = new HashSet<>();
+        for (Method m : allMethods)
+        {
+            signatureKeys.add(jvmBridgeSignatureKey(m));
+        }
+        for (Class<?> c = topClass; c != null && c != Object.class; c = c.getSuperclass())
+        {
+            for (Method m : SecurityUtil.doPrivilegedGetDeclaredMethods(c))
+            {
+                if (!m.isBridge())
+                {
+                    continue;
+                }
+                if (skipBridgeMethodForCollection(m, excludeFinalMethods, c, topClass))
+                {
+                    continue;
+                }
+                String key = jvmBridgeSignatureKey(m);
+                if (signatureKeys.contains(key))
+                {
+                    continue;
+                }
+                signatureKeys.add(key);
+                allMethods.add(m);
+            }
+        }
+    }
+
+    private static String jvmBridgeSignatureKey(Method m)
+    {
+        return m.getName() + '\0' + org.apache.xbean.asm9.Type.getMethodDescriptor(m);
+    }
+
+    private static boolean skipBridgeMethodForCollection(Method m, boolean excludeFinalMethods,
+            Class<?> declaringClass, Class<?> topClass)
+    {
+        int modifiers = m.getModifiers();
+        if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
+        {
+            return true;
+        }
+        if (excludeFinalMethods && Modifier.isFinal(modifiers))
+        {
+            return true;
+        }
+        if ("finalize".equals(m.getName()))
+        {
+            return true;
+        }
+        if (!Modifier.isPublic(modifiers) && !Modifier.isProtected(modifiers))
+        {
+            if (!declaringClass.getPackage().getName().equals(topClass.getPackage().getName()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void addNonPrivateMethods(Class<?> topClass, boolean excludeFinalMethods,
@@ -325,7 +411,7 @@ public final class ClassUtil
 
             if (method.isBridge())
             {
-                // we have no interest in generics bridge methods
+                // we have no interest in generics bridge methods for general API reflection
                 continue;
             }
 

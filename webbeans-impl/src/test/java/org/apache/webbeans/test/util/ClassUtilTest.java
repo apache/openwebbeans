@@ -41,6 +41,20 @@ public class ClassUtilTest {
     }
 
     @Test
+    public void testGetNonPrivateMethods_includeJvmBridgeMethods()
+    {
+        List<Method> withoutBridges = ClassUtil.getNonPrivateMethods(SpecificClass.class, false);
+        withoutBridges.removeAll(Arrays.asList(Object.class.getDeclaredMethods()));
+        Assert.assertEquals(1, withoutBridges.size());
+        Assert.assertFalse(withoutBridges.stream().anyMatch(Method::isBridge));
+
+        List<Method> withBridges = ClassUtil.getNonPrivateMethods(SpecificClass.class, false, true);
+        withBridges.removeAll(Arrays.asList(Object.class.getDeclaredMethods()));
+        Assert.assertEquals(2, withBridges.size());
+        Assert.assertEquals(1, withBridges.stream().filter(Method::isBridge).count());
+    }
+
+    @Test
     public void testGetAllNonPrivateMethods_packagePrivate()
     {
         List<Method> nonPrivateMethods = ClassUtil.getNonPrivateMethods(MyOtherPackageSubClass.class, false);
@@ -94,6 +108,35 @@ public class ClassUtilTest {
 
         Assert.assertTrue(ClassUtil.isMethodDeclared(clazz, "doSomething"));
         Assert.assertFalse(ClassUtil.isMethodDeclared(clazz, "notExistingMethod"));
+    }
+
+    /** Covariant return yields a bridge ()Ljava/lang/Object; — same JVM descriptor as Object.clone(). */
+    public interface CovariantIface
+    {
+        Object getV();
+    }
+
+    public abstract static class CovariantBase
+    {
+        public String getV()
+        {
+            return "x";
+        }
+    }
+
+    public static final class CovariantImpl extends CovariantBase implements CovariantIface
+    {
+    }
+
+    @Test
+    public void testGetNonPrivateMethods_jvmBridgeDescriptorDistinctFromClone()
+    {
+        List<Method> methods = ClassUtil.getNonPrivateMethods(CovariantImpl.class, true, true);
+        long bridgeGetV = methods.stream().filter(m -> "getV".equals(m.getName()) && m.isBridge()).count();
+        Assert.assertEquals(
+                "covariant bridge shares ()Ljava/lang/Object; with clone — must still be listed (OWB-923)",
+                1,
+                bridgeGetV);
     }
 
     private boolean isOverridden(Class subClass, String methodName) throws Exception

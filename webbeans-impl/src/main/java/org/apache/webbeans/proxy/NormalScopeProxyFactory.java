@@ -236,9 +236,9 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             List<Method> protectedMethods = new ArrayList<>();
 
 
-            for (Method method : ClassUtil.getNonPrivateMethods(classToProxy, true))
+            for (Method method : ClassUtil.getNonPrivateMethods(classToProxy, true, true))
             {
-                if (unproxyableMethod(method))
+                if (unproxyableMethodExceptBridge(method))
                 {
                     continue;
                 }
@@ -382,7 +382,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         {
             if (isIgnoredMethod(delegatedMethod))
             {
-                return;
+                continue;
             }
 
             String methodDescriptor = Type.getMethodDescriptor(delegatedMethod);

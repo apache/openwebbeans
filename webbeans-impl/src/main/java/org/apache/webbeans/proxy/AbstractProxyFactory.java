@@ -463,12 +463,26 @@ public abstract class AbstractProxyFactory
 
 
 
-    protected boolean unproxyableMethod(Method delegatedMethod)
+    /**
+     * Methods that must not be proxied (excluding the {@link Method#isBridge()} rule).
+     * When a caller uses {@link org.apache.webbeans.util.ClassUtil#getNonPrivateMethods(Class, boolean, boolean)} with
+     * {@code includeJvmBridgeMethods == true}, use this for filtering — not {@link #unproxyableMethod}, which also skips
+     * all bridge methods for the common case where {@link org.apache.webbeans.util.ClassUtil#getNonPrivateMethods(Class, boolean)} omits them.
+     */
+    protected boolean unproxyableMethodExceptBridge(Method delegatedMethod)
     {
         int modifiers = delegatedMethod.getModifiers();
 
         return (modifiers & (Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL | Modifier.NATIVE)) > 0 ||
-               "finalize".equals(delegatedMethod.getName()) || delegatedMethod.isBridge();
+               "finalize".equals(delegatedMethod.getName());
+    }
+
+    /**
+     * For method lists that omit JVM bridges (usual {@link org.apache.webbeans.util.ClassUtil#getNonPrivateMethods(Class, boolean)}).
+     */
+    protected boolean unproxyableMethod(Method delegatedMethod)
+    {
+        return unproxyableMethodExceptBridge(delegatedMethod) || delegatedMethod.isBridge();
     }
 
     /**
