@@ -105,7 +105,6 @@ public class ConversationLoggingTest
         System.setProperty(ScannerService.class.getName(), scannerServiceClass.getName());
         System.setProperty(ContainerLifecycle.class.getName(), WebContainerLifecycle.class.getName());
         System.setProperty(ConversationService.class.getName(), WebConversationService.class.getName());
-        System.setProperty("org.apache.webbeans.application.supportsConversation", "false");
         try
         {
             final WebBeansConfigurationListener wbcl = new WebBeansConfigurationListener();

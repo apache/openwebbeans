@@ -23,7 +23,6 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.spi.Context;
 
 import org.junit.Assert;
-import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
@@ -42,7 +41,6 @@ public class ConversationScopedTest extends AbstractUnitTest
     @Test
     public void testTransientConversation() throws Exception
     {
-        addConfiguration(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION, "true");
         startContainer(ConversationScopedBean.class);
 
         ConversationScopedBean instance = getInstance(ConversationScopedBean.class);
@@ -64,7 +62,6 @@ public class ConversationScopedTest extends AbstractUnitTest
         ConversationScopedInitBean.gotStarted = false;
         EndConversationObserver.endConversationCalled = false;
 
-        addConfiguration(OpenWebBeansConfiguration.APPLICATION_SUPPORTS_CONVERSATION, "true");
         startContainer(ConversationScopedInitBean.class, EndConversationObserver.class);
 
         ConversationScopedInitBean instance = getInstance(ConversationScopedInitBean.class);

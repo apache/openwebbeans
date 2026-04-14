@@ -23,6 +23,7 @@ import static org.apache.webbeans.util.Asserts.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.enterprise.context.ConversationScoped;
@@ -45,8 +46,7 @@ public class ConversationManagerTest extends AbstractUnitTest
                 return conversationId.get();
             }
         });
-        addConfiguration("org.apache.webbeans.application.supportsConversation", "true");
-        startContainer();
+        startContainer(ConversationManagerConversationBean.class);
         final ContextsService contextsService = getWebBeansContext().getContextsService();
         contextsService.startContext(ConversationScoped.class, null);
         final ConversationContext conversationContext1 = ConversationContext.class.cast(
@@ -75,5 +75,11 @@ public class ConversationManagerTest extends AbstractUnitTest
 
         contextsService.getCurrentContext(ConversationScoped.class); // trigger update
         assertNotEquals(beginTime, conversation2.getLastAccessTime());
+    }
+
+    @ConversationScoped
+    public static class ConversationManagerConversationBean implements Serializable
+    {
+        private static final long serialVersionUID = 1L;
     }
 }

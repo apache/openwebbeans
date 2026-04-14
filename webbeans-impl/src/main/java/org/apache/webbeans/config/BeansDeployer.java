@@ -43,6 +43,7 @@ import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
+import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.context.control.ActivateRequestContextInterceptorBean;
 import org.apache.webbeans.corespi.se.DefaultJndiService;
 import org.apache.webbeans.decorator.DecoratorsManager;
@@ -312,6 +313,11 @@ public class BeansDeployer
                 
                 // We are finally done with our bean discovery
                 fireAfterBeanDiscoveryEvent();
+
+                if (webBeansContext.getContextsService() instanceof AbstractContextsService acs)
+                {
+                    acs.detectConversationSupport(webBeansContext);
+                }
 
                 // activate InjectionResolver cache now
                 webBeansContext.getBeanManagerImpl().getInjectionResolver().setStartup(false);

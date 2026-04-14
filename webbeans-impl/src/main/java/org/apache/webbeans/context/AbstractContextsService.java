@@ -23,12 +23,15 @@ import java.util.Iterator;
 import java.util.Set;
 
 import jakarta.enterprise.context.ContextException;
+import jakarta.enterprise.context.ConversationScoped;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.inject.spi.Bean;
 
 import org.apache.webbeans.annotation.BeforeDestroyedLiteral;
 import org.apache.webbeans.annotation.DestroyedLiteral;
 import org.apache.webbeans.annotation.InitializedLiteral;
+import org.apache.webbeans.component.OwbBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.conversation.ConversationImpl;
 import org.apache.webbeans.conversation.ConversationManager;
@@ -46,8 +49,30 @@ public abstract class AbstractContextsService implements ContextsService
     protected AbstractContextsService(WebBeansContext webBeansContext)
     {
         this.webBeansContext = webBeansContext;
-        supportsConversation = webBeansContext.getOpenWebBeansConfiguration().supportsConversation();
+        // OWB-1074: enabled after discovery via {@link #afterBeanDiscoveryConversationSupport}
+        supportsConversation = false;
+    }
 
+    /**
+     * OWB-1074: enable {@code ConversationScoped} infrastructure when the deployment defines at least
+     * one enabled bean with that scope (fast bean scan). Same rule in SE and servlet ({@code WebContextsService}) modes.
+     */
+    public void detectConversationSupport(WebBeansContext wbc)
+    {
+        boolean hasConversationScoped = false;
+        for (Bean<?> bean : wbc.getBeanManagerImpl().getBeans())
+        {
+            if (bean instanceof OwbBean && !((OwbBean) bean).isEnabled())
+            {
+                continue;
+            }
+            if (ConversationScoped.class.equals(bean.getScope()))
+            {
+                hasConversationScoped = true;
+                break;
+            }
+        }
+        setSupportConversations(hasConversationScoped);
     }
 
     @Override

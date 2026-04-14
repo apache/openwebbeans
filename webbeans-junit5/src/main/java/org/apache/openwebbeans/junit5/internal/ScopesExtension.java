@@ -20,6 +20,7 @@ package org.apache.openwebbeans.junit5.internal;
 
 import org.apache.openwebbeans.junit5.Scopes;
 import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.context.AbstractContextsService;
 import org.apache.webbeans.spi.ContextsService;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -79,9 +80,12 @@ public class ScopesExtension implements BeforeAllCallback, AfterAllCallback, Bef
         {
             stopIfNeeded(scopes, contextsService, RequestScoped.class);
             stopIfNeeded(scopes, contextsService, SessionScoped.class);
-            if (webBeansContext.getOpenWebBeansConfiguration().supportsConversation())
+            if (contextsService instanceof AbstractContextsService acs)
             {
-                stopIfNeeded(scopes, contextsService, ConversationScoped.class);
+                if (acs.isSupportsConversation())
+                {
+                    stopIfNeeded(scopes, contextsService, ConversationScoped.class);
+                }
             }
         }
         return Stream.of(scopes)
