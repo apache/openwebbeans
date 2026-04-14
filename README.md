@@ -14,7 +14,7 @@ Apache's implementation of the Contexts and Dependency Injection (CDI) / Jakarta
 
 ### main
 Jakarta CDI 4.1 implementation (Jakarta EE 11)  
-Requires Java 11+
+Requires Java 17+
 
 ### owb_4.0.x
 ![owb_4.0.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=4.0&color=cyan)
@@ -38,7 +38,7 @@ Requires Java 5+.
 
 ## Minimum Requirements (main)
 
-- Java 11+
+- Java 17+
 - CDI 4.1 (Jakarta CDI / Jakarta EE 11)
 - TCK compliant
 
