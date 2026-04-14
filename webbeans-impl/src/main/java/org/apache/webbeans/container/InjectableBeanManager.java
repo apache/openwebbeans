@@ -24,6 +24,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -356,6 +357,24 @@ public class InjectableBeanManager implements BeanManager, Externalizable
     public <T extends Extension> T getExtension(Class<T> extensionClass)
     {
         return bm.getExtension(extensionClass);
+    }
+
+    @Override
+    public Collection<Context> getContexts(Class<? extends Annotation> scopeType)
+    {
+        return bm.getContexts(scopeType);
+    }
+
+    @Override
+    public boolean isMatchingBean(Set<Type> beanTypes, Set<Annotation> beanQualifiers, Type requiredType, Set<Annotation> requiredQualifiers)
+    {
+        return bm.isMatchingBean(beanTypes, beanQualifiers, requiredType, requiredQualifiers);
+    }
+
+    @Override
+    public boolean isMatchingEvent(Type specifiedType, Set<Annotation> specifiedQualifiers, Type observedEventType, Set<Annotation> observedEventQualifiers)
+    {
+        return bm.isMatchingEvent(specifiedType, specifiedQualifiers, observedEventType, observedEventQualifiers);
     }
 
     @Override

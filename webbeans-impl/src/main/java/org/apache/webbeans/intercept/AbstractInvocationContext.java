@@ -18,12 +18,16 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import jakarta.inject.Provider;
 import jakarta.interceptor.InvocationContext;
@@ -38,21 +42,30 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
     protected Object[] parameters;
     private Map<String, Object> contextData;
     private Object timer;
+    private final Set<Annotation> interceptorBindings;
 
-    public AbstractInvocationContext(Provider<T> target, AccessibleObject member, Object[] parameters)
+    public AbstractInvocationContext(Provider<T> target, AccessibleObject member, Object[] parameters, Set<Annotation> interceptorBindings)
     {
         this.target = target;
         this.member = member;
         this.parameters = parameters;
+        if (interceptorBindings == null || interceptorBindings.isEmpty())
+        {
+            this.interceptorBindings = Collections.emptySet();
+        }
+        else
+        {
+            this.interceptorBindings = Collections.unmodifiableSet(new LinkedHashSet<>(interceptorBindings));
+        }
         if (!member.isAccessible())
         {
             member.setAccessible(true);
         }
     }
 
-    public AbstractInvocationContext(Provider<T> target, Method method, Object[] parameters, Object timer)
+    public AbstractInvocationContext(Provider<T> target, Method method, Object[] parameters, Object timer, Set<Annotation> interceptorBindings)
     {
-        this(target, method, parameters);
+        this(target, method, parameters, interceptorBindings);
         this.timer = timer;
     }
     
@@ -127,5 +140,11 @@ public abstract class AbstractInvocationContext<T> implements InvocationContext
             return Constructor.class.cast(member);
         }
         return null;
+    }
+
+    @Override
+    public Set<Annotation> getInterceptorBindings()
+    {
+        return interceptorBindings;
     }
 }

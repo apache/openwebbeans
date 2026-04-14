@@ -18,9 +18,11 @@
  */
 package org.apache.webbeans.intercept;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jakarta.enterprise.inject.spi.InterceptionType;
 import jakarta.enterprise.inject.spi.Interceptor;
@@ -39,9 +41,9 @@ public class InterceptorInvocationContext<T> extends AbstractInvocationContext<T
     
     public InterceptorInvocationContext(Provider<T> provider, InterceptionType type,
                                         List<Interceptor<?>> interceptors, Map<Interceptor<?>, ?> instances,
-                                        AccessibleObject method, Object[] parameters)
+                                        AccessibleObject method, Object[] parameters, Set<Annotation> interceptorBindings)
     {
-        super(provider, method, parameters);
+        super(provider, method, parameters, interceptorBindings);
         this.type = type;
         this.interceptors = interceptors;
         this.instances = instances;

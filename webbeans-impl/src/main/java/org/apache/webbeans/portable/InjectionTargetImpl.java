@@ -113,6 +113,10 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
 
     private List<Interceptor<?>> aroundConstructInterceptors;
 
+    private Set<Annotation> aroundConstructInterceptorBindings = Collections.emptySet();
+
+    private Set<Annotation> classLevelInterceptorBindings = Collections.emptySet();
+
     public InjectionTargetImpl(AnnotatedType<T> annotatedType, Set<InjectionPoint> injectionPoints, WebBeansContext webBeansContext,
                                List<AnnotatedMethod<?>> postConstructMethods, List<AnnotatedMethod<?>> preDestroyMethods)
     {
@@ -129,7 +133,10 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     protected void defineLifecycleInterceptors(Bean<T> bean, AnnotatedType<T> annotatedType, WebBeansContext webBeansContext)
     {
         BeanInterceptorInfo interceptorInfo = getInterceptorInfo();
-        
+
+        aroundConstructInterceptorBindings = interceptorInfo.getAroundConstructInterceptorBindings();
+        classLevelInterceptorBindings = interceptorInfo.getClassLevelInterceptorBindings();
+
         postConstructInterceptors
             = getLifecycleInterceptors(interceptorInfo.getEjbInterceptors(), interceptorInfo.getClassCdiInterceptors(), InterceptionType.POST_CONSTRUCT);
 
@@ -166,7 +173,8 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
                 InjectableConstructor<T> injectableConstructor = new InjectableConstructor<>(cons, this, creationalContext);
                 ConstructorInstanceProvider provider = new ConstructorInstanceProvider();
                 ConstructorInterceptorInvocationContext<T> invocationContext = new ConstructorInterceptorInvocationContext<T>(
-                        provider, aroundConstructInterceptors, interceptorInstances, cons, injectableConstructor.createParameters());
+                        provider, aroundConstructInterceptors, interceptorInstances, cons, injectableConstructor.createParameters(),
+                        aroundConstructInterceptorBindings);
                 provider.setContext(invocationContext);
                 invocationContext.proceed();
                 Object newInstance = invocationContext.getNewInstance();
@@ -321,7 +329,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
 
         InvocationContext ic = new LifecycleInterceptorInvocationContext<>(internalInstance, InterceptionType.POST_CONSTRUCT, postConstructInterceptors,
-            interceptorInstances, postConstructMethods);
+            interceptorInstances, postConstructMethods, classLevelInterceptorBindings);
         try
         {
             ic.proceed();
@@ -360,7 +368,7 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
         }
 
         InvocationContext ic = new LifecycleInterceptorInvocationContext<>(internalInstance, InterceptionType.PRE_DESTROY, preDestroyInterceptors,
-            interceptorInstances, preDestroyMethods);
+            interceptorInstances, preDestroyMethods, classLevelInterceptorBindings);
         try
         {
             ic.proceed();

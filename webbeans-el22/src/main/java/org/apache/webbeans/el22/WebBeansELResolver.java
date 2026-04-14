@@ -29,12 +29,11 @@ import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.el.ELContextStore;
 
-import java.beans.FeatureDescriptor;
 import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
+
 
 /**
  * JSF or JSP expression language a.k.a EL resolver.
@@ -69,15 +68,6 @@ public class WebBeansELResolver extends ELResolver
      */
     @Override
     public Class<?> getCommonPropertyType(ELContext context, Object base)
-    {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base)
     {
         return null;
     }
