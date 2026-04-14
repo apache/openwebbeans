@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://openwebbeans.apache.org/images/owb_logo.png" width="300" />
+<img src="https://openwebbeans.apache.org/resources/images/logo.png" width="300" />
 </div>
 <br>
 
