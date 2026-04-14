@@ -4,7 +4,7 @@
 <br>
 
 ![Maven Central](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl)
-[![Build Status](https://github.com/apache/openwebbeans/workflows/OpenWebBeans%20CI/badge.svg)](https://github.com/apache/openwebbeans/actions)
+[![Build Status](https://github.com/apache/openwebbeans/workflows/CI/badge.svg)](https://github.com/apache/openwebbeans/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Apache's implementation of the Contexts and Dependency Injection (CDI) / Jakarta CDI specification
