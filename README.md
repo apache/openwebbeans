@@ -18,23 +18,19 @@ Requires Java 17+
 
 ### owb_4.0.x
 ![owb_4.0.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=4.0&color=cyan)  
-Jakarta CDI 4.0 implementation  
-Requires Java 11+
+Jakarta CDI 4.0 implementation (Jakarta EE 10), requires Java 11+.  
 
 ### owb_2.0.x
 ![owb_2.0.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=2.0&color=cyan)  
-CDI 2.0 (JSR-365) implementation  
-Requires Java 8+.
+CDI 2.0 (JSR-365) implementation (Java EE 8), requires Java 8+.  
 
 ### owb_1.7.x
 ![owb_1.7.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=1.7&color=cyan)  
-CDI 1.2 (JSR-346) implementation  
-Requires Java 7+.
+CDI 1.2 (JSR-346) implementation (Java EE 7), requires Java 7+.  
 
 ### owb_1.2.x
 ![owb_1.2.x](https://img.shields.io/maven-central/v/org.apache.openwebbeans/openwebbeans-impl?versionPrefix=1.2&color=cyan)  
-CDI 1.0 (JSR-299) implementation  
-Requires Java 5+.
+CDI 1.0 (JSR-299) implementation (Java EE 6), requires Java 5+.  
 
 ## Minimum Requirements (main)
 
