@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.portable;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.apache.webbeans.component.BeanManagerBean;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
+import org.apache.webbeans.intercept.InterceptorResolutionService.MethodInterceptionPlan;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.proxy.OwbInterceptorProxy;
 
@@ -53,6 +55,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
     protected BeanInterceptorInfo interceptorInfo;
     protected InterceptorDecoratorProxyFactory proxyFactory;
     protected Map<Method, List<Interceptor<?>>> methodInterceptors;
+    protected Map<Method, Set<Annotation>> methodInterceptorBindings;
 
     public AbstractProducer()
     {
@@ -91,6 +94,7 @@ public abstract class AbstractProducer<T> implements Producer<T>
         }
 
         methodInterceptors = webBeansContext.getInterceptorResolutionService().createMethodInterceptors(interceptorInfo);
+        methodInterceptorBindings = webBeansContext.getInterceptorResolutionService().createMethodInterceptorBindings(interceptorInfo);
 
         defineLifecycleInterceptors(bean, annotatedType, webBeansContext);
 
@@ -141,9 +145,10 @@ public abstract class AbstractProducer<T> implements Producer<T>
 
         if (hasInterceptorInfo() && !(instance instanceof OwbInterceptorProxy))
         {
+            MethodInterceptionPlan interceptionPlan = new MethodInterceptionPlan(methodInterceptors, methodInterceptorBindings);
             instance = creationalContextImpl.getWebBeansContext().getInterceptorResolutionService()
                 .createProxiedInstance(instance, creationalContextImpl, creationalContext,
-                        interceptorInfo, proxyClass, methodInterceptors, passivationId, interceptorInstances,
+                        interceptorInfo, proxyClass, interceptionPlan, passivationId, interceptorInstances,
                         this::isDelegateInjection, this::filterDecorators);
             creationalContextImpl.putContextual(oldContextual);
         }

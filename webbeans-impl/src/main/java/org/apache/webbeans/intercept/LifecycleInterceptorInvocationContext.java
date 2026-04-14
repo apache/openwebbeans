@@ -24,12 +24,17 @@ import jakarta.enterprise.inject.spi.AnnotatedMethod;
 import jakarta.enterprise.inject.spi.InterceptionType;
 import jakarta.enterprise.inject.spi.Interceptor;
 import jakarta.interceptor.InvocationContext;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * InvocationContext for lifecycle methods like &#064;PostConstruct, etc.
@@ -43,15 +48,24 @@ public class LifecycleInterceptorInvocationContext<T> implements InvocationConte
     private Map<String, Object> contextData = new HashMap<>();
     private int interceptorIndex;
     private List<AnnotatedMethod<?>> lifecycleMethods;
+    private final Set<Annotation> interceptorBindings;
 
     public LifecycleInterceptorInvocationContext(T target, InterceptionType type, List<Interceptor<?>> interceptors, Map<Interceptor<?>, ?> instances,
-                                                 List<AnnotatedMethod<?>> lifecycleMethods)
+                                                 List<AnnotatedMethod<?>> lifecycleMethods, Set<Annotation> interceptorBindings)
     {
         this.target = target;
         this.type = type;
         this.interceptors = interceptors;
         this.instances = instances;
         this.lifecycleMethods = lifecycleMethods;
+        if (interceptorBindings == null || interceptorBindings.isEmpty())
+        {
+            this.interceptorBindings = Collections.emptySet();
+        }
+        else
+        {
+            this.interceptorBindings = Collections.unmodifiableSet(new LinkedHashSet<>(interceptorBindings));
+        }
     }
 
     @Override
@@ -141,9 +155,15 @@ public class LifecycleInterceptorInvocationContext<T> implements InvocationConte
         return null;
     }
 
-    // @Override
-    public Constructor getConstructor()
+    @Override
+    public Constructor<?> getConstructor()
     {
         return null;
+    }
+
+    @Override
+    public Set<Annotation> getInterceptorBindings()
+    {
+        return interceptorBindings;
     }
 }

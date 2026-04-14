@@ -33,18 +33,23 @@ import jakarta.enterprise.inject.spi.InjectionTarget;
 import jakarta.enterprise.inject.spi.InterceptionType;
 import jakarta.enterprise.inject.spi.Interceptor;
 import jakarta.inject.Provider;
+
+import java.lang.annotation.Annotation;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.ObjectStreamException;
+import java.io.StreamCorruptedException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externalizable
 {
@@ -73,6 +78,7 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
 
 
     private Map<Method, List<Interceptor<?>>> interceptors;
+    private Map<Method, Set<Annotation>> methodInterceptorBindings;
     private Map<Interceptor<?>, ?> instances;
 
     /**
@@ -90,10 +96,21 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
                                      Map<Interceptor<?>, ?> instances,
                                      String beanPassivationId)
     {
+        this(target, delegate, interceptors, null, instances, beanPassivationId);
+    }
+
+    public DefaultInterceptorHandler(T target,
+                                     T delegate,
+                                     Map<Method, List<Interceptor<?>>> interceptors,
+                                     Map<Method, Set<Annotation>> methodInterceptorBindings,
+                                     Map<Interceptor<?>, ?> instances,
+                                     String beanPassivationId)
+    {
         this.target = target;
         this.delegate = delegate;
         this.instances = instances;
         this.interceptors = interceptors;
+        this.methodInterceptorBindings = methodInterceptorBindings;
         this.beanPassivationId = beanPassivationId;
     }
 
@@ -133,8 +150,18 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
                 methodInterceptors = Collections.emptyList();
             }
 
+            Set<Annotation> bindings = Collections.emptySet();
+            if (methodInterceptorBindings != null)
+            {
+                Set<Annotation> forMethod = methodInterceptorBindings.get(method);
+                if (forMethod != null)
+                {
+                    bindings = forMethod;
+                }
+            }
+
             InterceptorInvocationContext<T> ctx
-                = new InterceptorInvocationContext<T>(new InstanceProvider(delegate), InterceptionType.AROUND_INVOKE, methodInterceptors, instances, method, parameters);
+                = new InterceptorInvocationContext<T>(new InstanceProvider(delegate), InterceptionType.AROUND_INVOKE, methodInterceptors, instances, method, parameters, bindings);
 
             return ctx.proceed();
         }
@@ -211,6 +238,70 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         }
 
         out.writeUTF(beanPassivationId);
+
+        if (methodInterceptorBindings == null
+            || methodInterceptorBindings.isEmpty())
+        {
+            out.writeInt(0);
+        }
+        else
+        {
+            List<Map.Entry<Method, Set<Annotation>>> bindingEntries =
+                new ArrayList<>(methodInterceptorBindings.entrySet());
+            bindingEntries.sort((e1, e2) ->
+            {
+                Method a = e1.getKey();
+                Method b = e2.getKey();
+                int cmp = a.getDeclaringClass().getName()
+                    .compareTo(b.getDeclaringClass().getName());
+                if (cmp != 0)
+                {
+                    return cmp;
+                }
+                cmp = a.getName().compareTo(b.getName());
+                if (cmp != 0)
+                {
+                    return cmp;
+                }
+                Class<?>[] pa = a.getParameterTypes();
+                Class<?>[] pb = b.getParameterTypes();
+                if (pa.length != pb.length)
+                {
+                    return Integer.compare(pa.length, pb.length);
+                }
+                for (int k = 0; k < pa.length; k++)
+                {
+                    cmp = pa[k].getName().compareTo(pb[k].getName());
+                    if (cmp != 0)
+                    {
+                        return cmp;
+                    }
+                }
+                return 0;
+            });
+            out.writeInt(bindingEntries.size());
+            for (Map.Entry<Method, Set<Annotation>> entry
+                : bindingEntries)
+            {
+                Method key = entry.getKey();
+                out.writeObject(key.getDeclaringClass());
+                out.writeUTF(key.getName());
+                out.writeObject(key.getParameterTypes());
+                Set<Annotation> annos = entry.getValue();
+                if (annos == null || annos.isEmpty())
+                {
+                    out.writeInt(0);
+                }
+                else
+                {
+                    out.writeInt(annos.size());
+                    for (Annotation annotation : annos)
+                    {
+                        out.writeObject(annotation);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -273,6 +364,53 @@ public class DefaultInterceptorHandler<T> implements InterceptorHandler, Externa
         }
 
         beanPassivationId = in.readUTF();
+
+        int methodBindingsSize = in.readInt();
+        if (methodBindingsSize == 0)
+        {
+            methodInterceptorBindings = Collections.emptyMap();
+        }
+        else
+        {
+            Map<Method, Set<Annotation>> bindingsMap = new HashMap<>(methodBindingsSize);
+            for (int k = 0; k < methodBindingsSize; k++)
+            {
+                Class<?> bindingDeclaringClass = (Class<?>) in.readObject();
+                String bindingName = in.readUTF();
+                Class<?>[] bindingParameters = (Class<?>[]) in.readObject();
+                Method bindingMethod;
+                try
+                {
+                    bindingMethod = bindingDeclaringClass.getDeclaredMethod(
+                        bindingName, bindingParameters);
+                }
+                catch (NoSuchMethodException e)
+                {
+                    throw new NotSerializableException(
+                        bindingDeclaringClass.getName() + '#' + bindingName);
+                }
+                int annCount = in.readInt();
+                Set<Annotation> bindingSet = new LinkedHashSet<>();
+                for (int m = 0; m < annCount; m++)
+                {
+                    Object o = in.readObject();
+                    if (!(o instanceof Annotation))
+                    {
+                        throw new StreamCorruptedException(
+                            "Expected java.lang.annotation.Annotation");
+                    }
+                    bindingSet.add((Annotation) o);
+                }
+                if (!bindingSet.isEmpty())
+                {
+                    bindingsMap.put(bindingMethod,
+                        Collections.unmodifiableSet(bindingSet));
+                }
+            }
+            methodInterceptorBindings = bindingsMap.isEmpty()
+                ? Collections.emptyMap()
+                : bindingsMap;
+        }
     }
 
     /**

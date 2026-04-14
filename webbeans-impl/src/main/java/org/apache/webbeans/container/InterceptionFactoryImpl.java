@@ -23,6 +23,7 @@ import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
 import org.apache.webbeans.configurator.TrackingAnnotatedTypeConfiguratorImpl;
 import org.apache.webbeans.context.creational.CreationalContextImpl;
 import org.apache.webbeans.intercept.InterceptorResolutionService;
+import org.apache.webbeans.intercept.InterceptorResolutionService.MethodInterceptionPlan;
 import org.apache.webbeans.proxy.InterceptorDecoratorProxyFactory;
 import org.apache.webbeans.util.WebBeansUtil;
 
@@ -111,10 +112,12 @@ public class InterceptionFactoryImpl<T> implements InterceptionFactory<T> /*todo
         var interceptorInstances  = interceptorResolutionService
             .createInterceptorInstances(cache.interceptorInfo, creationalContext);
         var methodInterceptors = interceptorResolutionService.createMethodInterceptors(cache.interceptorInfo);
+        var methodInterceptorBindings = interceptorResolutionService.createMethodInterceptorBindings(cache.interceptorInfo);
+        var interceptionPlan = new MethodInterceptionPlan(methodInterceptors, methodInterceptorBindings);
         return interceptorResolutionService.createProxiedInstance(
                 originalInstance, creationalContext, creationalContext, cache.interceptorInfo,
                 (Class<? extends T>) cache.proxyClass,
-                methodInterceptors, passivationId, interceptorInstances,
+                interceptionPlan, passivationId, interceptorInstances,
                 c -> false, (a, d) -> d);
     }
 
