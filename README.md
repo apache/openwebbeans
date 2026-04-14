@@ -8,7 +8,7 @@
 [![Build Status](https://github.com/apache/openwebbeans/workflows/CI/badge.svg)](https://github.com/apache/openwebbeans/actions)
 [![Build Status ASF](https://ci-builds.apache.org/buildStatus/icon?job=OpenWebBeans%2FOpenWebBeans+CI+%28main%29&subject=ASF-Build)](https://ci-builds.apache.org/job/OpenWebBeans/job/OpenWebBeans%20CI%20%28main%29/)
 
-Apache's implementation of the Contexts and Dependency Injection (CDI) / Jakarta CDI specification
+Apache OpenWebBeans (OWB) - Apache's implementation of the Contexts and Dependency Injection (CDI) / Jakarta CDI specification
 
 ## Branches
 
