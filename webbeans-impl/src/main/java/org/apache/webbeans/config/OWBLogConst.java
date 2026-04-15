@@ -83,7 +83,7 @@ public final class OWBLogConst
     public static final String ERROR_0010 = "ERROR_0010"; // An error occurred while closing the JMS instance.
     public static final String ERROR_0011 = "ERROR_0011"; // Method security access violation for method : [{0}] in decorator class : [{1}]
     public static final String ERROR_0012 = "ERROR_0012"; // Exception in calling method : [{0}] in decorator class : [{1}]. Look in the log for target checked exception.
-    public static final String ERROR_0013 = "ERROR_0013"; // An Exception occurred while starting a fresh session!
+    public static final String ERROR_0013 = "ERROR_0013"; // Caught an Exception while starting a fresh session: {0}
     public static final String ERROR_0014 = "ERROR_0014"; // Method illegal access for method : [{0}] in decorator class : [{1}]
     public static final String ERROR_0015 = "ERROR_0015"; // Illegal access exception for field : [{0}] in decorator class : [{1}]
     public static final String ERROR_0016 = "ERROR_0016"; // IllegalArgumentException has occurred while calling the field: [{0}] on the class: [{1}]

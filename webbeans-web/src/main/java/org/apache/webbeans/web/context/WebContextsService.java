@@ -50,6 +50,7 @@ import jakarta.servlet.ServletRequestEvent;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -851,7 +852,8 @@ public class WebContextsService extends AbstractContextsService
             }
             catch (Exception e)
             {
-                logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0013, e));
+                logger.log(Level.SEVERE, WebBeansLoggerFacade.constructMessage(OWBLogConst.ERROR_0013,
+                        Objects.requireNonNullElse(e.getMessage(), e.toString())), e);
             }
         }
     }
