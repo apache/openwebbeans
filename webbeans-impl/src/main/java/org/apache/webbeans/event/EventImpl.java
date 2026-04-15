@@ -106,7 +106,7 @@ public class EventImpl<T> implements Event<T>, Serializable
         }
         else
         {
-            webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
+            webBeansContext.getWebBeansUtil().validEventType(eventType, metadata.getType());
             doFireSyncEvent(event, metadata.select(eventType));
         }
     }
@@ -123,7 +123,7 @@ public class EventImpl<T> implements Event<T>, Serializable
         Type eventType = event.getClass();
         if (eventType != metadata.validatedType())
         {
-            webBeansContext.getWebBeansUtil().validEventType(eventType.getClass(), metadata.getType());
+            webBeansContext.getWebBeansUtil().validEventType(eventType, metadata.getType());
             return webBeansContext.getNotificationManager()
                     .fireEvent(event, metadata.select(eventType), false, notificationOptions);
         }

@@ -48,7 +48,6 @@ import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
 import org.apache.webbeans.config.OwbParametrizedTypeImpl;
-import org.apache.webbeans.config.OwbWildcardTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.InjectionResolver;
@@ -1598,7 +1597,9 @@ public final class WebBeansUtil
             {
                 for (Type t : OwbParametrizedTypeImpl.class.cast(et).getActualTypeArguments())
                 {
-                    if (OwbWildcardTypeImpl.class.isInstance(t))
+                    // Wildcards are often fine; throwing on every OwbWildcardTypeImpl broke CDI TCK
+                    // wildcard cases (and Enum resolution). Still reject loose type variables.
+                    if (TypeVariable.class.isInstance(t))
                     {
                         throw new IllegalArgumentException("TypeVariable forbidden for events");
                     }
