@@ -18,12 +18,15 @@
  */
 package org.apache.webbeans.inject.instance;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.OptionalDataException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,6 +49,7 @@ import jakarta.enterprise.util.TypeLiteral;
 import jakarta.inject.Provider;
 
 import org.apache.webbeans.annotation.DefaultLiteral;
+import org.apache.webbeans.config.OwbParametrizedTypeImpl;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectionResolver;
@@ -237,7 +241,30 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
         final Annotation[] effectiveQualifiers = qualifiers != null && qualifiers.length > 0
             ? concatenateQualifiers(qualifiers)
             : qualifierAnnotations.toArray(new Annotation[0]);
-        return new InstanceImpl<>(sub, injectionPoint, webBeansContext, effectiveQualifiers);
+        final InjectionPoint nextInjectionPoint = injectionPoint == null ? null
+            : new InstanceInjectionPoint(injectionPoint, effectiveQualifiers, instanceTypeOverrideForSelectClass(injectionPoint, sub));
+        return new InstanceImpl<>(sub, nextInjectionPoint, webBeansContext, effectiveQualifiers);
+    }
+
+    /**
+     * OWB-1155: only override {@link InjectionPoint#getType()} to {@code Instance<subtype>} when the
+     * current injection point already represents an {@code Instance<…>} dependency. Otherwise
+     * (e.g. {@code BeanConfiguratorImpl#createInstance} uses {@code Object} with the field's
+     * {@link InjectionPoint}) forcing {@code Instance<subtype>} breaks {@link org.apache.webbeans.portable.InjectionPointProducer}.
+     */
+    private static Type instanceTypeOverrideForSelectClass(InjectionPoint injectionPoint, Type sub)
+    {
+        Type t = injectionPoint.getType();
+        if (!ParameterizedType.class.isInstance(t))
+        {
+            return null;
+        }
+        ParameterizedType pt = ParameterizedType.class.cast(t);
+        if (pt.getRawType() != Instance.class)
+        {
+            return null;
+        }
+        return new OwbParametrizedTypeImpl(null, Instance.class, sub);
     }
 
     /**
@@ -404,17 +431,24 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     {
         private InjectionPoint delegate;
         private Set<Annotation> qualifiers;
+        private Type typeOverride;
 
         protected InstanceInjectionPoint(InjectionPoint injectionPoint, Annotation[] newQualifiersArray)
         {
+            this(injectionPoint, newQualifiersArray, null);
+        }
+
+        protected InstanceInjectionPoint(InjectionPoint injectionPoint, Annotation[] newQualifiersArray, Type typeOverride)
+        {
             this.delegate = injectionPoint;
             this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(newQualifiersArray)));
+            this.typeOverride = typeOverride;
         }
 
         @Override
         public Type getType()
         {
-            return delegate.getType();
+            return typeOverride != null ? typeOverride : delegate.getType();
         }
 
         @Override
@@ -458,6 +492,14 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             OwbCustomObjectInputStream owbCustomObjectInputStream = new OwbCustomObjectInputStream(inp, WebBeansUtil.getCurrentClassLoader());
             qualifiers = Set.class.cast(owbCustomObjectInputStream.readObject());
             delegate = InjectionPoint.class.cast(owbCustomObjectInputStream.readObject());
+            try
+            {
+                typeOverride = Type.class.cast(owbCustomObjectInputStream.readObject());
+            }
+            catch (EOFException | OptionalDataException ex)
+            {
+                typeOverride = null;
+            }
         }
 
         private void writeObject(ObjectOutputStream op) throws IOException
@@ -465,6 +507,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             ObjectOutputStream out = new ObjectOutputStream(op);
             out.writeObject(qualifiers);
             out.writeObject(delegate);
+            out.writeObject(typeOverride);
         }
     }
 

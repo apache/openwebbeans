@@ -55,10 +55,13 @@ public class InstanceQualifierInjectionPointTest extends AbstractUnitTest
     @Inject
     private Instance<ShardContract> instance2;
 
+    @Inject
+    @Any
+    private Instance<Number> numbers;
 
     @Test
     public void checkQualfiers() {
-        startContainer(Arrays.<Class<?>>asList(
+        startContainer(Arrays.asList(
             Qualifier1.class,
             QualifiersHolder.class,
             Factory.class), Collections.<String>emptyList(), true);
@@ -74,11 +77,26 @@ public class InstanceQualifierInjectionPointTest extends AbstractUnitTest
         assertNotNull(instance2.get());
         assertEquals(1, holder.getQualifiers().size());
         assertEquals(Default.class, holder.getQualifiers().iterator().next().annotationType());
-
-
-
     }
 
+    /**
+     * OWB-1155: {@link Instance#select(Class, Annotation...)} must propagate selected qualifiers to
+     * {@link InjectionPoint} (OWB-1122 fixed only {@link Instance#select(Annotation...)}).
+     */
+    @Test
+    public void subtypeSelectPropagatesQualifiersToInjectionPointOw1155()
+    {
+        startContainer(Arrays.asList(
+            Qualifier1.class,
+            QualifiersHolder.class,
+            Factory.class), Collections.emptyList(), true);
+
+        assertNotNull(numbers.select(Integer.class, new AnnotationLiteral<Qualifier1>()
+        {
+        }).get());
+        assertEquals(holder.getQualifiers().toString(), 1, holder.getQualifiers().size());
+        assertEquals(Qualifier1.class, holder.getQualifiers().iterator().next().annotationType());
+    }
 
     public static class Factory
     {
@@ -98,6 +116,15 @@ public class InstanceQualifierInjectionPointTest extends AbstractUnitTest
             return new ShardContract()
             {
             };
+        }
+
+        @Produces
+        @Qualifier1
+        @Default
+        public Integer produceNumber(final InjectionPoint ip)
+        {
+            holder.setQualifiers(ip.getQualifiers());
+            return 42;
         }
     }
 
