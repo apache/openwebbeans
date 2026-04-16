@@ -23,6 +23,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 /** @deprecated  use SecurityService instead */
+@Deprecated
 public class SecurityUtil
 {
 

@@ -144,6 +144,7 @@ public class OpenWebBeansConfiguration
      * enabled in the beans.xml of jar1 is not automatically enabled in jar2
      * @deprecated as spec section 5 and 12 contradict each other and the BDA per jar handling is broken anyway
      **/
+    @Deprecated
     public static final String USE_BDA_BEANSXML_SCANNER = "org.apache.webbeans.useBDABeansXMLScanner";
 
     /** A list of known JARs/paths which should not be scanned for beans */

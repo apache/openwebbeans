@@ -42,6 +42,7 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
      * do not remove, this ct is used from within TomEE for example.
      * @deprecated
      */
+    @Deprecated
     public BeanAttributesImpl(Bean<T> bean)
     {
         this(bean.getTypes(),
