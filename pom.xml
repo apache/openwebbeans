@@ -669,7 +669,7 @@
                 <version>${maven-javadoc.version}</version>
                 <configuration>
                     <quiet>true</quiet>
-                    <source>${maven.compiler.source}</source>
+                    <release>${maven.compiler.source}</release>
                     <doclint>none</doclint>
                 </configuration>
             </plugin>
