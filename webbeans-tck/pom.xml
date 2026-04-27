@@ -135,36 +135,6 @@
                     <groupId>jakarta.ejb</groupId>
                     <artifactId>jakarta.ejb-api</artifactId>
                 </exclusion>
-                <!-- not yet G jakarta jars
-                <exclusion>
-                  <groupId>jakarta.resource</groupId>
-                  <artifactId>jakarta.resource-api</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>jakarta.jms</groupId>
-                  <artifactId>jakarta.jms-api</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>jakarta.persistence</groupId>
-                  <artifactId>jakarta.persistence-api</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>jakarta.ws.rs</groupId>
-                  <artifactId>jakarta.ws.rs-api</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>jakarta.xml.ws</groupId>
-                  <artifactId>jakarta.xml.ws-api</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>jakarta.transaction</groupId>
-                  <artifactId>jakarta.transaction-api</artifactId>
-                </exclusion>
-                <exclusion>
-                  <groupId>jakarta.faces</groupId>
-                  <artifactId>jakarta.faces-api</artifactId>
-                </exclusion>
-                -->
             </exclusions>
         </dependency>
 
@@ -185,6 +155,7 @@
                     <scope>test</scope>
                 </dependency>
 
+
             </dependencies>
             <build>
                 <plugins>
@@ -197,32 +168,6 @@
                                 <suiteXmlFile>standalone-suite.xml</suiteXmlFile>
                             </suiteXmlFiles>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-tck</id>
-                                <phase>generate-test-sources</phase>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-
-                                        <!-- OWB Porting Package -->
-                                        <artifactItem>
-                                            <groupId>org.apache.openwebbeans</groupId>
-                                            <artifactId>openwebbeans-porting</artifactId>
-                                            <overWrite>true</overWrite>
-                                            <outputDirectory>${project.build.directory}/dependency/lib</outputDirectory>
-                                        </artifactItem>
-
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
