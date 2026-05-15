@@ -15,5 +15,18 @@
 # specific language governing permissions and limitations
 # under the License.
 github:
-  dependabot_alerts:  false 
+  dependabot_alerts: false
   dependabot_updates: false
+  rulesets:
+    - name: "Default Branch Protection"
+      type: branch
+      branches:
+        includes:
+          - "~DEFAULT_BRANCH"
+          - "release/*"
+          - "rel/*"
+        excludes: []
+      bypass_teams:
+        - root
+      restrict_deletion: true
+      restrict_force_push: true
