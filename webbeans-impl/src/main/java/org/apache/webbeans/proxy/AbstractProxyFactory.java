@@ -313,7 +313,16 @@ public abstract class AbstractProxyFactory
                                             Method[] interceptedMethods, Method[] nonInterceptedMethods)
             throws ProxyGenerationException
     {
-        return createProxyClass(classLoader, proxyClassName, classToProxy, interceptedMethods, nonInterceptedMethods, null);
+        try
+        {
+            // this class might already exist from a previous definition.
+            return (Class<T>) classLoader.loadClass(proxyClassName);
+        }
+        catch (ClassNotFoundException e)
+        {
+            // if the class does not yet exist we need to really create it.
+            return createProxyClass(classLoader, proxyClassName, classToProxy, interceptedMethods, nonInterceptedMethods, null);
+        }
     }
 
     /**

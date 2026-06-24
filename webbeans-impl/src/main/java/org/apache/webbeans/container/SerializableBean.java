@@ -40,7 +40,7 @@ import java.util.Set;
  * {@link jakarta.enterprise.inject.spi.BeanManager#getPassivationCapableBean(String)}
  * for serialisation and deserialisation.
  *
- * @version $Rev$ $Date$
+ * @version $Rev$$Date$
  */
 public final class SerializableBean<T> implements Bean<T>, PassivationCapable, Serializable 
 {
