@@ -34,10 +34,10 @@ public class SecureInterceptorComponentTest extends AbstractUnitTest
     @Test
     public void testSecureInterceptor()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(SecureComponent.class);
         beanClasses.add(SecureInterceptor.class);
         startContainer(beanClasses, beanXmls);

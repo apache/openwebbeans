@@ -367,7 +367,7 @@ public class OpenWebBeansConfiguration
     private Properties doPrivilegedGetSystemProperties()
     {
         return AccessController.doPrivileged(
-            new PrivilegedAction<Properties>()
+            new PrivilegedAction<>()
             {
                 @Override
                 public Properties run()

@@ -43,14 +43,14 @@ public class MultipleDecoratorStackTests extends AbstractUnitTest
     @Test
     public void testDecoratorStack()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(Decorator1.class);
         classes.add(Decorator2.class);
         classes.add(IOutputProvider.class);
         classes.add(OutputProvider.class);
         classes.add(RequestStringBuilder.class);
 
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "MultipleDecoratorStack"));
 
         startContainer(classes, xmls);

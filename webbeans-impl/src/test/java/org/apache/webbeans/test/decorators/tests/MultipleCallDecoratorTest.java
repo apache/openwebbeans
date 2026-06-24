@@ -42,13 +42,13 @@ public class MultipleCallDecoratorTest extends AbstractUnitTest
     // it tests we don't have recusive issues in DelegateHandler
     public void testDecoratorStackWithAbstractAtEnd()
     {
-        final Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        final Collection<Class<?>> classes = new ArrayList<>();
         classes.add(MultipleCallDecorator.class);
         classes.add(IOutputProvider.class);
         classes.add(OutputProvider.class);
         classes.add(RequestStringBuilder.class);
 
-        final Collection<String> xmls = new ArrayList<String>();
+        final Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "MultipleCallDecoratorTest"));
 
         startContainer(classes, xmls);

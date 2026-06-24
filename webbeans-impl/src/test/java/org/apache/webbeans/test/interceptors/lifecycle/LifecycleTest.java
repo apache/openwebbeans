@@ -43,10 +43,10 @@ public class LifecycleTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testLifecycle()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "LifecycleTest"));
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(LifecycleInterceptor.class);
         beanClasses.add(LifecycleBean.class);
         beanClasses.add(LifecycleBean.FooProducer.class);
@@ -83,10 +83,10 @@ public class LifecycleTest extends AbstractUnitTest
     @Test
     public void testNotannotated()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "LifecycleTest"));
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(NotAnnotatedBean.class);
         beanClasses.add(LifecycleInterceptor.class);
         
@@ -119,10 +119,10 @@ public class LifecycleTest extends AbstractUnitTest
     @Test
     public void testDynamicInterceptorBeforeBeanDiscovery()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "LifecycleTestBbd"));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(NotAnnotatedBean.class);
         beanClasses.add(LifecycleInterceptor.class);
 
@@ -142,10 +142,10 @@ public class LifecycleTest extends AbstractUnitTest
     @Test
     public void testDynamicInterceptorProcessAnnotatedType()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "LifecycleTestPat"));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(NotAnnotatedBean.class);
         beanClasses.add(LifecycleInterceptor.class);
 

@@ -44,10 +44,10 @@ public class WithInheritedBindingTypeTest extends AbstractUnitTest
     @Test
     public void testStereoTypeBasedInterceptor()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "WithInheritedBindingTypeTest"));
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(TransactionInterceptor.class);
         beanClasses.add(SecureInterceptor.class);
         beanClasses.add(WithInheritedBindingTypeBean.class);

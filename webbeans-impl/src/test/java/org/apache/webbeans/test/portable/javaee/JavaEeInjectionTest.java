@@ -32,7 +32,7 @@ public class JavaEeInjectionTest extends AbstractUnitTest
     @Test
     public void testInjectionTarget()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(SampleBean.class);
         startContainer(classes);
         

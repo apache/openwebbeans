@@ -41,10 +41,10 @@ public class AlternativeSpecializesProducerTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testAlternativeSpecializeBean()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializesProducer"));
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(Pen.class);
         beanClasses.add(DefaultPenProducer.class);
         beanClasses.add(AdvancedPenProducer.class);

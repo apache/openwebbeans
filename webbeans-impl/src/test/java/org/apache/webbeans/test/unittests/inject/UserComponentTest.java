@@ -38,7 +38,7 @@ public class UserComponentTest extends AbstractUnitTest
     @Test
     public void testTypedComponent() throws Throwable
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(UserComponent.class);
         beanClasses.add(ContainUserComponent.class);
 

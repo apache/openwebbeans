@@ -37,9 +37,9 @@ public class DependentLifecycleTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testLifecycle()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(DependentLifecycleBean.class);
         
         startContainer(beanClasses, beanXmls);        

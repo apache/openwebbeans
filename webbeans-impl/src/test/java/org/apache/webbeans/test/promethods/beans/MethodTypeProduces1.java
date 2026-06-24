@@ -29,6 +29,6 @@ public class MethodTypeProduces1<T extends String>
     @Produces @Dependent @Named("ProMethodParameterized3") 
     ArrayList<T> methodPT3() 
     {
-        return new ArrayList<T>();
+        return new ArrayList<>();
     }
 } 

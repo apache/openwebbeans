@@ -23,6 +23,7 @@ import jakarta.enterprise.inject.spi.configurator.BeanAttributesConfigurator;
 import jakarta.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,10 +72,7 @@ public class BeanAttributesConfiguratorImpl<T> implements BeanAttributesConfigur
     @Override
     public BeanAttributesConfigurator<T> addTypes(Type... types)
     {
-        for (Type type : types)
-        {
-            this.types.add(type);
-        }
+        this.types.addAll(Arrays.asList(types));
         return this;
     }
 

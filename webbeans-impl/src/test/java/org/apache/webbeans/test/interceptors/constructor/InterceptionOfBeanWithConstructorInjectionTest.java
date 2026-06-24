@@ -47,7 +47,7 @@ public class InterceptionOfBeanWithConstructorInjectionTest extends AbstractUnit
     {
         addInterceptor(ConstructorIsNotAnIssueForMe.class);
 
-        final Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        final Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(BuildMeWithMyConstructor.class);
         beanClasses.add(Injected.class);
 

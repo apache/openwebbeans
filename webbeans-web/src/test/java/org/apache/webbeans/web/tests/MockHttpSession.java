@@ -25,7 +25,7 @@ import jakarta.servlet.http.HttpSession;
 
 public class MockHttpSession implements HttpSession
 {
-    private HashMap<String, Object> attributes = new HashMap<String, Object>();
+    private HashMap<String, Object> attributes = new HashMap<>();
     
     @Override
     public long getCreationTime()

@@ -38,10 +38,10 @@ public class MultiRequestProxyTest extends AbstractUnitTest
     @Test
     public void testMultiRequestProxying()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "DependingInterceptorTest"));
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(TransactionInterceptor.class);
         beanClasses.add(ApplicationScopedBean.class);
         beanClasses.add(RequestScopedBean.class);

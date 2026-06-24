@@ -39,10 +39,10 @@ public class InterceptBridgeMethodTest extends AbstractUnitTest
     @Test
     public final void testMethodLevelInterceptorOnBridgeMethod()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), InterceptorResolutionServiceTest.class.getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(TestIntercepted1.class);
         beanClasses.add(TestInterceptor1.class);
         beanClasses.add(TestInterceptorParent.class);

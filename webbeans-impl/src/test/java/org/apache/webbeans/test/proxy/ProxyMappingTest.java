@@ -43,7 +43,7 @@ public class ProxyMappingTest extends AbstractUnitTest
     @Test
     public void testProxyMappingConfig()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
 
         addExtension(new DummyScopedExtension());
         beanClasses.add(ConversationBean.class);

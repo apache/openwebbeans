@@ -35,7 +35,7 @@ public class ProducerFieldPassivationIdTest extends AbstractUnitTest
     @Test
     public void testMultipleListsWithGenerics()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(MultipleListProducer.class);
         
         

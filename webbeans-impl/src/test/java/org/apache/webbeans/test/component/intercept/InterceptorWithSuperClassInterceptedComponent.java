@@ -44,7 +44,7 @@ public class InterceptorWithSuperClassInterceptedComponent
     public Object intercept(InvocationContext context) throws Exception
     {
         System.out.println("In Interceptor Method");
-        java.util.List<String> s = new ArrayList<String>();
+        java.util.List<String> s = new ArrayList<>();
         Map<String, Object> map = context.getContextData();
         Set<Entry<String, Object>> set = map.entrySet();
         for (Entry<String, Object> s2 : set) {

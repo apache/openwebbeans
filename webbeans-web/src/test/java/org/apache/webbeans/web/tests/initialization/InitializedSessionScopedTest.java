@@ -35,7 +35,7 @@ public class InitializedSessionScopedTest extends AbstractUnitTest
     @Test
     public void testse() throws Exception
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(MySession.class);
         beanClasses.add(MySessionHandler.class);
         

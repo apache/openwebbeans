@@ -58,8 +58,8 @@ public abstract class AbstractUnitTest
     private Map<Class<?>, Object> services = new HashMap<>();
     private Properties configuration = new Properties();
     private List<Extension>  extensions = new ArrayList<>();
-    private List<Class<?>> interceptors = new ArrayList<Class<?>>();
-    private List<Class<?>> decorators = new ArrayList<Class<?>>();
+    private List<Class<?>> interceptors = new ArrayList<>();
+    private List<Class<?>> decorators = new ArrayList<>();
     private WebBeansContext webBeansContext;
 
     protected AbstractUnitTest()
@@ -109,9 +109,9 @@ public abstract class AbstractUnitTest
      */
     protected void startContainer(String beansXmlResourceName, Class<?>... beanClasses)
     {
-        List<String> beansXmls = new ArrayList<String>(1);
+        List<String> beansXmls = new ArrayList<>(1);
         beansXmls.add(getXmlUrl(beansXmlResourceName));
-        startContainer(new ArrayList<Class<?>>(Arrays.asList(beanClasses)), beansXmls);
+        startContainer(new ArrayList<>(Arrays.asList(beanClasses)), beansXmls);
     }
 
     /**
@@ -129,7 +129,7 @@ public abstract class AbstractUnitTest
 
     protected void startContainer(Collection<Class<?>> rawBeanClasses, Collection<String> beanXmls, boolean inject)
     {
-        final Collection<Class<?>> beanClasses = new ArrayList<Class<?>>(); // ensure it is updatable
+        final Collection<Class<?>> beanClasses = new ArrayList<>(); // ensure it is updatable
         beanClasses.addAll(rawBeanClasses);
 
         final ClassLoader currentClassLoader = WebBeansUtil.getCurrentClassLoader();

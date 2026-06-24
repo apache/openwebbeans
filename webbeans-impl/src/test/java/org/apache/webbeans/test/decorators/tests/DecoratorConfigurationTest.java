@@ -36,10 +36,10 @@ public class DecoratorConfigurationTest extends AbstractUnitTest
     @Test(expected = WebBeansConfigurationException.class)
     public void testMultipleDecoratorsInSameFile()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "SameDecorator_broken"));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(Decorator1.class);
         beanClasses.add(OutputProvider.class);
 
@@ -50,11 +50,11 @@ public class DecoratorConfigurationTest extends AbstractUnitTest
     @Test
     public void testMultipleDecoratorsInMultipleFiles()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "SimpleDecorator_1"));
         beanXmls.add(getXmlPath(PACKAGE_NAME, "SimpleDecorator_2"));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(Decorator1.class);
         beanClasses.add(OutputProvider.class);
         beanClasses.add(RequestStringBuilder.class);

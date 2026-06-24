@@ -63,7 +63,7 @@ public abstract class EjbBeanBuilder<T, E extends BaseEjbBean<T>>
                                                       List<AnnotatedMethod<?>> preDestroyMethods)
 
     {
-        return new AbstractEjbInjectionTarget<T>(annotatedType, points, webBeansContext)
+        return new AbstractEjbInjectionTarget<>(annotatedType, points, webBeansContext)
         {
             @Override
             public T produce(CreationalContext<T> creationalContext)

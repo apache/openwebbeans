@@ -39,7 +39,9 @@ public class TypeLiteralTest extends AbstractUnitTest
         
     }
     
-    public TypeLiteral<List<Integer>> literal2 = new TypeLiteral<List<Integer>>(){};
+    public TypeLiteral<List<Integer>> literal2 = new TypeLiteral<>()
+    {
+    };
     
     @Test
     public void testLiterals()

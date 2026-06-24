@@ -34,8 +34,8 @@ public class NamedProducerTest extends AbstractUnitTest
     @Test
     public void testNamedProducer()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<String> beanXmls = new ArrayList<>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
 
         beanClasses.add(ProducerBean.class);
         beanClasses.add(ConsumerBean.class);

@@ -56,7 +56,7 @@ public class ConversationStorageBean implements Bean<Set<ConversationContext>>, 
     @Override
     public Set<ConversationContext> create(CreationalContext<Set<ConversationContext>> creationalContext)
     {
-        return Collections.newSetFromMap(new ConcurrentHashMap<ConversationContext, Boolean>());
+        return Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
 
     @Override

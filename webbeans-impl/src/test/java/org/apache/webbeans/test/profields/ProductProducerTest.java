@@ -35,7 +35,7 @@ public class ProductProducerTest extends AbstractUnitTest
     @Test
     public void testProductProducer()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ProductInjectedBean.class);
         beanClasses.add(MyProductProducer.class);
         beanClasses.add(MyProductBean.class);

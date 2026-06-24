@@ -61,7 +61,7 @@ public class Decorator1Test extends AbstractUnitTest
 
         Assert.assertEquals("ServiceDecorator", s);
 
-        Set<Type> apiTyeps = new HashSet<Type>();
+        Set<Type> apiTyeps = new HashSet<>();
         apiTyeps.add(IService.class);
 
         List<Decorator<?>> decs = getBeanManager().resolveDecorators(apiTyeps, new Annotation[]{new Binding1Literal()});
@@ -90,7 +90,7 @@ public class Decorator1Test extends AbstractUnitTest
         account.deposit(new BigDecimal(1500));
         account.withdraw(new BigDecimal(3000));
 
-        Set<Type> apiTyeps = new HashSet<Type>();
+        Set<Type> apiTyeps = new HashSet<>();
         apiTyeps.add(Account.class);
 
         List<Decorator<?>> decs = getBeanManager().resolveDecorators(apiTyeps, new Annotation[] { DefaultLiteral.INSTANCE });
@@ -119,7 +119,7 @@ public class Decorator1Test extends AbstractUnitTest
 
         Assert.assertEquals("ServiceDecoratorWithCtInjectionPoint", s);
 
-        Set<Type> apiTyeps = new HashSet<Type>();
+        Set<Type> apiTyeps = new HashSet<>();
         apiTyeps.add(IService.class);
 
         List<Decorator<?>> decs = getBeanManager().resolveDecorators(apiTyeps, new Annotation[]{new Binding1Literal()});

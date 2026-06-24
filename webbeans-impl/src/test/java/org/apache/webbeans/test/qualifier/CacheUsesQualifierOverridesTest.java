@@ -230,7 +230,7 @@ public class CacheUsesQualifierOverridesTest extends AbstractUnitTest
         public Set<AnnotatedMethod<? super QualifierWithoutMarker>> getMethods()
         {
             AnnotatedType<QualifierWithoutMarker> declaringType = this;
-            return Collections.singleton(new AnnotatedMethod<QualifierWithoutMarker>()
+            return Collections.singleton(new AnnotatedMethod<>()
             {
 
                 @Override
@@ -267,10 +267,9 @@ public class CacheUsesQualifierOverridesTest extends AbstractUnitTest
                 public <T extends Annotation> T getAnnotation(Class<T> annotationType)
                 {
                     if (Nonbinding.class.equals(annotationType))
-                    { 
-                        return (T)new Nonbinding.Literal();
-                    }
-                    else
+                    {
+                        return (T) new Nonbinding.Literal();
+                    } else
                     {
                         return null;
                     }
@@ -289,14 +288,18 @@ public class CacheUsesQualifierOverridesTest extends AbstractUnitTest
                 }
 
                 @Override
-                public Method getJavaMember() {
-                    try {
+                public Method getJavaMember()
+                {
+                    try
+                    {
                         return QualifierWithoutMarker.class.getMethod("value");
-                    } catch (NoSuchMethodException e) {
+                    }
+                    catch (NoSuchMethodException e)
+                    {
                         throw new IllegalStateException(e);
                     }
                 }
-                
+
             });
         }
 

@@ -51,7 +51,7 @@ public class SerializationTest extends AbstractUnitTest
         final MockServletRequest mockServletRequest = new MockServletRequest();
         final ServletRequestEvent servletRequestEvent = new ServletRequestEvent(mockServletContext, mockServletRequest);
 
-        final Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        final Collection<Class<?>> classes = new ArrayList<>();
         classes.add(ReqBean.class);
         startContainer(classes);
 

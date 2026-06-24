@@ -44,7 +44,7 @@ public class ThirdPartyExtension implements Extension
             @Override
             public Set<Type> getTypes()
             {
-                Set<Type> types = new HashSet<Type>();
+                Set<Type> types = new HashSet<>();
                 types.add(Object.class);
                 types.add(SomeFakeBean.class);
                 return types;

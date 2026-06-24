@@ -55,7 +55,7 @@ public class CachedInterceptorHandlerTest extends AbstractUnitTest
     @Test
     public void testInterceptorPerformance() throws Exception
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ApplicationScopedBean.class);
         beanClasses.add(RequestScopedBean.class);
         beanClasses.add(DependentScopedBean.class);

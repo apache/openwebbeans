@@ -33,12 +33,12 @@ public class BrokenInterceptorTest extends AbstractUnitTest
     @Test
     public void testWarnings()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(BrokenBean.class);
         classes.add(BrokenAlternative.class);
         classes.add(BrokenName.class);
         
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "BrokenTest"));
         
         startContainer(classes,xmls);

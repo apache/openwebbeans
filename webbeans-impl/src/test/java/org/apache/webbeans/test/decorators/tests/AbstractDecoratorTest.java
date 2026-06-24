@@ -40,7 +40,7 @@ public class AbstractDecoratorTest extends AbstractUnitTest
     @Test
     public void testDecoratorStackWithAbstractAtEnd()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(Decorator1.class);
         classes.add(Decorator2.class);
         
@@ -54,7 +54,7 @@ public class AbstractDecoratorTest extends AbstractUnitTest
         classes.add(OutputProvider.class);
         classes.add(RequestStringBuilder.class);
 
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "AbstractDecoratorTest"));
 
         startContainer(classes, xmls);

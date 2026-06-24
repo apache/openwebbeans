@@ -47,9 +47,9 @@ public class PersonProducerTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testPersonProducer()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(Person.class);
         beanClasses.add(PersonProducerBean.class);
         
@@ -75,9 +75,9 @@ public class PersonProducerTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testNullPersonProducer()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(Person.class);
         beanClasses.add(PersonProducerBean.class);
         
@@ -100,9 +100,9 @@ public class PersonProducerTest extends AbstractUnitTest
     @Test
     public void testSessionScopedNullPersonProducer()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(Person.class);
         beanClasses.add(SessionScopedPersonProducerBean.class);
         
@@ -122,9 +122,9 @@ public class PersonProducerTest extends AbstractUnitTest
     @Test
     public void testRequestScopedNullPersonProducer()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(Person.class);
         beanClasses.add(RequestScopedNullPersonProducerBean.class);
         

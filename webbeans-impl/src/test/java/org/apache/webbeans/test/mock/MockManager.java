@@ -63,7 +63,7 @@ public class MockManager implements BeanManager
 {
     private BeanManagerImpl manager = null;
 
-    private List<AbstractOwbBean<?>> componentList = new ArrayList<AbstractOwbBean<?>>();
+    private List<AbstractOwbBean<?>> componentList = new ArrayList<>();
 
     public MockManager()
     {

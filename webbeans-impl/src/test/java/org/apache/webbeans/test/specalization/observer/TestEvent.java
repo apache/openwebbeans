@@ -23,7 +23,7 @@ import java.util.List;
 
 public class TestEvent
 {
-    private List<String> calledObserverNames = new ArrayList<String>();
+    private List<String> calledObserverNames = new ArrayList<>();
 
     public void addInvocation(String observerName)
     {

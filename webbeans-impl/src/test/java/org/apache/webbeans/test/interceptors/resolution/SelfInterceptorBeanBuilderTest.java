@@ -41,7 +41,7 @@ public class SelfInterceptorBeanBuilderTest extends AbstractUnitTest
     @Test
     public void testEjbInterceptorBeanCreation()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(SelfInterceptedClass.class);
 
         startContainer(beanClasses, null);
@@ -51,7 +51,7 @@ public class SelfInterceptorBeanBuilderTest extends AbstractUnitTest
         BeanAttributesImpl<SelfInterceptedClass> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
 
         SelfInterceptorBeanBuilder<SelfInterceptedClass> ibb
-                = new SelfInterceptorBeanBuilder<SelfInterceptedClass>(getWebBeansContext(), annotatedType, beanAttributes);
+                = new SelfInterceptorBeanBuilder<>(getWebBeansContext(), annotatedType, beanAttributes);
         ibb.defineSelfInterceptorRules();
         InterceptorBean<SelfInterceptedClass> bean = ibb.getBean();
         Assert.assertNotNull(bean);
@@ -76,7 +76,7 @@ public class SelfInterceptorBeanBuilderTest extends AbstractUnitTest
         BeanAttributesImpl<SelfInterceptedClass> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
 
         SelfInterceptorBeanBuilder<SelfInterceptedClass> ibb
-                = new SelfInterceptorBeanBuilder<SelfInterceptedClass>(getWebBeansContext(), annotatedType, beanAttributes);
+                = new SelfInterceptorBeanBuilder<>(getWebBeansContext(), annotatedType, beanAttributes);
         ibb.defineSelfInterceptorRules();
         InterceptorBean<SelfInterceptedClass> bean = ibb.getBean();
         Assert.assertNotNull(bean);

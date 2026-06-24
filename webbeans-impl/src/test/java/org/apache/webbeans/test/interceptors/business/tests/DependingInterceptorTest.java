@@ -44,10 +44,10 @@ public class DependingInterceptorTest extends AbstractUnitTest
     @Test
     public void testDependingBeanInterceptor()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "DependingInterceptorTest"));
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(TransactionInterceptor.class);
         beanClasses.add(ApplicationScopedBean.class);
         beanClasses.add(RequestScopedBean.class);
@@ -109,10 +109,10 @@ public class DependingInterceptorTest extends AbstractUnitTest
     @Test
     public void testInterceptorCreation() throws Exception 
     {
-            Collection<String> beanXmls = new ArrayList<String>();
+            Collection<String> beanXmls = new ArrayList<>();
             beanXmls.add(getXmlPath(PACKAGE_NAME, "DependingInterceptorTest"));
             
-            Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+            Collection<Class<?>> beanClasses = new ArrayList<>();
             beanClasses.add(TransactionInterceptor.class);
             beanClasses.add(ApplicationScopedBean.class);
             beanClasses.add(DependentScopedBean.class);

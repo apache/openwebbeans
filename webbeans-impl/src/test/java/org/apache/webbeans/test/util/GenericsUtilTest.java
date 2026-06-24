@@ -46,7 +46,7 @@ public class GenericsUtilTest {
     public void stackOverFlowProtection() throws Exception
     {
         final Type type = new OwbParametrizedTypeImpl(null, ByDefaultIllDoAStackOverFlowIngenericUtils.class, ByDefaultIllDoAStackOverFlowIngenericUtils.class.getTypeParameters());
-        final Collection<Method> methods = new ArrayList<Method>(asList(ByDefaultIllDoAStackOverFlowIngenericUtils.class.getMethods()));
+        final Collection<Method> methods = new ArrayList<>(asList(ByDefaultIllDoAStackOverFlowIngenericUtils.class.getMethods()));
         methods.removeAll(asList(Object.class.getMethods()));
         final Type actualType = methods.iterator().next().getTypeParameters()[0];
         GenericsUtil.resolveTypes(new Type[] { actualType }, type);
@@ -95,12 +95,15 @@ public class GenericsUtilTest {
     public void genericsLoop()
     {
         final ParameterizedType injectionPointType = new OwbParametrizedTypeImpl(null, GenericFoo.class, Long.class);
-        final TypeVariable<Class<?>> t = new TypeVariable<Class<?>>() {
+        final TypeVariable<Class<?>> t = new TypeVariable<>()
+        {
             @Override
-            public Type[] getBounds() {
+            public Type[] getBounds()
+            {
                 final TypeVariable<?> ref = this;
                 return new Type[]{
-                    new OwbParametrizedTypeImpl(null, Comparable.class, new TypeVariable<Class<?>>() {
+                    new OwbParametrizedTypeImpl(null, Comparable.class, new TypeVariable<Class<?>>()
+                    {
                         @Override
                         public <T extends Annotation> T getAnnotation(Class<T> annotationClass)
                         {
@@ -122,11 +125,12 @@ public class GenericsUtilTest {
                         @Override
                         public Type[] getBounds()
                         {
-                            return new Type[] { new OwbParametrizedTypeImpl(null, Comparable.class, ref) };
+                            return new Type[]{new OwbParametrizedTypeImpl(null, Comparable.class, ref)};
                         }
 
                         @Override
-                        public Class<?> getGenericDeclaration() {
+                        public Class<?> getGenericDeclaration()
+                        {
                             return GenericFoo.class;
                         }
 
@@ -206,7 +210,7 @@ public class GenericsUtilTest {
 
         public GenericObject<T, V> getObject()
         {
-            return new GenericObject<T, V>();
+            return new GenericObject<>();
         }
 
     }
@@ -265,7 +269,8 @@ public class GenericsUtilTest {
 
         public <T> AbstractObject<T> generic()
         {
-            return new AbstractObject<T>() {
+            return new AbstractObject<>()
+            {
             };
         }
     }

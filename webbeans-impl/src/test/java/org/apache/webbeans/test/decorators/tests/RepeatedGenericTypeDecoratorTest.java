@@ -39,7 +39,7 @@ public class RepeatedGenericTypeDecoratorTest extends AbstractUnitTest
         MyService myService = getInstance(MyService.class);
 
         MyServiceDecorator.called = false;
-        myService.doSomethingStrange(new MyInterface<MyInterface>()
+        myService.doSomethingStrange(new MyInterface<>()
         {
             @Override
             public void doSomethingStrange(MyInterface param)

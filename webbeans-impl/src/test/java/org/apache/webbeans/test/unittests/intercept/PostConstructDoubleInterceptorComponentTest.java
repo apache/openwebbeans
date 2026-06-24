@@ -36,7 +36,7 @@ public class PostConstructDoubleInterceptorComponentTest extends AbstractUnitTes
     public void testTypedComponent() throws Exception
     {
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(CheckWithCheckPayment.class);
         beanClasses.add(PostConstructDoubleInterceptorComponent.class);
 

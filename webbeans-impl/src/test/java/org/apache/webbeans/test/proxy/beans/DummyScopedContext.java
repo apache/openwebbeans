@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class DummyScopedContext implements Context
 {
-    private Map<Contextual<?>, Object> map = new HashMap<Contextual<?>, Object>();
+    private Map<Contextual<?>, Object> map = new HashMap<>();
 
     @Override
     public <T> T get(Contextual<T> component)

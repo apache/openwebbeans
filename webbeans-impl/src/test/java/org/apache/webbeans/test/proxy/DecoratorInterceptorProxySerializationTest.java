@@ -50,7 +50,10 @@ public class DecoratorInterceptorProxySerializationTest extends AbstractUnitTest
     {
         addDecorator(MyDecorator.class);
         addInterceptor(IBInterceptor.class);
-        startContainer(new ArrayList<Class<?>>() {{ add(Main.class); }}, null, true);
+        startContainer(new ArrayList<>()
+        {{
+            add(Main.class);
+        }}, null, true);
 
         try
         {

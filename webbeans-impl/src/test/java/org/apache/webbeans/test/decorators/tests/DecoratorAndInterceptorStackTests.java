@@ -54,7 +54,7 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
     @Test
     public void testDecoratorStack()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(Decorator1.class);
         classes.add(Decorator2.class);
         classes.add(IOutputProvider.class);
@@ -63,7 +63,7 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
         classes.add(MyIntercept.class);
         classes.add(OutputInterceptor.class);
 
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "DecoratorAndInterceptorStack"));
 
         startContainer(classes, xmls);
@@ -87,7 +87,7 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
     @Test
     public void testParallelInterceptorInvocation() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(Decorator1.class);
         classes.add(IOutputProvider.class);
         classes.add(OutputProvider.class);
@@ -96,7 +96,7 @@ public class DecoratorAndInterceptorStackTests extends AbstractUnitTest
         classes.add(OutsideBean.class);
         classes.add(OutputInterceptor.class);
 
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "DecoratorAndInterceptorStack"));
 
         startContainer(classes, xmls);

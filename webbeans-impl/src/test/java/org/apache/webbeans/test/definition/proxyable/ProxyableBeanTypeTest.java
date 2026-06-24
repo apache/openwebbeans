@@ -44,7 +44,7 @@ public class ProxyableBeanTypeTest extends AbstractUnitTest
     @Test
     public void testBeanWithPrivateFinalMethods()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(BeanWithPrivateFinalMethod.class);
 
         try
@@ -81,9 +81,9 @@ public class ProxyableBeanTypeTest extends AbstractUnitTest
     @Test
     public void testNotInjectedBeanWithoutDefaultCt()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(DependentBeanWithoutDefaultCt.class);
         beanClasses.add(NonAbstractSubClassBean.class);
 

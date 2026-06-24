@@ -27,9 +27,9 @@ import jakarta.inject.Named;
 
 public class MultipleListProducer
 {
-    @Produces @SessionScoped List<String> produceList1 = new ArrayList<String>();
-    @Produces @SessionScoped List<Integer> produceList2 = new ArrayList<Integer>(); 
+    @Produces @SessionScoped List<String> produceList1 = new ArrayList<>();
+    @Produces @SessionScoped List<Integer> produceList2 = new ArrayList<>();
     
-    @Produces @SessionScoped @Named(value="name1") List<Double> producerList3 = new ArrayList<Double>();
-    @Produces @SessionScoped @Named(value="name2") List<Double> producerList4 = new ArrayList<Double>();
+    @Produces @SessionScoped @Named(value="name1") List<Double> producerList3 = new ArrayList<>();
+    @Produces @SessionScoped @Named(value="name2") List<Double> producerList4 = new ArrayList<>();
 }

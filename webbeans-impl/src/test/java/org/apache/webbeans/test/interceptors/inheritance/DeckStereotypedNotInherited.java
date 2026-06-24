@@ -29,7 +29,7 @@ import jakarta.inject.Named;
 @StereotypeParentNotInherited
 public class DeckStereotypedNotInherited implements DeckType
 {
-    protected ArrayList<String> intercepted_by = new ArrayList<String>();
+    protected ArrayList<String> intercepted_by = new ArrayList<>();
     private int shuffled = 0, intercepted = 0;
 
     @Override

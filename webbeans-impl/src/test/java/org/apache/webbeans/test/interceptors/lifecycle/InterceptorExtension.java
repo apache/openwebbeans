@@ -66,9 +66,9 @@ public class InterceptorExtension implements Extension
     public void observeLiveCycleInterceptorBbd(@Observes BeforeBeanDiscovery bbd)
     {
         AnnotatedTypeImpl<LifecycleInterceptorBbd> annotatedType =
-                new AnnotatedTypeImpl<LifecycleInterceptorBbd>(LifecycleInterceptorBbd.class );
+            new AnnotatedTypeImpl<>(LifecycleInterceptorBbd.class);
 
-        Set<Annotation> anns = new HashSet<Annotation>();
+        Set<Annotation> anns = new HashSet<>();
         anns.add(new AnnotationLiteral<LifecycleBinding>(){});
         anns.add(new AnnotationLiteral<Interceptor>(){});
         annotatedType.setAnnotations(anns);
@@ -79,7 +79,7 @@ public class InterceptorExtension implements Extension
     public static class AnnotatedTypeImpl<X> implements AnnotatedType<X>
     {
         private Class<X> javaClass;
-        private Set<AnnotatedConstructor<X>>    annotatedConstructors = new HashSet<AnnotatedConstructor<X>>();
+        private Set<AnnotatedConstructor<X>>    annotatedConstructors = new HashSet<>();
         private Set<AnnotatedMethod<? super X>> annotatedMethods = Collections.EMPTY_SET;
         private Set<AnnotatedField<? super X>>  annotatedFields = Collections.EMPTY_SET;
         private Set<Type>                       typeClosures  = Collections.EMPTY_SET;
@@ -89,7 +89,7 @@ public class InterceptorExtension implements Extension
         public AnnotatedTypeImpl(Class<X> javaClass)
         {
             this.javaClass = javaClass;
-            this.annotatedConstructors.add(new AnnotatedConstructorImpl<X>(this));
+            this.annotatedConstructors.add(new AnnotatedConstructorImpl<>(this));
         }
 
         @Override

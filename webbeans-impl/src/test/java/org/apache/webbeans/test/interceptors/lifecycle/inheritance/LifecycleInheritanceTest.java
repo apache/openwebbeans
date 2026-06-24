@@ -47,7 +47,7 @@ public class LifecycleInheritanceTest extends AbstractUnitTest
     @Test
     public void testLifecycle()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(SubClassBean.class);
         classes.add(SuperClassBean.class);
         

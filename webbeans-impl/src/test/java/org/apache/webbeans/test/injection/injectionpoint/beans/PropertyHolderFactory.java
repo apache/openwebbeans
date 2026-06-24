@@ -86,7 +86,7 @@ public class PropertyHolderFactory {
         }
 
         //Consturct list for appending
-        List<String> stringList = new ArrayList<String>();
+        List<String> stringList = new ArrayList<>();
         stringList.add(injectionPoint.getMember().getDeclaringClass().getName());
         stringList.add(".");
         stringList.add(keyName);

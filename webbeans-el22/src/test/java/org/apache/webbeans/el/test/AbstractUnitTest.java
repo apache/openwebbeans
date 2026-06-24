@@ -43,7 +43,7 @@ import org.junit.Assert;
 public abstract class AbstractUnitTest
 {
     private StandaloneLifeCycle testLifecycle;
-    private List<Extension>  extensions = new ArrayList<Extension>();
+    private List<Extension>  extensions = new ArrayList<>();
     private WebBeansContext webBeansContext;
 
     protected AbstractUnitTest()

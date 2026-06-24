@@ -37,7 +37,7 @@ public class ParameterizedTypeWithTypeVariableExtension implements Extension
         @Override
         public PaintBrush<Red> createPaintTool()
         {
-            return new PaintBrush<Red>();
+            return new PaintBrush<>();
         }
     }
 

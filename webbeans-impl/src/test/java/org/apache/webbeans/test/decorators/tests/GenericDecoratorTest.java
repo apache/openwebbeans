@@ -45,11 +45,11 @@ public class GenericDecoratorTest extends AbstractUnitTest
     public void testGenericDecorator()
     {
         
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(Garphly.class);
         classes.add(GarphlyDecorator.class);
         
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "GenericDecoratorTest"));
 
         try
@@ -66,12 +66,12 @@ public class GenericDecoratorTest extends AbstractUnitTest
 
     @Test
     public void injection() throws Exception {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(DecoratedBean.class);
         classes.add(GenericInterface.class);
         classes.add(SampleDecorator.class);
 
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "GenericDecoratorTest"));
 
         startContainer(classes, xmls);
@@ -82,12 +82,12 @@ public class GenericDecoratorTest extends AbstractUnitTest
     
     @Test
     public void extendedInjection() throws Exception {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(ExtendedDecoratedBean.class);
         classes.add(ExtendedGenericInterface.class);
         classes.add(ExtendedSampleDecorator.class);
 
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "GenericDecoratorTest"));
 
         startContainer(classes, xmls);

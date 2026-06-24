@@ -36,7 +36,7 @@ public class MultipleSpecializationTest extends AbstractUnitTest
     @Test
     public void testMultipleSpecialization()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(BeanA.class);
         beanClasses.add(BeanB.class);
         beanClasses.add(BeanC.class);
@@ -65,7 +65,7 @@ public class MultipleSpecializationTest extends AbstractUnitTest
         
         try
         {
-            Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+            Collection<Class<?>> beanClasses = new ArrayList<>();
             beanClasses.add(BeanA.class);
             beanClasses.add(BeanB.class);
             beanClasses.add(BeanC.class);

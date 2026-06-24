@@ -40,9 +40,9 @@ public class GetterStringInjectorTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testGetterStringInjector()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(GetterStringProducerBean.class);
         beanClasses.add(GetterStringFieldInjector.class);
         beanClasses.add(StringProducerBean.class);

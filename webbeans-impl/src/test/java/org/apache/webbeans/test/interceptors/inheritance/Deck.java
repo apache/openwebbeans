@@ -31,7 +31,7 @@ import jakarta.inject.Named;
 @BindingSimpleInterceptor
 public class Deck implements DeckType
 {
-    protected ArrayList<String> intercepted_by = new ArrayList<String>();
+    protected ArrayList<String> intercepted_by = new ArrayList<>();
     private int shuffled = 0, intercepted = 0;
 
     @Override

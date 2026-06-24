@@ -47,7 +47,7 @@ public class WebBeansTest {
     @Test
     public void implicitBeans()
     {
-        final WebBeansContext webBeansContext = new WebBeansContext(new HashMap<Class<?>, Object>(), new Properties()
+        final WebBeansContext webBeansContext = new WebBeansContext(new HashMap<>(), new Properties()
         {{
             setProperty(ContextsService.class.getName(), WebContextsService.class.getName());
             setProperty(ScannerService.class.getName(), NoScan.class.getName());
@@ -79,7 +79,7 @@ public class WebBeansTest {
         @Override
         public void scan()
         {
-            archive = new CdiArchive(new DefaultBeanArchiveService(), Thread.currentThread().getContextClassLoader(), new HashMap<String, URL>(), null, null);
+            archive = new CdiArchive(new DefaultBeanArchiveService(), Thread.currentThread().getContextClassLoader(), new HashMap<>(), null, null);
             finder = new OwbAnnotationFinder(new ClassesArchive());
         }
     }

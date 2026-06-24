@@ -35,8 +35,8 @@ public class EjbInterceptorTest extends AbstractUnitTest
     @Test
     public void testEjbInterceptor()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<String> beanXmls = new ArrayList<>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(RequestScopedBean.class);
         beanClasses.add(ManagedBeanWithEjbInterceptor.class);
         beanClasses.add(ApplicationScopedBean.class);
@@ -58,8 +58,8 @@ public class EjbInterceptorTest extends AbstractUnitTest
     @Test
     public void testEjbMethodInterceptor()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<String> beanXmls = new ArrayList<>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(RequestScopedBean.class);
         beanClasses.add(ManagedBeanWithMethodEjbInterceptor.class);
         beanClasses.add(ApplicationScopedBean.class);
@@ -86,8 +86,8 @@ public class EjbInterceptorTest extends AbstractUnitTest
     @Test
     public void testDynamicEjbInterceptor()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<String> beanXmls = new ArrayList<>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ManagedBeanWithoutInterceptor.class);
         beanClasses.add(EjbInterceptor.class);
         addExtension(new EjbInterceptorExtension());

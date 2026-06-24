@@ -106,7 +106,7 @@ public class DecoratorExceptionTest extends AbstractUnitTest
         try
         {
             startContainer(IPayment.class);
-            Set<Type> api = new HashSet<Type>();
+            Set<Type> api = new HashSet<>();
             api.add(IPayment.class);
 
             Annotation[] anns = new Annotation[2];
@@ -128,7 +128,7 @@ public class DecoratorExceptionTest extends AbstractUnitTest
         try
         {
             startContainer(IPayment.class);
-            Set<Type> api = new HashSet<Type>();
+            Set<Type> api = new HashSet<>();
             api.add(IPayment.class);
 
             Annotation[] anns = new Annotation[2];
@@ -149,7 +149,7 @@ public class DecoratorExceptionTest extends AbstractUnitTest
         try
         {
             startContainer();
-            Set<Type> api = new HashSet<Type>();
+            Set<Type> api = new HashSet<>();
 
             Annotation[] anns = new Annotation[2];
             anns[0] = new DummyAnnotationLiteral();

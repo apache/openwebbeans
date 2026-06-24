@@ -39,7 +39,7 @@ public class ProducerComponentTest extends AbstractUnitTest
     public void testParametrizedProducer()
     {
         startContainer(ParametrizedProducer.class);
-        TypeLiteral<List<ParametrizedModel1>> model1 = new TypeLiteral<List<ParametrizedModel1>>()
+        TypeLiteral<List<ParametrizedModel1>> model1 = new TypeLiteral<>()
         {
         };
 
@@ -48,7 +48,7 @@ public class ProducerComponentTest extends AbstractUnitTest
         Assert.assertTrue(ParametrizedProducer.callModel1);
         Assert.assertTrue(!ParametrizedProducer.callModel2);
 
-        TypeLiteral<List<ParametrizedModel2>> model2 = new TypeLiteral<List<ParametrizedModel2>>()
+        TypeLiteral<List<ParametrizedModel2>> model2 = new TypeLiteral<>()
         {
         };
         List<ParametrizedModel2> instance2 = getInstance(model2.getType());

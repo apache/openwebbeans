@@ -87,7 +87,7 @@ public class GenericProducerTest extends AbstractUnitTest
         @Produces
         public <T, X> Gauge<T, X> gaugeProducer()
         {
-            return new Gauge<T, X>();
+            return new Gauge<>();
         }
     }
 

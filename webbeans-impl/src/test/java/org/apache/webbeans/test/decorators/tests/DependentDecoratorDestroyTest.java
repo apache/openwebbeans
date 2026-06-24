@@ -43,12 +43,12 @@ public class DependentDecoratorDestroyTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")    
     public void testDecoratorStack()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(DependentDecorator.class);
         classes.add(TransactionalInterceptor.class);
         classes.add(MyDestory.class);
 
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "DependentDecoratorDestroy"));
 
         startContainer(classes, xmls);

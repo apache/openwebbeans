@@ -37,7 +37,7 @@ public class EJBInterceptComponentTest extends AbstractUnitTest
     @Test
     public void testInterceptedComponent()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(InterceptedComponent.class);
         startContainer(beanClasses, null);
 
@@ -47,7 +47,7 @@ public class EJBInterceptComponentTest extends AbstractUnitTest
     @Test
     public void testInterceptorCalls()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(InterceptedComponent.class);
         startContainer(beanClasses, null);
 
@@ -62,7 +62,7 @@ public class EJBInterceptComponentTest extends AbstractUnitTest
     @Test
     public void testMultipleInterceptedComponent()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(MultipleInterceptedComponent.class);
         startContainer(beanClasses, null);
 
@@ -82,7 +82,7 @@ public class EJBInterceptComponentTest extends AbstractUnitTest
     @Test
     public void testInterceptorWithSuperClassComponent()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(InterceptorWithSuperClassInterceptedComponent.class);
         startContainer(beanClasses, null);
 
@@ -102,7 +102,7 @@ public class EJBInterceptComponentTest extends AbstractUnitTest
     @Test
     public void testMultipleListOfInterceptedComponent()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(MultipleListOfInterceptedComponent.class);
         startContainer(beanClasses, null);
 
@@ -119,7 +119,7 @@ public class EJBInterceptComponentTest extends AbstractUnitTest
     @Test
     public void testMultipleListOfInterceptedWithExcludeClassComponent()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(MultipleListOfInterceptedWithExcludeClassComponent.class);
         startContainer(beanClasses, null);
 

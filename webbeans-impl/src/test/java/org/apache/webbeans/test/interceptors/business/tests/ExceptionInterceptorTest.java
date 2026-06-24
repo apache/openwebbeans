@@ -35,10 +35,10 @@ public class ExceptionInterceptorTest extends AbstractUnitTest
     @Test
     public void testAroundInvokeWithoutThrowsException() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "RuntimeExceptionsInterceptorTest"));
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(RuntimeExceptionsInterceptor.class);
         beanClasses.add(RuntimeExceptionBindingTypeBean.class);
 

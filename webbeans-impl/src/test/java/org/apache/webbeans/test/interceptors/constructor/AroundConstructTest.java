@@ -48,7 +48,7 @@ public class AroundConstructTest extends AbstractUnitTest
     {
         addInterceptor(IllGetYourConstructorInvocation.class);
 
-        final Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        final Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(IAmBuiltWithMyConstructor.class);
         beanClasses.add(Foo.class);
 

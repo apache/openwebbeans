@@ -117,7 +117,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     @Override
     public Handle<T> getHandle()
     {
-        return new HandleImpl<T>(getBean());
+        return new HandleImpl<>(getBean());
     }
 
     @Override
@@ -283,7 +283,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
     public Iterator<T> iterator()
     {
         final Iterator<Bean<?>> beans = resolveBeans().iterator();
-        return new Iterator<T>()
+        return new Iterator<>()
         {
             @Override
             public boolean hasNext()

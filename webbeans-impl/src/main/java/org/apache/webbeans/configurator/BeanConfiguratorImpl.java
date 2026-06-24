@@ -444,7 +444,7 @@ public class BeanConfiguratorImpl<T> implements BeanConfigurator<T>
         public Producer<T> getProducer()
         {
             //X TODO
-            return new Producer<T>()
+            return new Producer<>()
             {
                 private final Instance<Object> instance = CDI.current();
 

@@ -35,7 +35,7 @@ public class PostConstructInterceptorComponentTest extends AbstractUnitTest
     @Test
     public void testTypedComponent() throws Throwable
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(CheckWithCheckPayment.class);
         beanClasses.add(PostConstructInterceptorComponent.class);
 

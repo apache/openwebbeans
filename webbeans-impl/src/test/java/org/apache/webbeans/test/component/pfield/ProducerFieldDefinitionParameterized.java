@@ -26,5 +26,5 @@ import jakarta.enterprise.inject.Produces;
 public class ProducerFieldDefinitionParameterized
 {
     private @Produces
-    List<Double> producedList = new ArrayList<Double>();
+    List<Double> producedList = new ArrayList<>();
 }

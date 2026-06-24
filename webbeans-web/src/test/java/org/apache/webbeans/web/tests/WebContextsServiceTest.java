@@ -41,7 +41,7 @@ public class WebContextsServiceTest
     @Test
     public void issue_OWB1124()
     {
-        final WebBeansContext webBeansContext = new WebBeansContext(new HashMap<Class<?>, Object>(), new Properties()
+        final WebBeansContext webBeansContext = new WebBeansContext(new HashMap<>(), new Properties()
         {{
             setProperty(ContextsService.class.getName(), WebContextsService.class.getName());
         }});

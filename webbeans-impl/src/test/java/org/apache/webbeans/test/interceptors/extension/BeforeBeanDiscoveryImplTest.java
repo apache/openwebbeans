@@ -99,7 +99,8 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
             final Set<Annotation> annotations = annotatedType1.getAnnotations();
             annotations.add(new EmptyAnnotationLiteral<InterceptorBinding>() {});
 
-            final AnnotatedType<OwbMethodBinding> annotatedType = new AnnotatedTypeWrapper<OwbMethodBinding>(this, annotatedType1, "x") {
+            final AnnotatedType<OwbMethodBinding> annotatedType = new AnnotatedTypeWrapper<>(this, annotatedType1, "x")
+            {
                 @Override
                 public Set<Annotation> getAnnotations()
                 {
@@ -156,7 +157,8 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
             final Set<Annotation> annotations = annotatedType1.getAnnotations();
             annotations.add(new EmptyAnnotationLiteral<InterceptorBinding>() {});
 
-            final AnnotatedType<TheBindingType> annotatedType = new AnnotatedTypeWrapper<TheBindingType>(this, annotatedType1, "x") {
+            final AnnotatedType<TheBindingType> annotatedType = new AnnotatedTypeWrapper<>(this, annotatedType1, "x")
+            {
                 @Override
                 public Set<Annotation> getAnnotations()
                 {
@@ -170,70 +172,83 @@ public class BeforeBeanDiscoveryImplTest extends AbstractUnitTest
                 }
             };
 
-            final AnnotatedTypeWrapper<TheBindingType> wrapper = new AnnotatedTypeWrapper<TheBindingType>(this, annotatedType, "x") {
+            final AnnotatedTypeWrapper<TheBindingType> wrapper = new AnnotatedTypeWrapper<>(this, annotatedType, "x")
+            {
                 @Override
-                public Set<AnnotatedMethod<? super TheBindingType>> getMethods() {
+                public Set<AnnotatedMethod<? super TheBindingType>> getMethods()
+                {
                     final Set<AnnotatedMethod<? super TheBindingType>> methods = super.getMethods();
-                    final Set<AnnotatedMethod<? super TheBindingType>> wrapped = new HashSet<AnnotatedMethod<? super TheBindingType>>();
+                    final Set<AnnotatedMethod<? super TheBindingType>> wrapped = new HashSet<>();
                     for (final AnnotatedMethod<? super TheBindingType> m : methods)
                     {
                         if ("shouldBeBound".equals(m.getJavaMember().getName()))
                         {
-                            wrapped.add(new AnnotatedMethod<TheBindingType>() {
+                            wrapped.add(new AnnotatedMethod<>()
+                            {
                                 @Override
-                                public Method getJavaMember() {
+                                public Method getJavaMember()
+                                {
                                     return m.getJavaMember();
                                 }
 
                                 @Override
-                                public List<AnnotatedParameter<TheBindingType>> getParameters() {
+                                public List<AnnotatedParameter<TheBindingType>> getParameters()
+                                {
                                     final List<? extends AnnotatedParameter<? super TheBindingType>> parameters = m.getParameters();
                                     return (List<AnnotatedParameter<TheBindingType>>) parameters;
                                 }
 
                                 @Override
-                                public boolean isStatic() {
+                                public boolean isStatic()
+                                {
                                     return m.isStatic();
                                 }
 
                                 @Override
-                                public AnnotatedType<TheBindingType> getDeclaringType() {
+                                public AnnotatedType<TheBindingType> getDeclaringType()
+                                {
                                     final AnnotatedType<? super TheBindingType> declaringType = m.getDeclaringType();
                                     return (AnnotatedType<TheBindingType>) declaringType;
                                 }
 
                                 @Override
-                                public Type getBaseType() {
+                                public Type getBaseType()
+                                {
                                     return m.getBaseType();
                                 }
 
                                 @Override
-                                public Set<Type> getTypeClosure() {
+                                public Set<Type> getTypeClosure()
+                                {
                                     return m.getTypeClosure();
                                 }
 
                                 @Override
-                                public <T extends Annotation> T getAnnotation(final Class<T> annotationType) {
+                                public <T extends Annotation> T getAnnotation(final Class<T> annotationType)
+                                {
                                     final T annotation = m.getAnnotation(annotationType);
                                     if (annotation == null && Nonbinding.class == annotationType)
                                     {
-                                        return (T) new EmptyAnnotationLiteral<Nonbinding>() {};
+                                        return (T) new EmptyAnnotationLiteral<Nonbinding>()
+                                        {
+                                        };
                                     }
                                     return annotation;
                                 }
 
                                 @Override
-                                public Set<Annotation> getAnnotations() {
+                                public Set<Annotation> getAnnotations()
+                                {
                                     return m.getAnnotations();
                                 }
 
                                 @Override
-                                public boolean isAnnotationPresent(final Class<? extends Annotation> annotationType) {
+                                public boolean isAnnotationPresent(final Class<? extends Annotation> annotationType)
+                                {
                                     return m.isAnnotationPresent(annotationType) || Nonbinding.class == annotationType;
                                 }
                             });
-                        }
-                        else
+                        } else
                         {
                             wrapped.add(m);
                         }

@@ -39,9 +39,9 @@ public class CircularInjectionTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testOneNormalOneDependent()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(CircularDependentScopedBean.class);
         beanClasses.add(CircularApplicationScopedBean.class);
         
@@ -60,9 +60,9 @@ public class CircularInjectionTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testOneDependentOneNormal()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(CircularDependentScopedBean.class);
         beanClasses.add(CircularApplicationScopedBean.class);
         

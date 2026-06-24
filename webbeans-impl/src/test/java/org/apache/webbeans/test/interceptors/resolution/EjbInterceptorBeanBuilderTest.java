@@ -46,7 +46,7 @@ public class EjbInterceptorBeanBuilderTest extends AbstractUnitTest
     @Test
     public void testEjbInterceptorBeanCreation()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(UtilitySampleBean.class);
         beanClasses.add(EjbInterceptor.class);
         beanClasses.add(ManagedBeanWithEjbInterceptor.class);
@@ -57,7 +57,7 @@ public class EjbInterceptorBeanBuilderTest extends AbstractUnitTest
 
         BeanAttributesImpl<EjbInterceptor> beanAttributes = BeanAttributesBuilder.forContext(getWebBeansContext()).newBeanAttibutes(annotatedType).build();
         EjbInterceptorBeanBuilder<EjbInterceptor> ibb
-                = new EjbInterceptorBeanBuilder<EjbInterceptor>(getWebBeansContext(), annotatedType, beanAttributes);
+                = new EjbInterceptorBeanBuilder<>(getWebBeansContext(), annotatedType, beanAttributes);
         ibb.defineEjbInterceptorRules();
         InterceptorBean<EjbInterceptor> bean = ibb.getBean();
         Assert.assertNotNull(bean);
@@ -73,7 +73,7 @@ public class EjbInterceptorBeanBuilderTest extends AbstractUnitTest
     @Test
     public void testInterceptorsManagerEjbBeanCreation()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(UtilitySampleBean.class);
         beanClasses.add(EjbInterceptor.class);
         beanClasses.add(ManagedBeanWithEjbInterceptor.class);

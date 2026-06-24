@@ -96,7 +96,7 @@ public class InjectionPointImpl implements InjectionPoint, Serializable
         this.injectionType = bean.getBeanClass();
         this.qualifierAnnotations = bean.getQualifiers() == null ?
                 Collections.<Annotation>emptySet() :
-                Collections.unmodifiableSet(new HashSet<>(bean.getQualifiers()));
+            Set.copyOf(bean.getQualifiers());
         this.annotated = null;
         this.injectionMember = null;
         this.delegate = false;
@@ -116,7 +116,7 @@ public class InjectionPointImpl implements InjectionPoint, Serializable
         Asserts.assertNotNull(qualifiers, "qualifiers");
         this.ownerBean = ownerBean;
         injectionType = type;
-        qualifierAnnotations = Collections.unmodifiableSet(new HashSet<>(qualifiers));
+        qualifierAnnotations = Set.copyOf(qualifiers);
         this.annotated = annotated;
         injectionMember = member;
         this.delegate = delegate;

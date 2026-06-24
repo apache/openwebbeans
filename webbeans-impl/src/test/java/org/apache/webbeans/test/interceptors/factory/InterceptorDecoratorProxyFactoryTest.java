@@ -257,7 +257,7 @@ public class InterceptorDecoratorProxyFactoryTest extends AbstractUnitTest
 
     public static class TestInterceptorHandler implements InterceptorHandler
     {
-        public List<String> invokedMethodNames = new ArrayList<String>();
+        public List<String> invokedMethodNames = new ArrayList<>();
 
         private Object instance;
 

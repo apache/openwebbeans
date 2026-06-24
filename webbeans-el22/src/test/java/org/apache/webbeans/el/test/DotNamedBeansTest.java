@@ -52,7 +52,7 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Test
     public void testNonResolved() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(GoldenFish.class);
 
@@ -66,7 +66,7 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Test
     public void testIntermediateNode() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(GoldenFish.class);
         classes.add(BlueGoldenFish.class);
@@ -82,7 +82,7 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Test
     public void testUniqueIntermediateNode() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(GoldenFish.class);
 
@@ -97,7 +97,7 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Test
     public void testLeaf() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(GoldenFish.class);
 
@@ -111,7 +111,7 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Test
     public void testNonDottedChildren() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(Dogs.class);
         classes.add(Dog.class);
@@ -133,7 +133,7 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Test
     public void testChildren() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(Dog.class);
         classes.add(BlueGoldenFish.class);
@@ -154,7 +154,7 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Test(expected = WebBeansConfigurationException.class)
     public void testConflictingName() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(GoldenFish.class);
         classes.add(ConflictingGoldenFish.class);
@@ -165,7 +165,7 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Test
     public void testSameBeginning() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(GoldenFish.class);
         classes.add(BlueGoldenFish.class);
@@ -181,7 +181,7 @@ public class DotNamedBeansTest extends AbstractUnitTest
     @Test
     public void testNoMatch() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(Dog.class);
 

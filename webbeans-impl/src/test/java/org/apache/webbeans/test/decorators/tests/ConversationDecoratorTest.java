@@ -44,10 +44,10 @@ public class ConversationDecoratorTest extends AbstractUnitTest
     @Test
     public void testConversationDecorator()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(ConversationDecorator.class);
         
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "ConversationDecoratorTest"));
         
         startContainer(classes,xmls);

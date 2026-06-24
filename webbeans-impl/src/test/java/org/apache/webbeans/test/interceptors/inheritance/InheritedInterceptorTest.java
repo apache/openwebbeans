@@ -44,11 +44,11 @@ public class InheritedInterceptorTest extends AbstractUnitTest
     
     @Before
     public void setUp() { 
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         
         beanXmls.add(getXmlPath(PACKAGE_NAME, "InheritedInterceptorTest"));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
 
         beanClasses.add(Deck.class);
         beanClasses.add(DeckChild.class);

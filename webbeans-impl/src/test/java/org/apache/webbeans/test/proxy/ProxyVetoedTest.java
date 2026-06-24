@@ -32,7 +32,7 @@ public class ProxyVetoedTest extends AbstractUnitTest
     @Test
     public void testVetoedAnnotation()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ApplicationBean.class);
         startContainer(beanClasses, null);
         ApplicationBean applicationBean = getInstance(ApplicationBean.class);

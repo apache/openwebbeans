@@ -42,8 +42,8 @@ public class NonSerializableParametersTest extends AbstractUnitTest
     @Test
     public void testInvalidNonSerializableDependentInjection()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<String> beanXmls = new ArrayList<>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ProducerWithNonSerializableParameterBean.class);
         beanClasses.add(SerializableBean.class);
         beanClasses.add(NonSerializableDependentBean.class);

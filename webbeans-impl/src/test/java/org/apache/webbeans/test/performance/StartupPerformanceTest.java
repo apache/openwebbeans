@@ -95,7 +95,7 @@ public class StartupPerformanceTest extends AbstractUnitTest
     @Test
     public void testPerformance()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(PaymentProcessorComponent.class);
         beanClasses.add(InstanceInjectedComponent.class);
         beanClasses.add(CheckWithCheckPayment.class);
@@ -169,7 +169,7 @@ public class StartupPerformanceTest extends AbstractUnitTest
 
     private void startupWithClasses(Collection<Class<?>> beanClasses)
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
 
 
         startContainer(beanClasses, beanXmls);

@@ -35,7 +35,7 @@ public class DisposalInjectedComponentTest extends AbstractUnitTest
     @Test
     public void testTypedComponent() throws Throwable
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(DisposalMethodComponent.class);
         classes.add(ServiceImpl1.class);
 

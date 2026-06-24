@@ -50,7 +50,7 @@ public class ELPerformanceTest extends AbstractUnitTest
     @Test
     public void testBeanCreation() throws Exception
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
 
         classes.add(SampleBean.class);
         classes.add(RequestBean.class);
@@ -59,7 +59,7 @@ public class ELPerformanceTest extends AbstractUnitTest
 
         startContainer(classes);
 
-        List<ParallelBeanStarter> strarters = new ArrayList<ParallelBeanStarter>();
+        List<ParallelBeanStarter> strarters = new ArrayList<>();
         WebBeansELResolver resolver = new WebBeansELResolver();
 
         long start = System.nanoTime();

@@ -34,8 +34,8 @@ public class UnusedBeanTest extends AbstractUnitTest
     @Test
     public void testUnusedBean()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<String> beanXmls = new ArrayList<>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(UnusedBean.class);
         beanClasses.add(UnusedBeanProducer.class);
         beanClasses.add(UnusedBeanDeclarer.class);

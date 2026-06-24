@@ -39,7 +39,7 @@ public class WebBeansScannerTest extends AbstractUnitTest
     @Test
     public void testWebBeansScanner() throws Exception
     {
-        List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Class<?>> classes = new ArrayList<>();
         classes.add(ScannerTestBean.class);
 
         //Start test container

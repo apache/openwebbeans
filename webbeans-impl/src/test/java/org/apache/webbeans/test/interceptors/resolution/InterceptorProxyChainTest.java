@@ -57,10 +57,10 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
     @Test
     public void testInterceptorProxyChain() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), InterceptorResolutionServiceTest.class.getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ClassMultiInterceptedClass.class);
         beanClasses.add(Transactional.class);
         beanClasses.add(Secure.class);
@@ -86,13 +86,13 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
 
         // step 1.
         // calculate the interceptor-method info
-        Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<Method, List<Interceptor<?>>>();
-        List<Method> nonBusinessMethods = new ArrayList<Method>();
+        Map<Method, List<Interceptor<?>>> methodInterceptors = new HashMap<>();
+        List<Method> nonBusinessMethods = new ArrayList<>();
         for (Map.Entry<Method, InterceptorResolutionService.BusinessMethodInterceptorInfo> miEntry : interceptorInfo.getBusinessMethodsInfo().entrySet())
         {
             Method interceptedMethod = miEntry.getKey();
             InterceptorResolutionService.BusinessMethodInterceptorInfo mii = miEntry.getValue();
-            List<Interceptor<?>> activeInterceptors = new ArrayList<Interceptor<?>>();
+            List<Interceptor<?>> activeInterceptors = new ArrayList<>();
 
             if (mii.getEjbInterceptors() != null)
             {
@@ -130,14 +130,14 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
 
         // step 3.
         // creating the InterceptorHandler for each intercepted instance later at runtime
-        Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<Interceptor<?>, Object>();
+        Map<Interceptor<?>,Object> interceptorInstances  = new HashMap<>();
         for (Interceptor interceptorBean : interceptorInfo.getCdiInterceptors())
         {
             Object interceptorInstance = interceptorBean.create(cc);
             interceptorInstances.put(interceptorBean, interceptorInstance);
         }
         InterceptorHandler interceptorHandler
-                = new DefaultInterceptorHandler<ClassMultiInterceptedClass>(internalInstance, internalInstance, methodInterceptors, interceptorInstances, null);
+                = new DefaultInterceptorHandler<>(internalInstance, internalInstance, methodInterceptors, interceptorInstances, null);
 
         ClassMultiInterceptedClass proxyInstance = pf.createProxyInstance(proxyClass, internalInstance, interceptorHandler);
         Assert.assertNotNull(proxyInstance);
@@ -203,7 +203,7 @@ public class InterceptorProxyChainTest extends AbstractUnitTest
      */
     public static class TestRequestScopedInstanceProvider<T> implements Provider<T>
     {
-        private ThreadLocal<T> instance = new ThreadLocal<T>();
+        private ThreadLocal<T> instance = new ThreadLocal<>();
 
         public TestRequestScopedInstanceProvider(T instance)
         {

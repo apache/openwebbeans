@@ -34,7 +34,7 @@ public class SpecializesPassivationTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testSpecializePassivatingBean()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(Pen.class);
         beanClasses.add(DefaultXyBean.class);
         beanClasses.add(SpecializedXyBean.class);

@@ -52,8 +52,8 @@ public class DependentPassivationCriteriaTest extends AbstractUnitTest
     @Test(expected = WebBeansConfigurationException.class)
     public void testInvalidNonSerializableDependentInjection()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<String> beanXmls = new ArrayList<>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(NonSerializableDependentBean.class);
         beanClasses.add(SerializableInjectionTargetFailA.class);
 
@@ -73,8 +73,8 @@ public class DependentPassivationCriteriaTest extends AbstractUnitTest
     @Test
     public void testInjectNonSerializableDependentIntoSerializableDependent()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<String> beanXmls = new ArrayList<>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ProducerWithNonSerializableResultBean.class);
         beanClasses.add(SerializableDependentInjectionTarget.class);
 

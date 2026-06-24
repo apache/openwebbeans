@@ -71,10 +71,10 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
     @Test
     public void testClassLevelSingleInterceptor() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ClassInterceptedClass.class);
         beanClasses.add(Transactional.class);
         beanClasses.add(TransactionalInterceptor.class);
@@ -114,10 +114,10 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
     @Test
     public void testStereotypeInterceptorBinding() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(getClass().getPackage().getName(), getClass().getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(StereotypeInterceptedClass.class);
         beanClasses.add(Transactional.class);
         beanClasses.add(TransactionalInterceptor.class);
@@ -141,10 +141,10 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
     @Test
     public void testClassLevelMultipleInterceptor() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ClassMultiInterceptedClass.class);
         beanClasses.add(Transactional.class);
         beanClasses.add(Secure.class);
@@ -177,7 +177,7 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
 
         Assert.assertEquals(0, interceptorInfo.getDecorators().size());
 
-        Map<Method, BusinessMethodInterceptorInfo> methodInterceptorInfos = new HashMap<Method, BusinessMethodInterceptorInfo>(interceptorInfo.getBusinessMethodsInfo());
+        Map<Method, BusinessMethodInterceptorInfo> methodInterceptorInfos = new HashMap<>(interceptorInfo.getBusinessMethodsInfo());
         Assert.assertNotNull(methodInterceptorInfos);
         Assert.assertEquals(8, methodInterceptorInfos.size());
 
@@ -201,10 +201,10 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
     @Test
     public void testMethodLevelInterceptor() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(MethodInterceptedClass.class);
         beanClasses.add(Transactional.class);
         beanClasses.add(Secure.class);
@@ -251,10 +251,10 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
     @Test
     public void testDecoratorResolution() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(DecoratedClass.class);
         beanClasses.add(ServiceDecorator.class);
 
@@ -281,10 +281,10 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
     @Test
     public void testAbstractDecoratorResolution() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(Cow.class);
         beanClasses.add(MyAbstractTestDecorator.class);
 
@@ -309,10 +309,10 @@ public class InterceptorResolutionServiceTest extends AbstractUnitTest
     @Test
     public void testEjbStyleInterceptorResolution() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(this.getClass().getPackage().getName(), this.getClass().getSimpleName()));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(InterceptedComponent.class);
         beanClasses.add(Interceptor1.class);
 

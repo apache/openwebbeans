@@ -30,7 +30,7 @@ import jakarta.enterprise.event.Observes;
 
 public class ExternalTestScopeContext implements Context 
 {
-    private static final Map<Contextual<?>, Object> instances = new HashMap<Contextual<?>, Object>();
+    private static final Map<Contextual<?>, Object> instances = new HashMap<>();
     
     private boolean active;
     

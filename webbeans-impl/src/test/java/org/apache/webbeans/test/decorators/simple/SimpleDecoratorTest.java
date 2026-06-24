@@ -40,17 +40,17 @@ public class SimpleDecoratorTest extends AbstractUnitTest
     @Test
     public void testSimpleDecorator()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(LogDecorator.class);
         classes.add(MyLog.class);
         
 
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "SimpleDecoratorTest"));
 
         startContainer(classes, xmls);
 
-        Set<Type> types = new LinkedHashSet<Type>();
+        Set<Type> types = new LinkedHashSet<>();
         types.add(ILog.class);
         
         Decorator<?> decorator = getBeanManager().resolveDecorators(types, new Annotation[0]).iterator().next();
@@ -76,13 +76,13 @@ public class SimpleDecoratorTest extends AbstractUnitTest
      */
     @Test
     public void testDecorateTwoBeans(){
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(LogDecorator.class);
         classes.add(MyLog.class);
         classes.add(OtherLog.class);
         
 
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "SimpleDecoratorTest"));
 
         startContainer(classes, xmls);

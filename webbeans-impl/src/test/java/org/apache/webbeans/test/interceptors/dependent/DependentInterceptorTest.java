@@ -45,10 +45,10 @@ public class DependentInterceptorTest extends AbstractUnitTest
     @SuppressWarnings("unchecked")
     public void testLifecycle()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "DependentInterceptorTest"));
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(DependentInterceptor.class);
         beanClasses.add(DependentScopedBean.class);
 

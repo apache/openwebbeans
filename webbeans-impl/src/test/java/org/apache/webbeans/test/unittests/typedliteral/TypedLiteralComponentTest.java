@@ -56,7 +56,7 @@ public class TypedLiteralComponentTest extends AbstractUnitTest
     {
         startContainer(TypeLiteralComponent.class);
 
-        TypeLiteral<ITypeLiteralComponent<List<String>>> tl = new TypeLiteral<ITypeLiteralComponent<List<String>>>()
+        TypeLiteral<ITypeLiteralComponent<List<String>>> tl = new TypeLiteral<>()
         {
         };
 

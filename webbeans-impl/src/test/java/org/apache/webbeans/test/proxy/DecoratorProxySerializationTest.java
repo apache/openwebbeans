@@ -41,7 +41,10 @@ public class DecoratorProxySerializationTest extends AbstractUnitTest
     public void testProxyMappingConfig() throws Exception
     {
         addDecorator(MyDecorator.class);
-        startContainer(new ArrayList<Class<?>>() {{ add(Main.class); }}, null, true);
+        startContainer(new ArrayList<>()
+        {{
+            add(Main.class);
+        }}, null, true);
 
         try
         {

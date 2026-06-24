@@ -51,10 +51,10 @@ public class NewProxyTest extends AbstractUnitTest
     @Test
     public void testAroundInvokeWithoutThrowsException() throws Exception
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "RuntimeExceptionsInterceptorTest"));
         
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(RuntimeExceptionsInterceptor.class);
         beanClasses.add(RuntimeExceptionBindingTypeBean.class);
 
@@ -71,7 +71,7 @@ public class NewProxyTest extends AbstractUnitTest
         RuntimeExceptionsInterceptor interceptor = (RuntimeExceptionsInterceptor) interceptorBean.create(creationalContext);
 
         Method[] interceptedMethods = {RuntimeExceptionBindingTypeBean.class.getMethod("business")};
-        Map<Method, List<Interceptor<?>>> interceptors = new HashMap<Method, List<Interceptor<?>>>();
+        Map<Method, List<Interceptor<?>>> interceptors = new HashMap<>();
         interceptors.put(interceptedMethods[0], Arrays.<Interceptor<?>> asList(interceptorBean));
         Map instances = new HashMap();
         instances.put(interceptorBean, interceptor);

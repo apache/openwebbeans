@@ -53,7 +53,7 @@ public class InjectionTargetTest extends AbstractUnitTest
     @Test
     public void testInjectionTarget()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(PersonModel.class);
         startContainer(classes);
 

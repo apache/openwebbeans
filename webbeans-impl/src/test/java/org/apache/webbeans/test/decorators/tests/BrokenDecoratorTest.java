@@ -40,13 +40,13 @@ public class BrokenDecoratorTest extends AbstractUnitTest
     @Test(expected = WebBeansConfigurationException.class)
     public void testDecoratorWithNonDependentScope()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(SomeBrokenDecorated.class);
         classes.add(BrokenScope.class);
         classes.add(BrokenAlternative.class);
         classes.add(BrokenName.class);
         
-        Collection<String> xmls = new ArrayList<String>();
+        Collection<String> xmls = new ArrayList<>();
         xmls.add(getXmlPath(PACKAGE_NAME, "BrokenDecoratorTest"));
 
         startContainer(classes, xmls);

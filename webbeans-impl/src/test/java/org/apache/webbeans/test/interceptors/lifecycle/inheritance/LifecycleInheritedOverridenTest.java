@@ -46,7 +46,7 @@ public class LifecycleInheritedOverridenTest extends AbstractUnitTest
     @Test
     public void testInheritedOverridenMethods()
     {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        Collection<Class<?>> classes = new ArrayList<>();
         classes.add(SubClassBean.class);
         classes.add(SubClassInheritedBean.class);
         

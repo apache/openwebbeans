@@ -36,10 +36,10 @@ public class PublicObserverTest extends AbstractUnitTest
     @Test
     public void testObserverMethodsInParentOfAlternativeAndSpecializedBeans()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializes"));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(BeanA.class);
         beanClasses.add(BeanC.class);
         startContainer(beanClasses, beanXmls);
@@ -59,10 +59,10 @@ public class PublicObserverTest extends AbstractUnitTest
     @Test
     public void testOverrideObserverMethodsInAlternativeAndSpecializedBeans()
     {
-        Collection<String> beanXmls = new ArrayList<String>();
+        Collection<String> beanXmls = new ArrayList<>();
         beanXmls.add(getXmlPath(PACKAGE_NAME, "AlternativeSpecializes"));
 
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(BeanA.class);
         beanClasses.add(BeanD.class);
         startContainer(beanClasses, beanXmls);
@@ -82,7 +82,7 @@ public class PublicObserverTest extends AbstractUnitTest
     @Test
     public void testObserverMethodsInParentOfSpecializedBeans()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(BeanA.class);
         beanClasses.add(BeanE.class);
         startContainer(beanClasses, null);
@@ -103,7 +103,7 @@ public class PublicObserverTest extends AbstractUnitTest
     @Test
     public void testOverrideObserverMethodsInSpecializedBeans()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(BeanA.class);
         beanClasses.add(BeanB.class);
         startContainer(beanClasses, null);

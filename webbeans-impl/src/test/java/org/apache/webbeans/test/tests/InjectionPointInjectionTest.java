@@ -60,7 +60,7 @@ public class InjectionPointInjectionTest extends AbstractUnitTest {
     @Test
     public void testInjectionPointInjection()
     {
-        Collection<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        Collection<Class<?>> beanClasses = new ArrayList<>();
         beanClasses.add(ConstructorInjectionPointOwner.class);
         beanClasses.add(FieldInjectionPointOwner.class);
         beanClasses.add(MethodInjectionPointOwner.class);
