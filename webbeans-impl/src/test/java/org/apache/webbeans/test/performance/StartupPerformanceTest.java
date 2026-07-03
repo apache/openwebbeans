@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import org.apache.webbeans.component.ConversationBean;
+import org.apache.webbeans.component.ProducerMethodBean;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.apache.webbeans.test.component.binding.AnyBindingComponent;
 import org.apache.webbeans.test.component.binding.DefaultAnyBinding;
@@ -62,6 +64,7 @@ import org.apache.webbeans.test.managed.instance.beans.DependentBean;
 import org.apache.webbeans.test.managed.instance.beans.DependentBeanProducer;
 import org.apache.webbeans.test.managed.instance.beans.InstanceForDependentBean;
 import org.apache.webbeans.test.managed.instance.beans.InstanceInjectedComponent;
+import org.apache.webbeans.test.producer.beans.SomeUserBean;
 import org.apache.webbeans.test.profields.beans.classproducer.MyProductBean;
 import org.apache.webbeans.test.profields.beans.classproducer.MyProductProducer;
 import org.apache.webbeans.test.profields.beans.classproducer.ProductInjectedBean;
@@ -79,6 +82,51 @@ import org.apache.webbeans.test.component.CheckWithCheckPayment;
 import org.apache.webbeans.test.component.CheckWithMoneyPayment;
 import org.apache.webbeans.test.component.IPayment;
 import org.apache.webbeans.test.component.PaymentProcessorComponent;
+import org.apache.webbeans.test.component.decorator.clean.ServiceDecoratorWithCtInjectionPoint;
+import org.apache.webbeans.test.contexts.conversation.ConversationScopedInitBean;
+import org.apache.webbeans.test.injection.circular.beans.CircularConstructorOrProducerMethodParameterBean;
+import org.apache.webbeans.test.injection.circular.beans.CircularNormalInConstructor;
+import org.apache.webbeans.test.interceptors.beans.ApplicationScopedBean;
+import org.apache.webbeans.test.interceptors.beans.DependentScopedBean;
+import org.apache.webbeans.test.interceptors.beans.RequestScopedBean;
+import org.apache.webbeans.test.interceptors.business.common.RuntimeExceptionBindingTypeBean;
+import org.apache.webbeans.test.interceptors.business.common.TransactionalBaseBean;
+import org.apache.webbeans.test.interceptors.business.common.TransactionalChildBean;
+import org.apache.webbeans.test.interceptors.business.common.WithInheritedBindingTypeBean;
+import org.apache.webbeans.test.interceptors.business.common.WithInheritedStereoTypeInterceptorBean;
+import org.apache.webbeans.test.interceptors.business.common.WithStereoTypeInterceptorBean;
+import org.apache.webbeans.test.interceptors.common.DependentInterceptor;
+import org.apache.webbeans.test.interceptors.dependent.DependentLifecycleBean;
+import org.apache.webbeans.test.interceptors.ejb.ManagedBeanWithEjbInterceptor;
+import org.apache.webbeans.test.interceptors.ejb.ManagedBeanWithMethodEjbInterceptor;
+import org.apache.webbeans.test.interceptors.ejb.ManagedBeanWithoutInterceptor;
+import org.apache.webbeans.test.interceptors.factory.ProtectedUsageBean;
+import org.apache.webbeans.test.interceptors.factory.SubPackageInterceptedClass;
+import org.apache.webbeans.test.interceptors.factory.beans.ClassInterceptedClass;
+import org.apache.webbeans.test.interceptors.factory.beans.ClassMultiInterceptedClass;
+import org.apache.webbeans.test.interceptors.factory.beans.DecoratedClass;
+import org.apache.webbeans.test.interceptors.factory.beans.InterceptionFactoryBeansProducer;
+import org.apache.webbeans.test.interceptors.factory.beans.PartialBeanClass;
+import org.apache.webbeans.test.interceptors.factory.beans.SomeBaseClass;
+import org.apache.webbeans.test.interceptors.factory.beans.TonsOfMethodsInterceptedClass;
+import org.apache.webbeans.test.interceptors.inheritance.Deck;
+import org.apache.webbeans.test.interceptors.inheritance.DeckChild;
+import org.apache.webbeans.test.interceptors.inheritance.DeckStereotyped;
+import org.apache.webbeans.test.interceptors.inheritance.DeckStereotypedChild;
+import org.apache.webbeans.test.interceptors.inheritance.DeckStereotypedGrandchild;
+import org.apache.webbeans.test.interceptors.inheritance.DeckStereotypedNotInherited;
+import org.apache.webbeans.test.interceptors.inheritance.DeckStereotypedNotInheritedChild;
+import org.apache.webbeans.test.interceptors.inheritance.InterceptorInherited;
+import org.apache.webbeans.test.interceptors.lifecycle.NotAnnotatedBean;
+import org.apache.webbeans.test.interceptors.lifecycle.LifecycleBean;
+import org.apache.webbeans.test.interceptors.lifecycle.inheritance.SubClassBean;
+import org.apache.webbeans.test.interceptors.lifecycle.inheritance.SubClassInheritedBean;
+import org.apache.webbeans.test.interceptors.priority.InterceptedBean;
+import org.apache.webbeans.test.interceptors.resolution.beans.UtilitySampleBean;
+import org.apache.webbeans.test.interceptors.resolution.interceptors.SelfInterceptedClass;
+import org.apache.webbeans.test.interceptors.resolution.interceptors.SelfInterceptionSubclass;
+import org.apache.webbeans.test.component.literals.InstanceTypeLiteralBean;
+import org.apache.webbeans.test.promethods.beans.RequestScopedNullPersonProducerBean;
 import org.junit.Test;
 
 /**
@@ -157,6 +205,76 @@ public class StartupPerformanceTest extends AbstractUnitTest
 
         addDecorator(LargeTransactionDecorator.class);
         addDecorator(ServiceDecorator.class);
+
+        // Interceptors - business
+        beanClasses.add(WithInheritedStereoTypeInterceptorBean.class);
+        beanClasses.add(WithStereoTypeInterceptorBean.class);
+        beanClasses.add(TransactionalBaseBean.class);
+        beanClasses.add(TransactionalChildBean.class);
+        beanClasses.add(RuntimeExceptionBindingTypeBean.class);
+        beanClasses.add(WithInheritedBindingTypeBean.class);
+
+        // Interceptors - lifecycle
+        beanClasses.add(NotAnnotatedBean.class);
+        beanClasses.add(LifecycleBean.class);
+        beanClasses.add(LifecycleBean.FooProducer.class);
+        beanClasses.add(SubClassBean.class);
+        beanClasses.add(SubClassInheritedBean.class);
+
+        // Interceptors - inheritance
+        beanClasses.add(Deck.class);
+        beanClasses.add(DeckChild.class);
+        beanClasses.add(DeckStereotyped.class);
+        beanClasses.add(DeckStereotypedChild.class);
+        beanClasses.add(DeckStereotypedGrandchild.class);
+        beanClasses.add(DeckStereotypedNotInherited.class);
+        beanClasses.add(DeckStereotypedNotInheritedChild.class);
+        beanClasses.add(InterceptorInherited.class);
+
+        // Interceptors - factory
+        beanClasses.add(ClassInterceptedClass.class);
+        beanClasses.add(ClassMultiInterceptedClass.class);
+        beanClasses.add(TonsOfMethodsInterceptedClass.class);
+        beanClasses.add(PartialBeanClass.class);
+        beanClasses.add(SomeBaseClass.class);
+        beanClasses.add(DecoratedClass.class);
+        beanClasses.add(InterceptionFactoryBeansProducer.class);
+        beanClasses.add(SubPackageInterceptedClass.class);
+        beanClasses.add(ProtectedUsageBean.class);
+        // Interceptors - resolution
+        beanClasses.add(SelfInterceptedClass.class);
+        beanClasses.add(SelfInterceptionSubclass.class);
+        beanClasses.add(UtilitySampleBean.class);
+        // Interceptors - ejb
+        beanClasses.add(ManagedBeanWithEjbInterceptor.class);
+        beanClasses.add(ManagedBeanWithMethodEjbInterceptor.class);
+        beanClasses.add(ManagedBeanWithoutInterceptor.class);
+        // Interceptors - dependent
+        beanClasses.add(DependentInterceptor.class);
+        beanClasses.add(DependentLifecycleBean.class);
+        // Interceptors - beans
+        beanClasses.add(ApplicationScopedBean.class);
+        beanClasses.add(RequestScopedBean.class);
+        beanClasses.add(DependentScopedBean.class);
+        // Interceptors - priority
+        beanClasses.add(InterceptedBean.class);
+        // Contexts - singleton
+        beanClasses.add(SomeUserBean.class);
+        // Contexts - request
+        beanClasses.add(RequestScopedBean.class);
+        beanClasses.add(RequestScopedNullPersonProducerBean.class);
+        // Contexts - conversation
+        beanClasses.add(ConversationBean.class);
+        beanClasses.add(ConversationScopedInitBean.class);
+        // Decorators
+        beanClasses.add(ServiceDecoratorWithCtInjectionPoint.class);
+        // Managed instance
+        beanClasses.add(InstanceTypeLiteralBean.class);
+        // Circular injection
+        beanClasses.add(CircularConstructorOrProducerMethodParameterBean.class);
+        beanClasses.add(CircularNormalInConstructor.class);
+        // Producers
+        beanClasses.add(ProducerMethodBean.class);
 
         long start = System.nanoTime();
         for (int i=0; i < NUMBER_ITERATIONS; i++)
