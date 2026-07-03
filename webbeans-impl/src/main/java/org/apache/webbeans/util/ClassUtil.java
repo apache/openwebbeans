@@ -839,14 +839,14 @@ public final class ClassUtil
      */
     public static Class<?> getClazz(Type type)
     {
-        if(type instanceof ParameterizedType)
+        if(type instanceof Class)
+        {
+            return (Class<?>)type;
+        }
+        else if(type instanceof ParameterizedType)
         {
             ParameterizedType pt = (ParameterizedType)type;
             return (Class<?>)pt.getRawType();                
-        }
-        else if(type instanceof Class)
-        {
-            return (Class<?>)type;
         }
         else if(type instanceof GenericArrayType)
         {
