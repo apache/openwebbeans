@@ -1213,7 +1213,7 @@ public class BeansDeployer
 
         if (beans != null && beans.size() > 0)
         {
-            LinkedList<String> beanNames = new LinkedList<>();
+            Set<String> beanNames = new HashSet<>(200);
             for (Bean<?> bean : beans)
             {
                 try
@@ -1244,7 +1244,7 @@ public class BeansDeployer
                     String beanName = bean.getName();
                     if (beanName != null)
                     {
-                        beanNames.push(beanName);
+                        beanNames.add(beanName);
                     }
 
                     if (bean instanceof OwbBean && !(bean instanceof Interceptor) && !(bean instanceof Decorator))
@@ -1314,49 +1314,46 @@ public class BeansDeployer
         }
     }
 
-    private void validateBeanNames(LinkedList<String> beanNames)
+    private void validateBeanNames(Set<String> beanNames)
     {
-        if(beanNames.size() > 0)
-        {   
-            InjectionResolver resolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
+        if (beanNames.isEmpty())
+        {
+            return;
+        }
 
-            for(String beanName : beanNames)
+        InjectionResolver resolver = webBeansContext.getBeanManagerImpl().getInjectionResolver();
+
+        for (String beanName : beanNames)
+        {
+            Set<Bean<?>> beans = resolver.implResolveByName(beanName);
+            if (beans.size() > 1)
             {
-                for(String other : beanNames)
+                try
                 {
-                    String part = null;
-                    int i = beanName.lastIndexOf('.');
-                    if(i != -1)
-                    {
-                        part = beanName.substring(0,i);                
-                    }
-                    
-                    if(beanName.equals(other))
-                    {
-                        Set<Bean<?>> beans = resolver.implResolveByName(beanName);
-                        if(beans.size() > 1)
-                        {
-                            try
-                            {
-                                resolver.resolve(beans, null);
-                            }
-                            catch(AmbiguousResolutionException are)
-                            {
-                                // throw the Exception with even more information
-                                InjectionExceptionUtil.throwAmbiguousResolutionExceptionForBeanName(beans, beanName);
-                            }   
-                        }
-                    }
-                    else
-                    {
-                        if(part != null && part.equals(other))
-                        {
-                            throw new WebBeansDeploymentException("EL name of one bean is of the form x.y, where y is a valid bean EL name, and " +
-                                    "x is the EL name of the other bean for the bean name : " + beanName);
-                        }
-                    }
-                }                
-            }            
+                    resolver.resolve(beans, null);
+                }
+                catch (AmbiguousResolutionException are)
+                {
+                    // throw the Exception with even more information
+                    InjectionExceptionUtil.throwAmbiguousResolutionExceptionForBeanName(beans, beanName);
+                }
+            }
+        }
+
+        // 2) Check for partial name conflicts (x.y vs x)
+        for (String beanName : beanNames)
+        {
+            int dotIndex = beanName.lastIndexOf('.');
+            if (dotIndex > 0)
+            {
+                String partial = beanName.substring(0, dotIndex);
+                if (beanNames.contains(partial))
+                {
+                    throw new WebBeansDeploymentException(
+                            "EL name of one bean is of the form x.y, where y is a valid bean EL name, and "
+                                    + "x is the EL name of the other bean for the bean name : " + beanName);
+                }
+            }
         }
     }
 
