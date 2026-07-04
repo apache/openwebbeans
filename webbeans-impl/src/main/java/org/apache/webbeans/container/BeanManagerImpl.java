@@ -1577,6 +1577,31 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         return null;
     }
 
+    public boolean hasAdditionalDefaultAnnotatedType(AnnotatedType<?> annotatedType)
+    {
+        final ConcurrentMap<String, AnnotatedType<?>> annotatedTypes = additionalAnnotatedTypes.get(annotatedType.getJavaClass());
+        if (annotatedTypes == null)
+        {
+            return false;
+        }
+
+        for (AnnotatedType<?> candidate : annotatedTypes.values())
+        {
+            if (candidate == annotatedType || !(candidate instanceof AnnotatedTypeWrapper))
+            {
+                continue;
+            }
+
+            AnnotatedTypeWrapper<?> wrapper = (AnnotatedTypeWrapper<?>) candidate;
+            if (wrapper.getId().endsWith(AnnotatedElementFactory.OWB_DEFAULT_KEY) &&
+                    candidate.getAnnotations().equals(annotatedType.getAnnotations())) // strictly it is qualifiers only but faster
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public <T> Iterable<AnnotatedType<T>> getAnnotatedTypes(Class<T> type)
     {
         final Collection<AnnotatedType<T>> types = new ArrayList<>(2);

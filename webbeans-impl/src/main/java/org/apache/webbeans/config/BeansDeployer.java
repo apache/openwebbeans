@@ -39,7 +39,6 @@ import org.apache.webbeans.component.creation.ObserverMethodsBuilder;
 import org.apache.webbeans.component.creation.ProducerFieldBeansBuilder;
 import org.apache.webbeans.component.creation.ProducerMethodBeansBuilder;
 import org.apache.webbeans.configurator.AnnotatedTypeConfiguratorImpl;
-import org.apache.webbeans.container.AnnotatedTypeWrapper;
 import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.container.InjectableBeanManager;
 import org.apache.webbeans.container.InjectionResolver;
@@ -1631,14 +1630,8 @@ public class BeansDeployer
             for (Map.Entry<AnnotatedType<?>, ExtendedBeanAttributes<?>> annotatedType : beanAttributesMap.entrySet())
             {
                 final AnnotatedType<?> key = annotatedType.getKey();
-                final Collection<? extends AnnotatedType<?>> userAnnotatedTypes =
-                        bm.getUserAnnotatedTypes(key.getJavaClass());
                 // if we have a matching AT (same type+annotations+default id) we skip it since we already deployed it
-                if (userAnnotatedTypes != null && userAnnotatedTypes.stream().anyMatch(it ->
-                        it != key &&
-                        AnnotatedTypeWrapper.class.isInstance(it) &&
-                        AnnotatedTypeWrapper.class.cast(it).getId().endsWith(AnnotatedElementFactory.OWB_DEFAULT_KEY) &&
-                        it.getAnnotations().equals(key.getAnnotations()))) // strictly it is qualifiers only but faster
+                if (bm.hasAdditionalDefaultAnnotatedType(key))
                 {
                     continue;
                 }
