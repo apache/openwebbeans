@@ -1213,7 +1213,7 @@ public class BeansDeployer
 
         if (beans != null && beans.size() > 0)
         {
-            Set<String> beanNames = new HashSet<>(200);
+            Set<String> beanNames = new HashSet<>(Math.min(beans.size(), 200));
             for (Bean<?> bean : beans)
             {
                 try
