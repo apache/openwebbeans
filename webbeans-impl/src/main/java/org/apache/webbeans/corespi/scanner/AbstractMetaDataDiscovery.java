@@ -490,13 +490,6 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                         Class<?> clazz = ClassUtil.getClassFromName(className, loader, dontSkipNCDFT);
                         if (clazz != null)
                         {
-                            if (dontSkipNCDFT)
-                            {
-                                // try to provoke a NoClassDefFoundError exception which is thrown
-                                // if some dependencies of the class are missing
-                                clazz.getDeclaredFields();
-                            }
-
                             // we can add this class cause it has been loaded completely
                             classSet.add(clazz);
                         }
