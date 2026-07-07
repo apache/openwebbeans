@@ -37,14 +37,20 @@ import jakarta.inject.Named;
 import org.apache.el.ExpressionFactoryImpl;
 import org.apache.el.lang.FunctionMapperImpl;
 import org.apache.el.lang.VariableMapperImpl;
+import org.apache.webbeans.config.WebBeansContext;
+import org.apache.webbeans.el22.WebBeansELResolver;
 import org.apache.webbeans.el22.WrappedExpressionFactory;
 import org.apache.webbeans.el22.WrappedValueExpressionNode;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
+import org.apache.webbeans.spi.ContextsService;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 
 public class DotNamedBeansTest extends AbstractUnitTest
 {
@@ -59,6 +65,99 @@ public class DotNamedBeansTest extends AbstractUnitTest
         startContainer(classes);
         final Object node = getBeanManager().getELResolver().getValue(new MockELContext(), null, "bla");
         Assert.assertNull(node);
+
+        shutDownContainer();
+    }
+
+    /**
+     * Regression test for the root-level negative-cache fast path in
+     * {@link WebBeansELResolver#getValue(ELContext, Object, Object)}: a name which is
+     * confirmed to never resolve to any bean must keep returning {@code null} on every
+     * call to the same resolver, both before and after the negative cache is populated.
+     */
+    @Test
+    public void testRepeatedRootMissStaysNull() throws Exception
+    {
+        Collection<Class<?>> classes = new ArrayList<>();
+
+        classes.add(GoldenFish.class);
+
+        startContainer(classes);
+
+        final ELResolver resolver = getBeanManager().getELResolver();
+
+        // first call: "bla" is unknown, populates the negative cache
+        Assert.assertNull(resolver.getValue(new MockELContext(), null, "bla"));
+        // second call: must hit the new fast path and still resolve to null
+        Assert.assertNull(resolver.getValue(new MockELContext(), null, "bla"));
+
+        shutDownContainer();
+    }
+
+    /**
+     * The lazily built {@code dottedBeanNameIndex} uses double-checked locking. Hammer a
+     * single shared resolver instance from many threads concurrently, all racing to build
+     * the index for the first time, and verify every thread still resolves the correct bean.
+     */
+    @Test
+    public void testConcurrentDottedIndexBuilding() throws Exception
+    {
+        Collection<Class<?>> classes = new ArrayList<>();
+
+        classes.add(GoldenFish.class);
+        classes.add(BlueGoldenFish.class);
+
+        startContainer(classes);
+
+        final WebBeansELResolver resolver = new WebBeansELResolver();
+        final int threadCount = 20;
+        final List<Throwable> failures = new CopyOnWriteArrayList<>();
+        final CountDownLatch ready = new CountDownLatch(threadCount);
+        final CountDownLatch go = new CountDownLatch(1);
+        final List<Thread> threads = new ArrayList<>();
+
+        for (int i = 0; i < threadCount; i++)
+        {
+            Thread t = new Thread(() ->
+            {
+                final ContextsService contextsService = WebBeansContext.currentInstance().getContextsService();
+                contextsService.startContext(RequestScoped.class, null);
+                try
+                {
+                    ready.countDown();
+                    go.await();
+
+                    final Object intermediate = resolver.getValue(new MockELContext(), null, "magic");
+                    Assert.assertTrue(intermediate instanceof WrappedValueExpressionNode);
+
+                    final Object goldenNode = resolver.getValue(new MockELContext(), intermediate, "golden");
+                    Assert.assertTrue(goldenNode instanceof WrappedValueExpressionNode);
+
+                    final Object fish = resolver.getValue(new MockELContext(), goldenNode, "fish");
+                    Assert.assertTrue(fish instanceof GoldenFish);
+                }
+                catch (Throwable e)
+                {
+                    failures.add(e);
+                }
+                finally
+                {
+                    contextsService.endContext(RequestScoped.class, null);
+                }
+            });
+            threads.add(t);
+            t.start();
+        }
+
+        ready.await();
+        go.countDown();
+
+        for (Thread t : threads)
+        {
+            t.join();
+        }
+
+        Assert.assertTrue("Concurrent dotted-name resolution failed: " + failures, failures.isEmpty());
 
         shutDownContainer();
     }

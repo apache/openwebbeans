@@ -30,9 +30,13 @@ import org.apache.webbeans.container.BeanManagerImpl;
 import org.apache.webbeans.el.ELContextStore;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -55,12 +59,28 @@ import java.util.stream.Collectors;
 public class WebBeansELResolver extends ELResolver
 {
     private final WebBeansContext webBeansContext;
-    private Set<String> dotNamedBeansNegativeCache;
+
+    /**
+     * beanName (or dotted-prefix) -> {@code true}, for names which are known to never resolve
+     * to a dot-named {@link Bean}. Backed by a {@link ConcurrentHashMap} instead of a
+     * {@link java.util.concurrent.CopyOnWriteArraySet} because misses can be caused by
+     * arbitrary/high-cardinality EL identifiers (e.g. per-row expressions), which would
+     * otherwise degrade to an O(n) array copy on every single new entry.
+     */
+    private final Map<String, Boolean> dotNamedBeansNegativeCache = new ConcurrentHashMap<>();
+
+    /**
+     * Lazily built, immutable-after-publish index of all {@link Bean}s whose name contains a dot,
+     * keyed by their full name. Only such beans can ever be candidates for
+     * {@link #findDottedName(ELContext, Object, BeanManagerImpl, ELContextStore, String)}, so
+     * indexing just this (usually tiny or empty) subset avoids a linear scan over
+     * <b>all</b> managed beans on every EL root-property access.
+     */
+    private volatile NavigableMap<String, Set<Bean<?>>> dottedBeanNameIndex;
 
     public WebBeansELResolver()
     {
         webBeansContext = WebBeansContext.getInstance();
-        dotNamedBeansNegativeCache = new CopyOnWriteArraySet<>();
     }
     
     /**
@@ -104,6 +124,18 @@ public class WebBeansELResolver extends ELResolver
 
         //Name of the bean
         final String beanName = (String) property;
+
+        // Fast path for root-level identifiers already known to never resolve to any CDI
+        // bean (exact or dot-prefixed), e.g. JSF implicit objects (#{request}, #{cc}, ...)
+        // or <ui:repeat>/<h:dataTable> row variables, which get re-evaluated for every row
+        // of every request. Skips the ELContextStore lookup and bean-name resolution below
+        // entirely. Safe because this cache is only ever populated from findDottedName(...)
+        // with a null base after beanManager.getBeans(beanName) was already found empty, so
+        // a hit here guarantees neither an exact nor a dotted match exists.
+        if (base == null && dotNamedBeansNegativeCache.containsKey(beanName))
+        {
+            return null;
+        }
 
         // Local store, create if not exist
         final ELContextStore elContextStore = ELContextStore.getInstance(true);
@@ -160,20 +192,17 @@ public class WebBeansELResolver extends ELResolver
                                   final ELContextStore elContextStore, final String beanName)
     {
         final String fqBeanName = base == null ? beanName : base + "." + beanName;
-        if (dotNamedBeansNegativeCache.contains(fqBeanName))
+        if (dotNamedBeansNegativeCache.containsKey(fqBeanName))
         {
             return null;
         }
 
-        final Set<Bean<?>> anyBeanName = beanManager.getBeans().stream()
-                .filter(b -> b.getName() != null)
-                .filter(b -> b.getName().equals(fqBeanName) || b.getName().startsWith(fqBeanName + "."))
-                .collect(Collectors.toSet());
+        final Set<Bean<?>> anyBeanName = getDottedBeanCandidates(beanManager, fqBeanName);
 
         // no exact and no startsWith match
         if (anyBeanName.isEmpty())
         {
-            dotNamedBeansNegativeCache.add(fqBeanName);
+            dotNamedBeansNegativeCache.put(fqBeanName, Boolean.TRUE);
             return null;
         }
 
@@ -186,6 +215,75 @@ public class WebBeansELResolver extends ELResolver
         // more than one bean with the same beginning
         context.setPropertyResolved(true);
         return new WrappedValueExpressionNode(fqBeanName);
+    }
+
+    /**
+     * Returns all beans whose name is either exactly {@code fqBeanName} or starts with
+     * {@code fqBeanName + "."}, using a sorted index over dot-named beans only, instead of
+     * scanning every managed bean.
+     */
+    private Set<Bean<?>> getDottedBeanCandidates(final BeanManagerImpl beanManager, final String fqBeanName)
+    {
+        NavigableMap<String, Set<Bean<?>>> index = getDottedBeanNameIndex(beanManager);
+        if (index.isEmpty())
+        {
+            return Collections.emptySet();
+        }
+
+        String prefix = fqBeanName + '.';
+        Set<Bean<?>> result = null;
+
+        Set<Bean<?>> exact = index.get(fqBeanName);
+        if (exact != null)
+        {
+            result = new HashSet<>(exact);
+        }
+
+        for (Map.Entry<String, Set<Bean<?>>> entry : index.tailMap(prefix, true).entrySet())
+        {
+            if (!entry.getKey().startsWith(prefix))
+            {
+                break;
+            }
+            if (result == null)
+            {
+                result = new HashSet<>();
+            }
+            result.addAll(entry.getValue());
+        }
+
+        return result == null ? Collections.emptySet() : result;
+    }
+
+    /**
+     * Lazily builds an index of all beans with a dot in their name, sorted by name so that
+     * prefix-matches can be found via a small {@link NavigableMap#tailMap(Object, boolean)} range
+     * instead of iterating over every bean in the application. This mirrors the permanent-cache
+     * assumption already used by {@link #dotNamedBeansNegativeCache}: once the container is up and
+     * serving EL expressions, the deployed bean set is stable.
+     */
+    private NavigableMap<String, Set<Bean<?>>> getDottedBeanNameIndex(final BeanManagerImpl beanManager)
+    {
+        if (dottedBeanNameIndex == null)
+        {
+            synchronized (this)
+            {
+                if (dottedBeanNameIndex == null)
+                {
+                    NavigableMap<String, Set<Bean<?>>> index = new TreeMap<>();
+                    for (Bean<?> bean : beanManager.getBeans())
+                    {
+                        final String name = bean.getName();
+                        if (name != null && name.indexOf('.') >= 0)
+                        {
+                            index.computeIfAbsent(name, k -> new HashSet<>()).add(bean);
+                        }
+                    }
+                    dottedBeanNameIndex = index;
+                }
+            }
+        }
+        return dottedBeanNameIndex;
     }
 
     protected Object getNormalScopedContextualInstance(BeanManagerImpl manager, ELContextStore store, ELContext context,
