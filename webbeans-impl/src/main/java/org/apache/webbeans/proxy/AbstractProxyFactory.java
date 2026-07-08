@@ -75,6 +75,16 @@ public abstract class AbstractProxyFactory
      */
     public static final int MODIFIER_SYNTHETIC = 0x00001000;
 
+    /**
+     * The method modifiers a generated proxy keeps when re-declaring a method of the proxied class;
+     * everything else (e.g. ABSTRACT, SYNCHRONIZED, NATIVE) must not appear on a generated
+     * delegation method. ACC_BRIDGE / ACC_SYNTHETIC are preserved so that overload resolution
+     * (e.g. jakarta.el MethodExpressions on proxied beans) can still detect re-declared JVM bridge
+     * methods via {@link Method#isBridge()}.
+     */
+    public static final int PROXYABLE_METHOD_MODIFIERS =
+            Modifier.PUBLIC | Modifier.PROTECTED | MODIFIER_VARARGS | MODIFIER_BRIDGE | MODIFIER_SYNTHETIC;
+
     protected final Unsafe unsafe;
 
     private final DefiningClassService definingService;
