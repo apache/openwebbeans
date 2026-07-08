@@ -395,7 +395,10 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
                 exceptionTypeNames[i] = Type.getType(exceptionTypes[i]).getInternalName();
             }
 
-            int targetModifiers = delegatedMethod.getModifiers() & (Modifier.PROTECTED | Modifier.PUBLIC | MODIFIER_VARARGS);
+            // preserve ACC_BRIDGE | ACC_SYNTHETIC on re-declared JVM bridge methods: overload resolution
+            // (e.g. jakarta.el MethodExpressions on proxied beans) relies on Method#isBridge() to disambiguate
+            int targetModifiers = delegatedMethod.getModifiers()
+                    & (Modifier.PROTECTED | Modifier.PUBLIC | MODIFIER_VARARGS | MODIFIER_BRIDGE | MODIFIER_SYNTHETIC);
 
             MethodVisitor mv = cw.visitMethod(targetModifiers, delegatedMethod.getName(), methodDescriptor, null, exceptionTypeNames);
 
@@ -454,7 +457,10 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
         int modifiers = method.getModifiers();
 
         // push the method definition
-        int modifier = modifiers & (Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED | Opcodes.ACC_VARARGS);
+        // preserve ACC_BRIDGE | ACC_SYNTHETIC on re-declared JVM bridge methods: overload resolution
+        // (e.g. jakarta.el MethodExpressions on proxied beans) relies on Method#isBridge() to disambiguate
+        int modifier = modifiers
+                & (Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED | Opcodes.ACC_VARARGS | Opcodes.ACC_BRIDGE | Opcodes.ACC_SYNTHETIC);
 
         MethodVisitor mv = cw.visitMethod(modifier, method.getName(), Type.getMethodDescriptor(method), null, null);
         mv.visitCode();

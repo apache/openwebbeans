@@ -60,6 +60,21 @@ public abstract class AbstractProxyFactory
      */
     public static final int MODIFIER_VARARGS = 0x00000080;
 
+    /**
+     * This is needed as the Modifier#BRIDGE is not (yet) public. Must be preserved when a proxy
+     * re-declares a JVM bridge method: overload resolution e.g. in Expression Language
+     * implementations relies on {@link Method#isBridge()} to disambiguate overloaded methods.
+     * Note that the bitcode is the same as Modifier#VOLATILE.
+     * But 'bridge' is only for methods, whereas 'volatile' is only for fields.
+     */
+    public static final int MODIFIER_BRIDGE = 0x00000040;
+
+    /**
+     * This is needed as the Modifier#SYNTHETIC is not (yet) public.
+     * JVM bridge methods carry ACC_BRIDGE | ACC_SYNTHETIC, so keep both on re-declared methods.
+     */
+    public static final int MODIFIER_SYNTHETIC = 0x00001000;
+
     protected final Unsafe unsafe;
 
     private final DefiningClassService definingService;
