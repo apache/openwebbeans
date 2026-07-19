@@ -288,7 +288,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
             if (classToProxy.isInterface())
             {
                 parentClassFileName = Type.getInternalName(Object.class);
-                superDefaultCt = Object.class.getConstructor(null);
+                superDefaultCt = Object.class.getConstructor();
                 descriptor = Type.getConstructorDescriptor(superDefaultCt);
             }
         }

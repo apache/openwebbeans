@@ -310,12 +310,12 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
             if (classToProxy.isInterface())
             {
                 parentClassFileName = Type.getInternalName(Object.class);
-                superDefaultCt = Object.class.getConstructor(null);
+                superDefaultCt = Object.class.getConstructor();
             }
             else
             {
                 parentClassFileName = classFileName;
-                superDefaultCt = classToProxy.getDeclaredConstructor(null);
+                superDefaultCt = classToProxy.getDeclaredConstructor();
             }
 
             String descriptor = Type.getConstructorDescriptor(superDefaultCt);

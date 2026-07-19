@@ -143,14 +143,14 @@ public class SubclassProxyFactory extends AbstractProxyFactory
             if (classToProxy.isInterface())
             {
                 parentClassFileName = Type.getInternalName(Object.class);
-                superDefaultCt = Object.class.getConstructor(null);
+                superDefaultCt = Object.class.getConstructor();
             }
             else
             {
                 parentClassFileName = classFileName;
                 if (constructor == null)
                 {
-                    superDefaultCt = classToProxy.getConstructor(null);
+                    superDefaultCt = classToProxy.getConstructor();
                 }
                 else
                 {
