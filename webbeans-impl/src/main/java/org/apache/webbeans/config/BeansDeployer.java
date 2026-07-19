@@ -147,8 +147,9 @@ public class BeansDeployer
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeansDeployer.class);
     public static final String JAVAX_ENTERPRISE_PACKAGE = "jakarta.enterprise.";
 
-    // from when on do we start processing bean validation in parallel, and how many per thread?
-    public static final int BEANS_PER_THREAD_MIN = 300;
+    // from when on do we start processing bean validation in parallel in an additional thread?
+    // 1 new thread per every this number.
+    public static final int BEANS_PER_THREAD_MIN = 500;
 
 
     /**Deployment is started or not*/
