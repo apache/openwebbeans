@@ -63,7 +63,7 @@ public final class EventUtil
     {
         Type type = injectionPoint.getType();
         
-        Class<?> candidateClazz = null;
+        Class<?> candidateClazz;
         if(type instanceof Class)
         {
             candidateClazz = (Class<?>)type;

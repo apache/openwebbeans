@@ -660,7 +660,7 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         }
 
         //Injected instance
-        Object instance = null;
+        Object instance;
 
 
         //Find the injection point Bean
@@ -742,8 +742,8 @@ public class BeanManagerImpl implements BeanManager, Referenceable
     {
         Asserts.assertNotNull(providedBean, "bean parameter");
 
-        Context context = null;
-        Object instance = null;
+        Context context;
+        Object instance;
 
         Bean<?> bean =  !OwbBean.class.isInstance(providedBean) ? thirdPartyMapping.get(providedBean) : providedBean;
         if (bean == null) // more than unlikely but still possible and not invalid (user could create new instance of bean each time, not forbidden)

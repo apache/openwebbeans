@@ -187,7 +187,7 @@ public class ConversationManager
 
     public boolean conversationTimedOut(ConversationImpl conv)
     {
-        long timeout = 0L;
+        long timeout;
         try
         {
             timeout = conv.getTimeout();

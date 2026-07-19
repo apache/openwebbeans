@@ -21,6 +21,7 @@ package org.apache.webbeans.decorator;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -169,13 +170,7 @@ public class DecoratorsManager
     {
         Set<Decorator<?>> set = new HashSet<>();
 
-        List<Class<? extends Annotation>> bindingTypes = new ArrayList<>();
-        Set<Annotation> listAnnot = new HashSet<>();
-        for (Annotation ann : anns)
-        {
-            bindingTypes.add(ann.annotationType());
-            listAnnot.add(ann);
-        }
+        Set<Annotation> listAnnot = new HashSet<>(Arrays.asList(anns));
 
         if (listAnnot.isEmpty())
         {

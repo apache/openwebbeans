@@ -1172,6 +1172,11 @@ public class BeansDeployer
                             }
                         }
                     });
+
+            if (!validationExceptions.isEmpty())
+            {
+                throw new WebBeansDeploymentException(validationExceptions.get(0));
+            }
         }
         else
         {

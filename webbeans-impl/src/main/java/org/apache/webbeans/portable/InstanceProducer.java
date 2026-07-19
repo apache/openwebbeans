@@ -50,7 +50,7 @@ public class InstanceProducer<T> extends AbstractProducer<Instance<T>>
         CreationalContextImpl<Instance<T>> creationalContextImpl = null;
         try
         {
-            InjectionPoint injectionPoint = null;
+            InjectionPoint injectionPoint;
             if (creationalContext instanceof CreationalContextImpl)
             {
                 creationalContextImpl = creationalContext;

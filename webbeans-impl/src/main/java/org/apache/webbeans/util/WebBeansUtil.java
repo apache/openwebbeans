@@ -1473,8 +1473,8 @@ public final class WebBeansUtil
                         throw new WebBeansConfigurationException(
                                 "No type specified for the interception factory, ensure to paramterize it");
                     }
-                    ParameterizedType pt = ParameterizedType.class.cast(injectionPoint.getType());
-                    if (pt.getActualTypeArguments() == null || pt.getActualTypeArguments().length != 1)
+                    ParameterizedType pt = (ParameterizedType) injectionPoint.getType();
+                    if (pt.getActualTypeArguments().length != 1)
                     {
                         throw new WebBeansConfigurationException("No explicit type specified for the interception factory");
                     }
