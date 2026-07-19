@@ -60,7 +60,6 @@ import jakarta.enterprise.inject.Vetoed;
 import jakarta.enterprise.inject.spi.BeanAttributes;
 import jakarta.enterprise.inject.spi.DefinitionException;
 
-import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -109,13 +108,11 @@ import jakarta.enterprise.inject.spi.ObserverMethod;
 import jakarta.enterprise.inject.spi.Producer;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -792,67 +789,6 @@ public class BeansDeployer
             beanEeProvider.registerEEBeans();
         }
             
-    }
-    
-    private void addDefaultBean(WebBeansContext ctx,String className)
-    {
-        Bean<?> bean = null;
-        
-        Class<?> beanClass = ClassUtil.getClassFromName(className);
-        if(beanClass != null)
-        {
-            bean  = (Bean)newInstance(ctx, beanClass);
-        }
-        
-        if(bean != null)
-        {
-            ctx.getBeanManagerImpl().addInternalBean(bean);
-        }
-    }
-
-    /**
-     * create a new instance of the class
-     */
-    private Object newInstance(WebBeansContext wbc, Class<?> clazz)
-    {
-        try
-        {
-            if(System.getSecurityManager() != null)
-            {
-                Constructor<?> c = webBeansContext.getSecurityService().doPrivilegedGetConstructor(clazz, WebBeansContext.class);
-                if (c == null)
-                {
-                    return webBeansContext.getSecurityService().doPrivilegedObjectCreate(clazz);
-                }
-                return c.newInstance(wbc);
-            }
-
-            if (clazz.getConstructors().length > 0)
-            {
-                try
-                {
-                    return clazz.getConstructor(new Class<?>[] { WebBeansContext.class }).newInstance(wbc);
-                }
-                catch (Exception e)
-                {
-                    return clazz.newInstance();
-                }
-            }
-            return clazz.newInstance();
-
-        }
-        catch(Exception e)
-        {
-            Throwable cause = e;
-            if(e instanceof PrivilegedActionException)
-            {
-                cause = e.getCause();
-            }
-
-            String error = "Error occurred while creating an instance of class : " + clazz.getName();
-            logger.log(Level.SEVERE, error, cause);
-            throw new WebBeansException(error,cause);
-        }
     }
 
     /**
