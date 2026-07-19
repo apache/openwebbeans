@@ -152,7 +152,7 @@ public class InjectableMethod<T> extends AbstractInjectable<T>
                 getWebBeansContext().getSecurityService().doPrivilegedSetAccessible(method, true);
             }
 
-            return (T) method.invoke(owner, list.toArray(new Object[list.size()]));
+            return (T) method.invoke(owner, list.toArray(new Object[0]));
 
         }
         catch (Exception e)

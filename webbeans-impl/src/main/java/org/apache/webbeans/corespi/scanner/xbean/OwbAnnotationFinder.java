@@ -57,7 +57,7 @@ public class OwbAnnotationFinder extends AnnotationFinder
         {
             // ignore, will not affect all cases
         }
-        Stream.of(classes).forEach(c -> super.readClassDef(c));
+        Stream.of(classes).forEach(super::readClassDef);
     }
 
     public ClassInfo getClassInfo(String className)

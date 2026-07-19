@@ -120,7 +120,7 @@ public class SubclassProxyFactory extends AbstractProxyFactory
         String proxyClassName = getSubClassName(classToProxy);
 
         List<Method> methods = ClassUtil.getNonPrivateMethods(classToProxy, true);
-        Method[] businessMethods = methods.toArray(new Method[methods.size()]);
+        Method[] businessMethods = methods.toArray(new Method[0]);
 
         AnnotatedConstructor<T> aCons = webBeansContext.getWebBeansUtil().getInjectedConstructor(annotatedType);
         Constructor<T> cons = aCons != null ? aCons.getJavaMember() : null;

@@ -84,34 +84,22 @@ public class OwbTypeVariableImpl
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
         {
             String methodName = method.getName();
-            if ("equals".equals(methodName))
+            return switch (methodName)
             {
-                return typeVariableEquals(args[0]);
-            }
-            else if ("hashCode".equals(methodName))
-            {
-                return typeVariableHashCode();
-            }
-            else if ("toString".equals(methodName))
-            {
-                return typeVariableToString();
-            }
-            else if ("getName".equals(methodName))
-            {
-                return getName();
-            }
-            else if ("getGenericDeclaration".equals(methodName))
-            {
-                return getGenericDeclaration();
-            }
-            else if ("getBounds".equals(methodName))
-            {
-                return getBounds();
-            }
+                case "equals" -> typeVariableEquals(args[0]);
+                case "hashCode" -> typeVariableHashCode();
+                case "toString" -> typeVariableToString();
+                case "getName" -> getName();
+                case "getGenericDeclaration" -> getGenericDeclaration();
+                case "getBounds" -> getBounds();
+                default ->
 
 
-            // new method from java8...
-            return null;
+                    // new method from java8...
+                    null;
+            };
+
+
         }
 
         /** method from TypeVariable */

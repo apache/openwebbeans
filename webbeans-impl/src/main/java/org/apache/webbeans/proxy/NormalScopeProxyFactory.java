@@ -252,8 +252,8 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
                 }
             }
 
-            nonInterceptedMethods = methods.toArray(new Method[methods.size()]);
-            interceptedMethods = protectedMethods.toArray(new Method[protectedMethods.size()]);
+            nonInterceptedMethods = methods.toArray(new Method[0]);
+            interceptedMethods = protectedMethods.toArray(new Method[0]);
         }
 
         String proxyClassName = getUnusedProxyClassName(

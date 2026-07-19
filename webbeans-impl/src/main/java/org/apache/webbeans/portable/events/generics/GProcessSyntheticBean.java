@@ -24,7 +24,6 @@ import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.inject.spi.ProcessSyntheticBean;
 
 
-@SuppressWarnings("unchecked")
 public class GProcessSyntheticBean extends GProcessBean implements ProcessSyntheticBean
 {
     private final Extension source;

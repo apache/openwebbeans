@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -111,10 +112,7 @@ public abstract class AbstractAnnotated implements Annotated
                     }
                     Annotation[] repeatableAnns =
                         (Annotation[]) repeatableMethod.orElseThrow(IllegalStateException::new).invoke(annotation);
-                    for (Annotation repeatableAnn : repeatableAnns)
-                    {
-                        repeatables.add(repeatableAnn);
-                    }
+                    repeatables.addAll(Arrays.asList(repeatableAnns));
                 }
                 catch (IllegalAccessException | InvocationTargetException e)
                 {

@@ -171,7 +171,7 @@ public class InjectionResolver
         }
 
         // not that happy about this check here and at runtime but few TCKs test Weld behavior only...
-        Bean<?> bean = resolve(implResolveByType(false, type, injectionPoint.getQualifiers().toArray(new Annotation[injectionPoint.getQualifiers().size()])),
+        Bean<?> bean = resolve(implResolveByType(false, type, injectionPoint.getQualifiers().toArray(new Annotation[0])),
                                      injectionPoint);
         if (bean != null && ManagedBean.class.isInstance(bean))
         {
@@ -266,7 +266,7 @@ public class InjectionResolver
         }
 
         Set<Annotation> qualSet = injectionPoint.getQualifiers();
-        Annotation[] qualifiers = qualSet.toArray(new Annotation[qualSet.size()]);
+        Annotation[] qualifiers = qualSet.toArray(new Annotation[0]);
 
         Set<Bean<?>> beanSet = implResolveByType(injectionPoint.isDelegate(), type, clazz, qualifiers);
 

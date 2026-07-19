@@ -215,10 +215,7 @@ public class ObserverMethodConfiguratorImpl<T> implements ObserverMethodConfigur
     @Override
     public ObserverMethodConfigurator<T> addQualifiers(Annotation... qualifiers)
     {
-        for (Annotation qualifier : qualifiers)
-        {
-            this.qualifiers.add(qualifier);
-        }
+        this.qualifiers.addAll(Arrays.asList(qualifiers));
         return this;
     }
 

@@ -176,7 +176,7 @@ public class InjectionPointFactory
     {
         Asserts.assertNotNull(parameter, "annotatedParameter");
         Set<Annotation> anns = parameter.getAnnotations();
-        Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(anns.toArray(new Annotation[anns.size()]));
+        Annotation[] qualifierAnnots = webBeansContext.getAnnotationManager().getQualifierAnnotations(anns.toArray(new Annotation[0]));
         InjectionPointImpl injectionPoint = new InjectionPointImpl(owner, Arrays.asList(qualifierAnnots), parameter);
         if (fireEvent)
         {

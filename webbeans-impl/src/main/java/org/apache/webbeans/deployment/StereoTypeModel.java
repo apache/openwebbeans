@@ -21,6 +21,7 @@ package org.apache.webbeans.deployment;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -136,10 +137,7 @@ public class StereoTypeModel implements IStereoTypeModel
         {
             Annotation[] ibs =
                 annotationManager.getInterceptorBindingMetaAnnotations(annotations);
-            for (Annotation ann : ibs)
-            {
-                interceptorBindingTypes.add(ann);
-            }
+            interceptorBindingTypes.addAll(Arrays.asList(ibs));
         }
 
         if (annotationManager.hasStereoTypeMetaAnnotation(annotations))

@@ -50,24 +50,15 @@ public final class DefaultAnnotation implements InvocationHandler, Annotation
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
-        if ("hashCode".equals(method.getName()))
+        return switch (method.getName())
         {
-            return hashCode();
-        }
-        else if ("equals".equals(method.getName()))
-        {
-            return equals(args[0]);
-        }
-        else if ("annotationType".equals(method.getName()))
-        {
-            return annotationType();
-        }
-        else if ("toString".equals(method.getName()))
-        {
-            return toString();
-        }
+            case "hashCode" -> hashCode();
+            case "equals" -> equals(args[0]);
+            case "annotationType" -> annotationType();
+            case "toString" -> toString();
+            default -> method.getDefaultValue();
+        };
 
-        return method.getDefaultValue();
     }
 
     @Override

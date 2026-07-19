@@ -486,7 +486,6 @@ public class ObserverMethodImpl<T> implements OwbObserverMethod<T>
      * @return the bean
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Class<?> getBeanClass()
     {
         return ownerBean.getBeanClass();

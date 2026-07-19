@@ -317,7 +317,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
 
     protected void filterExcludedJars(Set<URL> classPathUrls)
     {
-        classPathUrls.removeIf(i -> isExcludedJar(i));
+        classPathUrls.removeIf(this::isExcludedJar);
     }
     
     protected boolean isExcludedJar(URL url)
@@ -421,7 +421,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             OpenWebBeansConfiguration owbConfiguration = WebBeansContext.currentInstance().getOpenWebBeansConfiguration();
             String scanningExcludesProperty = owbConfiguration.getProperty(OpenWebBeansConfiguration.SCAN_EXCLUSION_PATHS);
             List<String> excludes = owbConfiguration.splitValues(scanningExcludesProperty);
-            scanningExcludes = excludes.toArray(new String[excludes.size()]);
+            scanningExcludes = excludes.toArray(new String[0]);
         }
     }
 

@@ -88,7 +88,7 @@ public class EventImpl<T> implements Event<T>, Serializable
         else
         {
             Set<Annotation> qualifiers = metadata.getQualifiers();
-            return new EventMetadataImpl(null, metadata.getType(), metadata.getInjectionPoint(), qualifiers.toArray(new Annotation[qualifiers.size()]), webBeansContext);
+            return new EventMetadataImpl(null, metadata.getType(), metadata.getInjectionPoint(), qualifiers.toArray(new Annotation[0]), webBeansContext);
         }
     }
 

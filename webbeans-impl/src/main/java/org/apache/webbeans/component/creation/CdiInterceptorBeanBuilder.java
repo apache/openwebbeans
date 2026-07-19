@@ -28,6 +28,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -80,7 +81,7 @@ public class CdiInterceptorBeanBuilder<T> extends InterceptorBeanBuilder<T, CdiI
             for (Annotation a : interceptorBindings)
             {
                 Target target = a.annotationType().getAnnotation(Target.class);
-                if (target == null || !asList(target.value()).equals(asList(ElementType.TYPE)))
+                if (target == null || !asList(target.value()).equals(List.of(ElementType.TYPE)))
                 {
                     throw new WebBeansConfigurationException(
                             a.annotationType().getName() + " doesn't have strictly @Target(TYPE) but has lifecycle methods. " +

@@ -189,7 +189,7 @@ public class InterceptorDecoratorProxyFactory extends AbstractProxyFactory
 
         Class<T> proxyClass = createProxyClass(
                 classLoader, at.getJavaClass(),
-                intercepted.toArray(new Method[intercepted.size()]), others.toArray(new Method[others.size()]));
+                intercepted.toArray(new Method[0]), others.toArray(new Method[0]));
         return proxyClass;
     }
 

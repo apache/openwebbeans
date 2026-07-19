@@ -54,7 +54,7 @@ public class Bootstrap
         long begin = System.currentTimeMillis();
         
         containerLifecycle.startApplication(properties);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> latch.countDown()));
+        Runtime.getRuntime().addShutdownHook(new Thread(latch::countDown));
         
         log.log(Level.INFO, OWBLogConst.INFO_0001, Long.toString(System.currentTimeMillis() - begin));
         latch.await();

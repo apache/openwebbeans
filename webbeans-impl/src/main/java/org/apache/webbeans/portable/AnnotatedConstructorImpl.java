@@ -100,7 +100,7 @@ public class AnnotatedConstructorImpl<X> extends AbstractAnnotatedCallable<X> im
                 }
                 current = current.getSuperclass();
             }
-            return annotations.values().toArray(new Annotation[annotations.size()]);
+            return annotations.values().toArray(new Annotation[0]);
         }
 
         return javaMember.getDeclaredAnnotations();

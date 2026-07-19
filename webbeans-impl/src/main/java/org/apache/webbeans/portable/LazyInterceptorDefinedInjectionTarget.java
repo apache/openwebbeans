@@ -69,7 +69,7 @@ public class LazyInterceptorDefinedInjectionTarget<T> extends InjectionTargetImp
                         }
                         try
                         {
-                            Set<Bean<?>> beans = bm.getBeans(annotatedType.getJavaClass(), annotations.toArray(new Annotation[annotations.size()]));
+                            Set<Bean<?>> beans = bm.getBeans(annotatedType.getJavaClass(), annotations.toArray(new Annotation[0]));
                             bean = (Bean<T>) bm.resolve(beans);
                         }
                         catch (Exception e)

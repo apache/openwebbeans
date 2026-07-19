@@ -149,7 +149,7 @@ public final class AnnotationManager
         }
 
         // check for stereotypes _explicitly_ declared on the bean class (not inherited)
-        Annotation[] stereoTypes = getStereotypeMetaAnnotations(typeAnns.toArray(new Annotation[typeAnns.size()]));
+        Annotation[] stereoTypes = getStereotypeMetaAnnotations(typeAnns.toArray(new Annotation[0]));
         Map<Class<? extends Annotation>, Annotation> annotationsFromSteretypes = new HashMap<>();
         for (Annotation stereoType : stereoTypes)
         {
@@ -368,7 +368,7 @@ public final class AnnotationManager
     public Annotation[] getQualifierAnnotations(Annotation... annotations)
     {
         Set<Annotation> qualifiers = getQualifierAnnotations(Arrays.asList(annotations));
-        return qualifiers.toArray(new Annotation[qualifiers.size()]);
+        return qualifiers.toArray(new Annotation[0]);
     }
 
     /**
@@ -726,7 +726,7 @@ public final class AnnotationManager
             else if (annotType.equals(Named.class))
             {
                 Named name = (Named) annotation;
-                if (!name.value().equals(""))
+                if (!name.value().isEmpty())
                 {
                     throw new WebBeansConfigurationException("@StereoType annotation can not define @Named " +
                             "annotation with value");
@@ -902,7 +902,7 @@ public final class AnnotationManager
         return repeatableMethodCache.computeIfAbsent(type, it -> Optional.ofNullable(resolveRepeatableMethod(it)));
     }
         
-    protected Method resolveRepeatableMethod(Class<?> type)
+    private Method resolveRepeatableMethod(Class<?> type)
     {
         Method value;
         try

@@ -413,7 +413,7 @@ public abstract class AbstractProxyFactory
 
         ArrayList<Method> outsorted = new ArrayList<>(Arrays.asList(methods));
         outsorted.removeAll(duplicates);
-        return outsorted.toArray(new Method[outsorted.size()]);
+        return outsorted.toArray(new Method[0]);
     }
      
     private boolean hasSameSignature(Method a, Method b)

@@ -239,7 +239,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
         if (aroundInvokeMethod != null)
         {
             interceptorFound = true;
-            interceptionMethods.put(InterceptionType.AROUND_INVOKE, aroundInvokeMethod.toArray(new Method[aroundInvokeMethod.size()]));
+            interceptionMethods.put(InterceptionType.AROUND_INVOKE, aroundInvokeMethod.toArray(new Method[0]));
         }
 
         if (postConstructMethods.size() > 0)
@@ -286,7 +286,7 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
             clazzParameters.add(ClassUtil.getClazz(parameter.getBaseType()));
         }
 
-        Class<?>[] params = clazzParameters.toArray(new Class<?>[clazzParameters.size()]);
+        Class<?>[] params = clazzParameters.toArray(new Class<?>[0]);
 
         if (params.length != 1 || !params[0].equals(InvocationContext.class))
         {

@@ -1882,7 +1882,7 @@ public class BeansDeployer
                 Set<Annotation> annTypeAnnotations = annotatedType.getAnnotations();
                 if (annTypeAnnotations != null)
                 {
-                    classAnnotations = annTypeAnnotations.toArray(new Annotation[annTypeAnnotations.size()]);
+                    classAnnotations = annTypeAnnotations.toArray(new Annotation[0]);
                 }
                 else
                 {

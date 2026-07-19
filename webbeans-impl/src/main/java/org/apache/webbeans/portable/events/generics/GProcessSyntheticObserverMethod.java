@@ -26,7 +26,6 @@ import jakarta.enterprise.inject.spi.ProcessSyntheticObserverMethod;
 import org.apache.webbeans.config.WebBeansContext;
 
 
-@SuppressWarnings("unchecked")
 public class GProcessSyntheticObserverMethod extends GProcessObserverMethod implements ProcessSyntheticObserverMethod
 {
     private final Extension source;

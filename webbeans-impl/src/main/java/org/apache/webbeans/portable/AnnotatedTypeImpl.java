@@ -101,7 +101,7 @@ public class AnnotatedTypeImpl<X>
                     annotationTypes.add(annotationType);
                 }
             }
-            setAnnotations(annotations.toArray(new Annotation[annotations.size()]));
+            setAnnotations(annotations.toArray(new Annotation[0]));
         }
     }
 

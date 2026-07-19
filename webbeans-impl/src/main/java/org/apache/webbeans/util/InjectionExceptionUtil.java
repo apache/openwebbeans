@@ -128,7 +128,7 @@ public class InjectionExceptionUtil
         {
             if (injectionPoint != null)
             {
-                qualifiers = injectionPoint.getQualifiers().toArray(new Annotation[injectionPoint.getQualifiers().size()]);
+                qualifiers = injectionPoint.getQualifiers().toArray(new Annotation[0]);
             }
             else
             {

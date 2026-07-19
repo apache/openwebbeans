@@ -108,10 +108,7 @@ public class InstanceImpl<T> implements Instance<T>, Serializable
             webBeansContext.getAnnotationManager().checkQualifierConditions(qualifiers);
         }
 
-        for (Annotation ann : qualifiers)
-        {
-            qualifierAnnotations.add(ann);
-        }
+        qualifierAnnotations.addAll(Arrays.asList(qualifiers));
     }
 
     @Override

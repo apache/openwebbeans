@@ -252,7 +252,7 @@ public class InjectionPointImpl implements InjectionPoint, Serializable
         //process annotations
         BeanManagerImpl beanManager = webBeansContext.getBeanManagerImpl();
         Set<Bean<?>> beans = beanManager.getBeans(ownerBeanClass,
-                                                  ownerQualifiers.toArray(new Annotation[ownerQualifiers.size()]));
+                                                  ownerQualifiers.toArray(new Annotation[0]));
         ownerBean = beanManager.resolve(beans);
 
         // determine type of injection point member (0=field, 1=method, 2=constructor) and read...

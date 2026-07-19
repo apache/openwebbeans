@@ -657,7 +657,7 @@ public final class ClassUtil
     {
         Asserts.nullCheckForClass(clazz);
 
-        Integer modifier = clazz.getModifiers();
+        int modifier = clazz.getModifiers();
 
         return !Modifier.isAbstract(modifier) && !Modifier.isInterface(modifier);
     }

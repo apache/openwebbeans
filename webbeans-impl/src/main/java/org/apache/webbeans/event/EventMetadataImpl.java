@@ -142,7 +142,7 @@ public class EventMetadataImpl implements EventMetadata, Serializable
         webBeansContext.getAnnotationManager().checkQualifierConditions(bindings);
         Set<Annotation> newQualifiers = ArrayUtil.asSet(bindings);
         newQualifiers.addAll(qualifiers);
-        return new EventMetadataImpl(type, subtype, injectionPoint, newQualifiers.toArray(new Annotation[newQualifiers.size()]), webBeansContext);
+        return new EventMetadataImpl(type, subtype, injectionPoint, newQualifiers.toArray(new Annotation[0]), webBeansContext);
     }
     
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException

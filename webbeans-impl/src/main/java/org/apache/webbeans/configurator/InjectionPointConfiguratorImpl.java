@@ -25,6 +25,7 @@ import jakarta.enterprise.inject.spi.configurator.InjectionPointConfigurator;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -70,10 +71,7 @@ public class InjectionPointConfiguratorImpl implements InjectionPointConfigurato
     @Override
     public InjectionPointConfigurator addQualifiers(Annotation... qualifiers)
     {
-        for (Annotation qualifier : qualifiers)
-        {
-            this.qualifiers.add(qualifier);
-        }
+        this.qualifiers.addAll(Arrays.asList(qualifiers));
         return this;
     }
 

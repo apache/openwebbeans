@@ -142,8 +142,8 @@ public class InterceptorResolutionService
                 ? Collections.emptySet()
                 : Collections.unmodifiableSet(new LinkedHashSet<>(classInterceptorBindings));
 
-        LinkedHashSet<Interceptor<?>> allUsedEjbInterceptors = new LinkedHashSet<>(); // we need to preserve the order!
-        allUsedEjbInterceptors.addAll(classLevelEjbInterceptors);
+        // we need to preserve the order!
+        LinkedHashSet<Interceptor<?>> allUsedEjbInterceptors = new LinkedHashSet<>(classLevelEjbInterceptors);
 
         Map<Method, BusinessMethodInterceptorInfo> businessMethodInterceptorInfos = new HashMap<>();
         Map<Constructor<?>, BusinessMethodInterceptorInfo> constructorInterceptorInfos = new HashMap<>();
@@ -1121,7 +1121,7 @@ public class InterceptorResolutionService
             }
             else
             {
-                this.cdiInterceptors = cdiInterceptors.toArray(new Interceptor[cdiInterceptors.size()]);
+                this.cdiInterceptors = cdiInterceptors.toArray(new Interceptor[0]);
             }
         }
 
@@ -1145,7 +1145,7 @@ public class InterceptorResolutionService
             }
             else
             {
-                this.ejbInterceptors = ejbInterceptors.toArray(new Interceptor[ejbInterceptors.size()]);
+                this.ejbInterceptors = ejbInterceptors.toArray(new Interceptor[0]);
             }
 
         }

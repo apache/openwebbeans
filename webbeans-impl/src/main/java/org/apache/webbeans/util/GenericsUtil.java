@@ -549,7 +549,7 @@ public final class GenericsUtil
     
     public static boolean containTypeVariable(Collection<? extends Type> types)
     {
-        return containTypeVariable(types.toArray(new Type[types.size()]));
+        return containTypeVariable(types.toArray(new Type[0]));
     }
     
     public static boolean containTypeVariable(Type[] types)
@@ -922,7 +922,7 @@ public final class GenericsUtil
                 classTypes.add(rawType);
             }
         }
-        return classTypes.toArray(new Class[classTypes.size()]);
+        return classTypes.toArray(new Class[0]);
     }
 
     private static Type resolveTypeVariable(TypeVariable<?> variable, Type actualType, Collection<TypeVariable<?>> seen)

@@ -117,14 +117,7 @@ public class NotificationManager
 
     // this is actually faster than a lambda Comparator.comparingInt(ObserverMethod::getPriority)
     private Comparator<? super ObserverMethod<? super Object>> observerMethodComparator
-        = new Comparator<>()
-    {
-        @Override
-        public int compare(ObserverMethod<? super Object> o1, ObserverMethod<? super Object> o2)
-        {
-            return Integer.compare(o1.getPriority(), o2.getPriority());
-        }
-    };
+        = (Comparator<ObserverMethod<? super Object>>) (o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority());
 
     // idea is to be able to skip O(n) events in favor of an algorithm closer to O(1) impl
     // statistically, it is not rare to not use all these events so we enable to skip most of them
@@ -211,10 +204,7 @@ public class NotificationManager
         List<ObserverMethod<?>> observerMethods = new ArrayList<>();
         for (Set<ObserverMethod<?>> methods: observers.values())
         {
-            for (ObserverMethod<?> method: methods)
-            {
-                observerMethods.add(method);
-            }
+            observerMethods.addAll(methods);
         }
         return observerMethods;
     }

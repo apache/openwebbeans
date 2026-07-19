@@ -111,7 +111,7 @@ public class InjectableConstructor<T> extends AbstractInjectable<T>
                 }
             }
         }
-        params = list.toArray(new Object[list.size()]);
+        params = list.toArray(new Object[0]);
         return params;
     }
 }
