@@ -248,7 +248,7 @@ public final class ClassUtil
             Set<String> list = new HashSet<>();
             Class<?> clazz = Object.class;
 
-            Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(clazz);
+            Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods)
             {
                 list.add(method.getName());
@@ -337,7 +337,7 @@ public final class ClassUtil
         }
         for (Class<?> c = topClass; c != null && c != Object.class; c = c.getSuperclass())
         {
-            for (Method m : SecurityUtil.doPrivilegedGetDeclaredMethods(c))
+            for (Method m : c.getDeclaredMethods())
             {
                 if (!m.isBridge())
                 {

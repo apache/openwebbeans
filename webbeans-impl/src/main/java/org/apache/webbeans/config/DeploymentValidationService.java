@@ -43,7 +43,6 @@ import org.apache.webbeans.exception.helper.ViolationMessageBuilder;
 import org.apache.webbeans.intercept.InterceptorResolutionService.BeanInterceptorInfo;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.portable.InjectionTargetImpl;
-import org.apache.webbeans.util.SecurityUtil;
 
 public class DeploymentValidationService
 {
@@ -164,7 +163,7 @@ public class DeploymentValidationService
             return finalMethodName;
         }
 
-        Method[] methods = SecurityUtil.doPrivilegedGetDeclaredMethods(beanClass);
+        Method[] methods = beanClass.getDeclaredMethods();
         for (Method m : methods)
         {
             int modifiers = m.getModifiers();
