@@ -49,6 +49,6 @@ public class ResourceProducerFactory<P> extends ProviderBasedProducerFactory<P>
     public <T> Producer<T> createProducer(Bean<T> bean)
     {
         return webBeansContext.getWebBeansUtil().fireProcessProducerEvent(
-                new ResourceProducer<T, P>(owner, member, webBeansContext, ref), member);
+            new ResourceProducer<>(owner, member, webBeansContext, ref), member);
     }
 }

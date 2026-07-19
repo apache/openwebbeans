@@ -155,7 +155,7 @@ public class NormalScopeProxyFactory extends AbstractProxyFactory
     public Provider getInstanceProvider(ClassLoader classLoader, Bean<?> bean)
     {
         String scopeClassName = bean.getScope().getName();
-        Class<? extends Provider> instanceProviderClass = null;
+        Class<? extends Provider> instanceProviderClass;
         String proxyMappingConfigKey = OpenWebBeansConfiguration.PROXY_MAPPING_PREFIX + scopeClassName;
         String className = webBeansContext.getOpenWebBeansConfiguration().getProperty(proxyMappingConfigKey);
         if (className == null || NormalScopedBeanInterceptorHandler.class.getName().equals(className))

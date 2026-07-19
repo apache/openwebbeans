@@ -63,7 +63,7 @@ public class ProducerFieldProducer<T, P> extends BaseProducerProducer<T, P>
     @Override
     protected T produce(Map<Interceptor<?>, ?> interceptors, CreationalContextImpl<T> creationalContext)
     {
-        T instance = null;
+        T instance;
         P parentInstance = null;
         CreationalContext<P> parentCreational = null;
         try

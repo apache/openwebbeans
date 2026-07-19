@@ -67,7 +67,7 @@ public class AbstractDecoratorInjectionTarget<T> extends InjectionTargetImpl<T>
         {
             throw new IllegalStateException(e);
         }
-        return new SubClassAnnotatedConstructorImpl<T>(webBeansContext, parentCtor, ct, annotatedType);
+        return new SubClassAnnotatedConstructorImpl<>(webBeansContext, parentCtor, ct, annotatedType);
     }
 
     @Override

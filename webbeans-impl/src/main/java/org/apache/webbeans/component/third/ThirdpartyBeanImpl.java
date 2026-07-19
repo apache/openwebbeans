@@ -48,7 +48,7 @@ public class ThirdpartyBeanImpl<T> extends AbstractOwbBean<T>
     @Override
     public Producer<T> getProducer()
     {
-        return new Producer<T>()
+        return new Producer<>()
         {
             @Override
             public T produce(CreationalContext<T> creationalContext)

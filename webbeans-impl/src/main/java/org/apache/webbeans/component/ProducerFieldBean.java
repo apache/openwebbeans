@@ -52,7 +52,7 @@ public class ProducerFieldBean<T> extends AbstractProducerBean<T>
     @Override
     public T create(CreationalContext<T> creationalContext)
     {
-        T instance = null;
+        T instance;
         
         instance = super.create(creationalContext);
         checkNullInstance(instance, producerField.getName());

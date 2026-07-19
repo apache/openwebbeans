@@ -225,31 +225,22 @@ public class DefaultBeanArchiveService implements BeanArchiveService
         }
 
 
-        InputStream xmlStream = null;
-        try
-        {
-            xmlStream = beansXmlUrl.openStream();
-
-            return readBeansXml(xmlStream, beansXmlUrl.toExternalForm());
-
-        }
-        catch (Exception e)
-        {
-            throw new WebBeansDeploymentException("Error while parsing the beans.xml file " + beansXmlLocation, e);
-        }
-        finally
+        try (InputStream xmlStream = beansXmlUrl.openStream())
         {
             try
             {
-                if (xmlStream != null)
-                {
-                    xmlStream.close();
-                }
+
+                return readBeansXml(xmlStream, beansXmlUrl.toExternalForm());
+
             }
-            catch (IOException ioe)
+            catch (Exception e)
             {
-                throw new WebBeansDeploymentException("Error while closing the input stream!", ioe);
+                throw new WebBeansDeploymentException("Error while parsing the beans.xml file " + beansXmlLocation, e);
             }
+        }
+        catch (IOException ioe)
+        {
+            throw new WebBeansDeploymentException("Error while closing the input stream!", ioe);
         }
     }
 
@@ -515,7 +506,7 @@ public class DefaultBeanArchiveService implements BeanArchiveService
                     {
                         String value = getTrimmedAttribute(condition, "value");
                         String systProp = System.getProperty(getTrimmedAttribute(condition, "name"));
-                        if ((value == null && systProp == null) || !(value != null && value.equals(systProp)))
+                        if (!(value != null && value.equals(systProp)))
                         {
                             skip = true;
                             break;

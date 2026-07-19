@@ -54,7 +54,7 @@ public class ConversationProducer extends InjectionTargetImpl<ConversationImpl>
     protected ConversationImpl newInstance(CreationalContextImpl<ConversationImpl> creationalContext)
     {
         Context currentContext = contextsService.getCurrentContext(ConversationScoped.class);
-        if (currentContext != null && currentContext instanceof ConversationContext)
+        if (currentContext instanceof ConversationContext)
         {
             return ((ConversationContext) currentContext).getConversation();
         }

@@ -43,7 +43,7 @@ public class ExceptionMessageBuilder implements Serializable
 
     public String getAdditionalInformation(String msg)
     {
-        return msg != null ? msg : "" + getAdditionalInformation();
+        return msg != null ? msg : getAdditionalInformation();
     }
 
     private String getAdditionalInformation()

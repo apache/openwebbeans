@@ -34,8 +34,6 @@ import org.apache.webbeans.util.GenericsUtil;
 
 public class BeanAttributesConfiguratorImpl<T> implements BeanAttributesConfigurator<T>
 {
-    private final WebBeansContext webBeansContext;
-
     private Set<Type> types;
     private Set<Annotation> qualifiers;
     private Class<? extends Annotation> scope;
@@ -45,8 +43,6 @@ public class BeanAttributesConfiguratorImpl<T> implements BeanAttributesConfigur
 
     public BeanAttributesConfiguratorImpl(WebBeansContext webBeansContext, BeanAttributes<T> originalBeanAttribute)
     {
-        this.webBeansContext = webBeansContext;
-        
         this.types = new HashSet<>(originalBeanAttribute.getTypes());
         this.qualifiers = new HashSet<>(originalBeanAttribute.getQualifiers());
         this.scope = originalBeanAttribute.getScope();

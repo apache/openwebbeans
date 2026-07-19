@@ -1162,8 +1162,8 @@ public class InterceptorResolutionService
 
     public static class LifecycleMethodInfo
     {
-        private List<AnnotatedMethod<?>> methods = new ArrayList<>();
-        private BusinessMethodInterceptorInfo methodInterceptorInfo;
+        private final List<AnnotatedMethod<?>> methods;
+        private final BusinessMethodInterceptorInfo methodInterceptorInfo;
 
         public LifecycleMethodInfo(List<AnnotatedMethod<?>> methods, BusinessMethodInterceptorInfo methodInterceptorInfo)
         {

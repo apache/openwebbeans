@@ -176,7 +176,7 @@ public class Unsafe
                                            Class<?> parent)
             throws ProxyGenerationException
     {
-        Class<?> definedClass = null;
+        Class<?> definedClass;
         try
         {
             // CHECKSTYLE:OFF
