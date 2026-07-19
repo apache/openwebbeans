@@ -80,7 +80,7 @@ public class SpecializationUtil
     {
         Set<AnnotatedType<?>> allAnnotatedTypes = getAllAnnotatedTypes(beanAttributesPerBda);
 
-        if (allAnnotatedTypes != null && !allAnnotatedTypes.isEmpty())
+        if (!allAnnotatedTypes.isEmpty())
         {
             // superClassList is used to handle the case: Car, CarToyota, Bus, SchoolBus, CarFord
             // for which case OWB should throw exception that both CarToyota and CarFord are

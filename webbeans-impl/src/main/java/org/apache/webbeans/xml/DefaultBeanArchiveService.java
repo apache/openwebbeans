@@ -643,14 +643,10 @@ public class DefaultBeanArchiveService implements BeanArchiveService
      */
     protected String getTrimmedAttribute(Element element, String attributeName)
     {
-        String val = element.getAttribute(attributeName);
-        if (val != null)
+        final String val = element.getAttribute(attributeName).trim();
+        if (!val.isEmpty())
         {
-            val = val.trim();
-            if (!val.isEmpty())
-            {
-                return val;
-            }
+            return val;
         }
         return null;
     }

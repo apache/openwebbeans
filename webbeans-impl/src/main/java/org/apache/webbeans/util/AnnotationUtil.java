@@ -207,7 +207,7 @@ public final class AnnotationUtil
             return true;
         }
 
-        if (annotation1 == null && annotation2 != null || annotation1 != null && annotation2 == null)
+        if (annotation1 == null || annotation2 == null)
 
         {
             return false;

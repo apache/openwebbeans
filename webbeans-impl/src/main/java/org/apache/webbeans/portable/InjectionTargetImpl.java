@@ -390,16 +390,11 @@ public class InjectionTargetImpl<T> extends AbstractProducer<T> implements Injec
     
     protected AnnotatedConstructor<T> createConstructor()
     {
-        AnnotatedConstructor<T> constructor = null;
         for (InjectionPoint injectionPoint : getInjectionPoints())
         {
             if (injectionPoint.getMember() instanceof Constructor)
             {
-                if (constructor == null)
-                {
-                    constructor = (AnnotatedConstructor<T>)((AnnotatedParameter<T>)injectionPoint.getAnnotated()).getDeclaringCallable();
-                    return constructor;
-                }
+                return (AnnotatedConstructor<T>)((AnnotatedParameter<T>)injectionPoint.getAnnotated()).getDeclaringCallable();
             }
         }
 

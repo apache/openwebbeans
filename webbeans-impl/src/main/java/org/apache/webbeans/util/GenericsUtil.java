@@ -95,7 +95,7 @@ public final class GenericsUtil
                 }
 
                 Class<?>[] interfaces = bean.getInterfaces();
-                if (interfaces == null || interfaces.length == 0)
+                if (interfaces.length == 0)
                 {
                     return false;
                 }

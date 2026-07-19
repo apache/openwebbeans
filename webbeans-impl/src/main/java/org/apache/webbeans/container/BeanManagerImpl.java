@@ -768,11 +768,11 @@ public class BeanManagerImpl implements BeanManager, Referenceable
         //Check type if bean type is given
         if(beanType != null && beanType != Object.class)
         {
-            boolean isProducer = AbstractProducerBean.class.isInstance(bean);
+            boolean isProducer = bean instanceof AbstractProducerBean;
             if(!isProducer && // we have different rules for producers
-               !isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, isProducer) &&
-               !GenericsUtil.satisfiesDependency(false, isProducer, beanType, bean.getBeanClass(), new HashMap<>()) &&
-               !GenericsUtil.satisfiesDependencyRaw(false, isProducer, beanType, bean.getBeanClass(), new HashMap<>()))
+               !isBeanTypeAssignableToGivenType(bean.getTypes(), beanType, false) &&
+               !GenericsUtil.satisfiesDependency(false, false, beanType, bean.getBeanClass(), new HashMap<>()) &&
+               !GenericsUtil.satisfiesDependencyRaw(false, false, beanType, bean.getBeanClass(), new HashMap<>()))
             {
                 throw new IllegalArgumentException("Given bean type : " + beanType + " is not applicable for the bean instance : " + bean);
             }

@@ -504,7 +504,8 @@ public final class ClassUtil
     {
         try
         {
-            return clazz.getMethod(name, parameterTypes) != null;
+            clazz.getMethod(name, parameterTypes);
+            return true;
         }
         catch (NoSuchMethodException e)
         {
