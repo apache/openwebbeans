@@ -19,8 +19,6 @@
 package org.apache.webbeans.config;
 
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -342,15 +340,7 @@ public class OpenWebBeansConfiguration
 
     private void overrideWithGlobalSettings(Properties configProperties)
     {
-        Properties systemProperties;
-        if(System.getSecurityManager() != null)
-        {
-            systemProperties = doPrivilegedGetSystemProperties();
-        }
-        else
-        {
-            systemProperties = System.getProperties();
-        }
+        Properties systemProperties = System.getProperties();
 
         Map<String, String> systemEnvironment = System.getenv();
 
@@ -370,22 +360,6 @@ public class OpenWebBeansConfiguration
             }
         }
     }
-
-    private Properties doPrivilegedGetSystemProperties()
-    {
-        return AccessController.doPrivileged(
-            new PrivilegedAction<>()
-            {
-                @Override
-                public Properties run()
-                {
-                    return System.getProperties();
-                }
-
-            }
-        );
-    }
-
 
     /**
      * Gets property.
