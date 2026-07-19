@@ -18,6 +18,7 @@
  */
 package org.apache.webbeans.test.interceptors.constructor;
 
+import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
 
@@ -63,6 +64,23 @@ public class AroundConstructTest extends AbstractUnitTest
         startContainer(asList(Simple.class, OldStyle.class), Collections.emptyList(), false);
         getInstance(Simple.class).callForNothing();
         assertEquals(1, OldStyle.count);
+    }
+
+    /**
+     * There must only max be a single AroundConstruct interceptor annotation per Interceptor.
+     */
+    @Test(expected = WebBeansConfigurationException.class)
+    public void checkDefinitionErrorOnMultipleAroundConstruct()
+    {
+        addInterceptor(IllGetYourConstructorInvocation.class);
+        addInterceptor(IllGetYourTwiceConstructorInvocation.class);
+
+        final Collection<Class<?>> beanClasses = new ArrayList<>();
+        beanClasses.add(IAmBuiltWithMyConstructor.class);
+        beanClasses.add(IAmBuiltWithAnIllegalConstructor.class);
+        beanClasses.add(Foo.class);
+
+        startContainer(beanClasses, Collections.emptyList(), true);
     }
 
     @ConstructorInterceptorBinding
@@ -124,6 +142,52 @@ public class AroundConstructTest extends AbstractUnitTest
     @Retention(RetentionPolicy.RUNTIME)
     @Target( { ElementType.TYPE, ElementType.METHOD })
     public @interface ConstructorInterceptorBinding
+    {
+    }
+
+
+    @ConstructorInterceptorBrokenBinding
+    public static class IAmBuiltWithAnIllegalConstructor
+    {
+        private final Foo foo;
+
+        @Inject
+        public IAmBuiltWithAnIllegalConstructor(final Foo foo)
+        {
+            if (foo == null) {
+                throw new NullPointerException();
+            }
+
+            this.foo = foo;
+        }
+    }
+
+    // this should fail, as only a single AroundInvoke is allowed
+    @ConstructorInterceptorBrokenBinding
+    @Interceptor
+    public static class IllGetYourTwiceConstructorInvocation
+    {
+        public static int count = 0;
+
+        @AroundConstruct
+        public Object around(final InvocationContext ic) throws Exception
+        {
+            count++;
+            return ic.proceed();
+        }
+
+        @AroundConstruct
+        public Object andAround(final InvocationContext ic) throws Exception
+        {
+            count++;
+            return ic.proceed();
+        }
+    }
+
+    @InterceptorBinding
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target( { ElementType.TYPE, ElementType.METHOD })
+    public @interface ConstructorInterceptorBrokenBinding
     {
     }
 }

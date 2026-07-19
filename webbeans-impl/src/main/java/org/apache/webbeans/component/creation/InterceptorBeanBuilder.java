@@ -147,10 +147,10 @@ public abstract class InterceptorBeanBuilder<T, B extends InterceptorBean<T>> ex
 
         for (Class clazz : classHierarchy)
         {
+            int arouncConstructCount = 0;
 
             for (AnnotatedMethod m : methods)
             {
-                int arouncConstructCount = 0;
                 if (clazz == m.getJavaMember().getDeclaringClass())
                 {
                     if (m.getAnnotation(AroundConstruct.class) != null)
