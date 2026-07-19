@@ -84,6 +84,13 @@ public class OpenWebBeansConfiguration
     /**Use EJB Discovery or not*/
     public static final String USE_EJB_DISCOVERY = "org.apache.webbeans.spi.deployer.useEjbMetaDataDiscoveryService";
 
+    /**
+     * The maximum number of threads to use for BeansDeployer validation of our beans.
+     * We detect how many CPU cores we do have and then for each 300 or so beans, we use a new thread.
+     * But we will always stay below the max number of CPU cores and configured maxThreads.
+     */
+    public static final String BEANS_DEPLOYER_MAX_THREADS = "org.apache.webbeans.deployer.maxThreads";
+
     /**Container lifecycle*/
     public static final String CONTAINER_LIFECYCLE = "org.apache.webbeans.spi.ContainerLifecycle";
 
@@ -605,5 +612,11 @@ public class OpenWebBeansConfiguration
     public BeanArchiveService.BeanDiscoveryMode getDefaultBeanDiscoveryMode()
     {
         return BeanArchiveService.BeanDiscoveryMode.valueOf(getProperty(OpenWebBeansConfiguration.DEFAULT_BEAN_DISCOVERY_MODE));
+    }
+
+    public int getBeanDeployerMaxThreads()
+    {
+        final String maxThreadsStr = getProperty(OpenWebBeansConfiguration.BEANS_DEPLOYER_MAX_THREADS);
+        return maxThreadsStr == null ? Integer.MAX_VALUE : Integer.parseInt(maxThreadsStr.trim());
     }
 }

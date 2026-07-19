@@ -52,7 +52,6 @@ import org.apache.webbeans.event.ObserverMethodImpl;
 import org.apache.webbeans.event.OwbObserverMethod;
 import org.apache.webbeans.exception.WebBeansConfigurationException;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
-import org.apache.webbeans.exception.WebBeansException;
 
 import jakarta.annotation.Priority;
 import jakarta.enterprise.inject.Alternative;
@@ -61,6 +60,7 @@ import jakarta.enterprise.inject.Vetoed;
 import jakarta.enterprise.inject.spi.BeanAttributes;
 import jakarta.enterprise.inject.spi.DefinitionException;
 
+import org.apache.webbeans.exception.WebBeansException;
 import org.apache.webbeans.inject.AlternativesManager;
 import org.apache.webbeans.intercept.InterceptorsManager;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
@@ -128,8 +128,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import static java.util.Arrays.asList;
 import static org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
 import static org.apache.webbeans.spi.BeanArchiveService.BeanArchiveInformation;
@@ -145,6 +149,9 @@ public class BeansDeployer
     //Logger instance
     private static final Logger logger = WebBeansLoggerFacade.getLogger(BeansDeployer.class);
     public static final String JAVAX_ENTERPRISE_PACKAGE = "jakarta.enterprise.";
+
+    // from when on do we start processing bean validation in parallel, and how many per thread?
+    public static final int BEANS_PER_THREAD_MIN = 300;
 
 
     /**Deployment is started or not*/
@@ -1189,9 +1196,50 @@ public class BeansDeployer
         logger.fine("Validation of the beans' injection points has started.");
 
         Set<Bean<?>> beans = webBeansContext.getBeanManagerImpl().getBeans();
-        
+
         //Validate Others
-        validate(beans);
+
+        int numCpus = Runtime.getRuntime().availableProcessors();
+
+        // for each pack of beans we take a new thread.
+        int numParts = Math.min(numCpus, 1+ (beans.size() / BEANS_PER_THREAD_MIN));
+        numParts = Math.min(webBeansContext.getOpenWebBeansConfiguration().getBeanDeployerMaxThreads(), numParts);
+
+        List<Collection<Bean<?>>> beanParts = partition(beans, numParts);
+
+        if (logger.isLoggable(Level.FINER))
+        {
+            logger.finer("Using " + beanParts.size() + " threads to validate " + beans.size() + " beans");
+        }
+
+        if (beanParts.size() > 1)
+        {
+            List<RuntimeException> validationExceptions = new ArrayList<>();
+
+            beanParts.stream()
+                .map(c -> CompletableFuture.runAsync(() -> validate(c)))
+                .collect(Collectors.toList())    // Java 8–15
+                .forEach(f ->
+                    {
+                        try
+                        {
+                            f.join();
+                        }
+                        catch (CompletionException ce)
+                        {
+                            for (Throwable throwable : ce.getSuppressed())
+                            {
+                                validationExceptions.add(throwable instanceof RuntimeException
+                                    ? (RuntimeException) throwable
+                                    : new WebBeansDeploymentException(throwable));
+                            }
+                        }
+                    });
+        }
+        else
+        {
+            validate(beans);
+        }
         
         logger.fine("Validation of the observer methods' injection points has started.");
         
@@ -1200,7 +1248,35 @@ public class BeansDeployer
 
         logger.info(OWBLogConst.INFO_0003);
     }
-    
+
+    private List<Collection<Bean<?>>> partition(Set<Bean<?>> beans, int numParts)
+    {
+        int beanSize = beans.size();
+        if (beanSize < BEANS_PER_THREAD_MIN || numParts <= 1)
+        {
+            // not worth firing off a thread for 100 or so beans or less, or if there is not enough CPUs.
+            return Collections.singletonList(beans);
+        }
+
+        List<Collection<Bean<?>>> beanParts = new ArrayList<>(numParts);
+        int partCollectionSize = (beanSize / numParts) + 1; // make sure all are processed
+        Iterator<Bean<?>> beanSetIterator = beans.iterator();
+        for (int i = 0; i < numParts; i++)
+        {
+            List<Bean<?>> part = new ArrayList<>(partCollectionSize);
+            for (int b = 0; b < partCollectionSize; b++)
+            {
+                if (beanSetIterator.hasNext())
+                {
+                    part.add(beanSetIterator.next());
+                }
+            }
+            beanParts.add(part);
+        }
+
+        return beanParts;
+    }
+
     /**
      * Validates beans.
      * 
@@ -1362,7 +1438,7 @@ public class BeansDeployer
     private Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesFromClassPath(ScannerService scanner)
     {
         logger.fine("Creating AnnotatedTypes from class files has started.");
-        Set<Class<?>> foundClasses = new HashSet<>(100);
+        Set<Class<?>> foundClasses = new HashSet<>(300);
 
         Map<BeanArchiveInformation, List<AnnotatedType<?>>> annotatedTypesPerBda
             = new HashMap<>();
