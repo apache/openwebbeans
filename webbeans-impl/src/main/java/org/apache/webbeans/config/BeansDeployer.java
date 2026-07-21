@@ -1164,12 +1164,10 @@ public class BeansDeployer
                         }
                         catch (CompletionException ce)
                         {
-                            for (Throwable throwable : ce.getSuppressed())
-                            {
-                                validationExceptions.add(throwable instanceof RuntimeException
-                                    ? (RuntimeException) throwable
-                                    : new WebBeansDeploymentException(throwable));
-                            }
+                            Throwable throwable = ce.getCause();
+                            validationExceptions.add(throwable instanceof RuntimeException
+                                ? (RuntimeException) throwable
+                                : new WebBeansDeploymentException(throwable));
                         }
                     });
 
