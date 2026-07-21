@@ -87,7 +87,7 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
     }
 
     @Override
-    public boolean isPackageExcluded(String packageName)
+    public boolean isPackageExcluded(String className)
     {
         if (excludedPackages != null)
         {
@@ -99,7 +99,7 @@ public class DefaultBeanArchiveInformation implements BeanArchiveService.BeanArc
                  * 'org.apache.foobar'
                  * Currently trying to clarify this.
                  */
-                if (packageName.startsWith(excludedPackage))
+                if (className.startsWith(excludedPackage))
                 {
                     return true;
                 }

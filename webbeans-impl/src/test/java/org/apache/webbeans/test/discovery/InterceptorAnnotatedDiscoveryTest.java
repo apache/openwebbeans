@@ -19,6 +19,7 @@
 package org.apache.webbeans.test.discovery;
 
 import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
+import org.apache.webbeans.corespi.scanner.xbean.OwbAnnotationFinder;
 import org.apache.webbeans.corespi.se.DefaultScannerService;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.ScannerService;
@@ -41,12 +42,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -56,64 +62,37 @@ public class InterceptorAnnotatedDiscoveryTest extends AbstractUnitTest
     @Test
     public void discover()
     {
-        setClasses(FooInterceptor.class.getName(), FooMe.class.getName());
+        setClasses(FooInterceptor.class, FooMe.class);
 
         startContainer();
         assertEquals("foo", getInstance(FooMe.class).foo());
     }
 
-    private void setClasses(final String... classes) {
+    private void setClasses(final Class<?>... classes) {
         // replace the implicit BDA by an annotated one
         addService(ScannerService.class, new DefaultScannerService()
         {
             @Override
-            protected AnnotationFinder initFinder()
+            protected void initFinder()
             {
-                if (finder != null)
-                {
-                    return finder;
-                }
+                // no-op, just to avoid super call
+            }
 
-                super.initFinder();
-                archive = new CdiArchive(webBeansContext().getBeanArchiveService(), WebBeansUtil.getCurrentClassLoader(), emptyMap(), null, null)
+            @Override
+            public Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> getBeanClassesPerBda()
+            {
+                Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> beanInfo = new HashMap<>();
+
+                BeanArchiveService.BeanArchiveInformation bai = new DefaultBeanArchiveInformation("openwebbeans://default")
                 {
-                    @Override
-                    public Map<String, FoundClasses> classesByUrl()
                     {
-                        try
-                        {
-                            final String url = "openwebbeans://annotated";
-                            return singletonMap(url, new FoundClasses(
-                                    new URL("openwebbeans", null, -1, "annotated", new URLStreamHandler()
-                                    {
-                                        @Override
-                                        protected URLConnection openConnection(final URL u) throws IOException
-                                        {
-                                            return new URLConnection(u)
-                                            {
-                                                @Override
-                                                public void connect() throws IOException
-                                                {
-                                                    // no-op
-                                                }
-                                            };
-                                        }
-                                    }),
-                                    asList(classes),
-                                    new DefaultBeanArchiveInformation("openwebbeans://default")
-                                    {{
-                                        setBeanDiscoveryMode(BeanArchiveService.BeanDiscoveryMode.ANNOTATED);
-                                    }}));
-                        }
-                        catch (final MalformedURLException e)
-                        {
-                            fail(e.getMessage());
-                            throw new IllegalStateException(e);
-                        }
+                    setBeanDiscoveryMode(BeanArchiveService.BeanDiscoveryMode.ANNOTATED);
                     }
                 };
 
-                return finder;
+                beanInfo.put(bai, new HashSet<>(Arrays.asList(classes)));
+
+                return beanInfo;
             }
         });
     }

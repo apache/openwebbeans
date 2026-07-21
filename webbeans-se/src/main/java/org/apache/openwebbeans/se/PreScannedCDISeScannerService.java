@@ -24,13 +24,13 @@ import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
 import org.apache.webbeans.corespi.scanner.xbean.OwbAnnotationFinder;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.util.WebBeansUtil;
-import org.apache.xbean.finder.AnnotationFinder;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 public class PreScannedCDISeScannerService extends CDISeScannerService
@@ -48,12 +48,14 @@ public class PreScannedCDISeScannerService extends CDISeScannerService
     }
 
     @Override
-    protected AnnotationFinder initFinder()
+    protected void initFinder()
     {
-        if (finder != null)
+        if (annotationFinders != null)
         {
-            return finder;
+            return;
         }
+
+        annotationFinders = new ArrayList<>();
 
         // todo: support to read beanDeploymentUrls from the conf as well
         //       -> for now we use a full programmatic deployment (single in mem archive)
@@ -75,9 +77,9 @@ public class PreScannedCDISeScannerService extends CDISeScannerService
         }).toArray(Class[]::new);
         addClassesDeploymentUrl();
         final BeanArchiveService beanArchiveService = webBeansContext.getBeanArchiveService();
-        archive = new CdiArchive(
+        CdiArchive archive = new CdiArchive(
                 beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
-                emptyMap(), null, getAdditionalArchive());
+                emptyList(), null, getAdditionalArchive());
         final Map.Entry<String, URL> deplUrl = getBeanDeploymentUrls().entrySet().iterator().next();
         archive.classesByUrl().put(
                 deplUrl.getKey(),
@@ -85,8 +87,7 @@ public class PreScannedCDISeScannerService extends CDISeScannerService
                         deplUrl.getValue(),
                         Stream.of(classes.split(",")).collect(toList()),
                         beanArchiveService.getBeanArchiveInformation(deplUrl.getValue())));
-        finder = new OwbAnnotationFinder(reflectClasses);
-        return finder;
+        annotationFinders.add(new OwbAnnotationFinder(reflectClasses));
     }
 
     @Override

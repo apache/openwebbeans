@@ -19,7 +19,6 @@
 package org.apache.openwebbeans.se;
 
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
-import org.apache.webbeans.corespi.scanner.xbean.OwbAnnotationFinder;
 import org.apache.xbean.finder.archive.Archive;
 import org.apache.xbean.finder.archive.ClassesArchive;
 import org.apache.xbean.finder.archive.FileArchive;
@@ -49,10 +48,6 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
     private boolean autoScanning = true;
     private final Collection<Class<?>> classes = new ArrayList<>();
 
-    public OwbAnnotationFinder getFinder()
-    {
-        return finder;
-    }
 
     public void loader(ClassLoader loader)
     {

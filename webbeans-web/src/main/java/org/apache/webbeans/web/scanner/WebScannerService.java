@@ -19,7 +19,6 @@
 package org.apache.webbeans.web.scanner;
 
 import org.apache.webbeans.corespi.scanner.AbstractMetaDataDiscovery;
-import org.apache.webbeans.corespi.scanner.xbean.OwbAnnotationFinder;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.util.ExceptionUtil;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -59,11 +58,6 @@ public class WebScannerService extends AbstractMetaDataDiscovery
         addWarBeansArchive();
 
         registerBeanArchives(loader);
-    }
-
-    public OwbAnnotationFinder getFinder()
-    {
-        return finder;
     }
 
     /**

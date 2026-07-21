@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  */
 public class OwbAnnotationFinder extends AnnotationFinder
 {
-    public OwbAnnotationFinder(Archive archive, boolean checkRuntimeAnnotation)
+    public OwbAnnotationFinder(CdiArchive archive, boolean checkRuntimeAnnotation)
     {
         super(archive, checkRuntimeAnnotation);
     }
@@ -39,6 +39,11 @@ public class OwbAnnotationFinder extends AnnotationFinder
     public OwbAnnotationFinder(Archive archive)
     {
         super(archive);
+    }
+
+    public CdiArchive getCdiArchive()
+    {
+        return (CdiArchive) getArchive();
     }
 
     public OwbAnnotationFinder(final Class<?>[] classes)

@@ -84,10 +84,16 @@ public class OpenWebBeansConfiguration
 
     /**
      * The maximum number of threads to use for BeansDeployer validation of our beans.
-     * We detect how many CPU cores we do have and then for each 300 or so beans, we use a new thread.
+     * We detect how many CPU cores we do have and then for each 500 or so beans, we use a new thread.
      * But we will always stay below the max number of CPU cores and configured maxThreads.
      */
     public static final String BEANS_DEPLOYER_MAX_THREADS = "org.apache.webbeans.deployer.maxThreads";
+
+    /**
+     * The maximum number of threads to use for the ScannerService.
+     * We detect how many CPU cores we do have and use that as maximum threads or the configured maxThreads.
+     */
+    public static final String SCANNER_SERVICE_MAX_THREADS = "org.apache.webbeans.scanner.maxThreads";
 
     /**Container lifecycle*/
     public static final String CONTAINER_LIFECYCLE = "org.apache.webbeans.spi.ContainerLifecycle";
@@ -591,6 +597,12 @@ public class OpenWebBeansConfiguration
     public int getBeanDeployerMaxThreads()
     {
         final String maxThreadsStr = getProperty(OpenWebBeansConfiguration.BEANS_DEPLOYER_MAX_THREADS);
+        return maxThreadsStr == null ? Integer.MAX_VALUE : Integer.parseInt(maxThreadsStr.trim());
+    }
+
+    public int getScannerServiceMaxThreads()
+    {
+        final String maxThreadsStr = getProperty(OpenWebBeansConfiguration.SCANNER_SERVICE_MAX_THREADS);
         return maxThreadsStr == null ? Integer.MAX_VALUE : Integer.parseInt(maxThreadsStr.trim());
     }
 }

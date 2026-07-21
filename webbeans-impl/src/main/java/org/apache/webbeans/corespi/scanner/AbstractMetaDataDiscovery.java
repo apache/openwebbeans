@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -58,6 +59,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -98,21 +104,24 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
      */
     private Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> beanClassesPerBda;
 
+    protected List<OwbAnnotationFinder> annotationFinders;
+
+
     protected String[] scanningExcludes;
 
     protected ClassLoader loader;
-    protected CdiArchive archive;
-    protected OwbAnnotationFinder finder;
     protected boolean isBDAScannerEnabled;
     protected BDABeansXmlScanner bdaBeansXmlScanner;
     protected WebBeansContext webBeansContext;
 
-    protected AnnotationFinder initFinder()
+    protected void initFinder()
     {
-        if (finder != null)
+        if (annotationFinders != null)
         {
-            return finder;
+            return;
         }
+
+        annotationFinders = new ArrayList<>();
 
         final WebBeansContext webBeansContext = webBeansContext();
         if (beanArchiveService == null)
@@ -132,12 +141,50 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                     .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
             extensionJars.clear(); // no more needed
         }
-        archive = new CdiArchive(
-                beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
-                beanDeploymentUrls, userFilter, getAdditionalArchive());
-        finder = new OwbAnnotationFinder(archive);
 
-        return finder;
+        int numCpus = Runtime.getRuntime().availableProcessors();
+        int numThreads = Math.min(webBeansContext.getOpenWebBeansConfiguration().getScannerServiceMaxThreads(), numCpus);
+
+        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+        List<CompletableFuture<OwbAnnotationFinder>> futures = new ArrayList<>(beanDeploymentUrls.size());
+
+        try
+        {
+            for (URL beanDeploymentUrl : beanDeploymentUrls.values())
+            {
+                futures.add(CompletableFuture.supplyAsync(() -> {
+                    CdiArchive archive = new CdiArchive(
+                        beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
+                        Collections.singletonList(beanDeploymentUrl), userFilter, getAdditionalArchive());
+                    return new OwbAnnotationFinder(archive);
+                }, executor));
+            }
+
+            for (CompletableFuture<OwbAnnotationFinder> f : futures)
+            {
+                try
+                {
+                    annotationFinders.add(f.get());
+                }
+                catch (CompletionException ce)
+                {
+                    Throwable t = ce.getCause();
+                    throw new WebBeansDeploymentException(t);
+                }
+                catch (ExecutionException e)
+                {
+                    throw new WebBeansDeploymentException(e);
+                }
+                catch (InterruptedException e)
+                {
+                    logger.info("Interrupted, aborting MetaDataDiscovery");
+                }
+            }
+        }
+        finally
+        {
+            executor.shutdown();
+        }
     }
 
     protected Archive getAdditionalArchive()
@@ -373,8 +420,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
     @Override
     public void release()
     {
-        finder = null;
-        archive = null;
+        annotationFinders = null;
         loader = null;
         annotationCache.clear();
     }
@@ -469,50 +515,53 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             boolean dontSkipNCDFT = !(webBeansContext != null &&
                     webBeansContext.getOpenWebBeansConfiguration().isSkipNoClassDefFoundErrorTriggers());
 
-            for (CdiArchive.FoundClasses foundClasses : archive.classesByUrl().values())
+            for (OwbAnnotationFinder annotationFinder : annotationFinders)
             {
-                Set<Class<?>> classSet = new HashSet<>();
-                boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED == foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode();
-                for (String className : foundClasses.getClassNames())
+
+                for (CdiArchive.FoundClasses foundClasses : annotationFinder.getCdiArchive().classesByUrl().values())
                 {
-                    try
+                    Set<Class<?>> classSet = new HashSet<>();
+                    boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED == foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode();
+                    for (String className : foundClasses.getClassNames())
                     {
-                        if (scanModeAnnotated)
+                        try
                         {
-                            // in this case we need to find out whether we should keep this class in the Archive
-                            AnnotationFinder.ClassInfo classInfo = finder.getClassInfo(className);
-                            if (classInfo == null || !isBeanAnnotatedClass(classInfo))
+                            if (scanModeAnnotated)
                             {
-                                continue;
+                                // in this case we need to find out whether we should keep this class in the Archive
+                                AnnotationFinder.ClassInfo classInfo = annotationFinder.getClassInfo(className);
+                                if (classInfo == null || !isBeanAnnotatedClass(classInfo))
+                                {
+                                    continue;
+                                }
                             }
-                        }
 
-                        Class<?> clazz = ClassUtil.getClassFromName(className, loader, dontSkipNCDFT);
-                        if (clazz != null)
-                        {
-                            // we can add this class cause it has been loaded completely
-                            classSet.add(clazz);
-                        }
-                    }
-                    catch (NoClassDefFoundError e)
-                    {
-                        if (isAnonymous(className))
-                        {
-                            if (logger.isLoggable(Level.FINE))
+                            Class<?> clazz = ClassUtil.getClassFromName(className, loader, dontSkipNCDFT);
+                            if (clazz != null)
                             {
-                                logger.log(Level.FINE, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
+                                // we can add this class cause it has been loaded completely
+                                classSet.add(clazz);
                             }
                         }
-                        else if (logger.isLoggable(Level.WARNING))
+                        catch (NoClassDefFoundError e)
                         {
-                            logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
+                            if (isAnonymous(className))
+                            {
+                                if (logger.isLoggable(Level.FINE))
+                                {
+                                    logger.log(Level.FINE, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
+                                }
+                            }
+                            else if (logger.isLoggable(Level.WARNING))
+                            {
+                                logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
+                            }
                         }
                     }
+
+                    beanClassesPerBda.put(foundClasses.getBeanArchiveInfo(), classSet);
                 }
-
-                beanClassesPerBda.put(foundClasses.getBeanArchiveInfo(), classSet);
             }
-
         }
         return beanClassesPerBda;
     }

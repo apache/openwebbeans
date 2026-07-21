@@ -28,7 +28,6 @@ import org.apache.webbeans.spi.ScannerService;
 import org.apache.webbeans.web.context.WebContextsService;
 import org.apache.webbeans.web.lifecycle.test.MockServletContext;
 import org.apache.webbeans.xml.DefaultBeanArchiveService;
-import org.apache.xbean.finder.archive.ClassesArchive;
 import org.junit.Test;
 
 import jakarta.enterprise.inject.spi.Bean;
@@ -36,7 +35,8 @@ import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.http.HttpServletRequest;
-import java.net.URL;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -79,8 +79,9 @@ public class WebBeansTest {
         @Override
         public void scan()
         {
-            archive = new CdiArchive(new DefaultBeanArchiveService(), Thread.currentThread().getContextClassLoader(), new HashMap<>(), null, null);
-            finder = new OwbAnnotationFinder(new ClassesArchive());
+            CdiArchive archive = new CdiArchive(new DefaultBeanArchiveService(), Thread.currentThread().getContextClassLoader(), new HashMap<>(), null, null);
+            annotationFinders = new ArrayList<>();
+            annotationFinders.add(new OwbAnnotationFinder(archive));
         }
     }
 }

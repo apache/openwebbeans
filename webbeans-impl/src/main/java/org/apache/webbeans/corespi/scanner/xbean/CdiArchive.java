@@ -52,12 +52,21 @@ public class CdiArchive implements Archive
 
     private final Archive delegate;
 
+    /**
+     * @deprecated Method only exists for backward compatibility reasons.
+     */
     public CdiArchive(BeanArchiveService beanArchiveService, ClassLoader loader, Map<String, URL> urls,
+                      Filter userFilter, Archive customArchive)
+    {
+        this(beanArchiveService, loader, urls.values(), userFilter, customArchive);
+    }
+
+    public CdiArchive(BeanArchiveService beanArchiveService, ClassLoader loader, Collection<URL> urls,
                       Filter userFilter, Archive customArchive)
     {
         Collection<Archive> archives = new ArrayList<>();
         boolean customAdded = false;
-        for (URL url : urls.values())
+        for (URL url : urls)
         {
             List<String> urlClasses = new ArrayList<>();
 
