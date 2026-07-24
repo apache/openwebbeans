@@ -293,22 +293,29 @@ public final class ClassUtil
     {
         Map<String, List<Method>> methodMap = new HashMap<>();
         List<Method> allMethods = new ArrayList<>(10);
+        // mirrors allMethods for O(1) membership checks (avoids O(n^2) List#contains with Method#equals)
+        Set<Method> allMethodsSet = new HashSet<>();
 
         Class<?> clazz = topClass;
 
         if (!clazz.isAnnotation() && clazz.isInterface())
         {
-            addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, clazz);
+            addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, allMethodsSet, clazz, true);
             for (Class<?> parent : clazz.getInterfaces())
             {
-                addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, parent);
+                addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, allMethodsSet, parent, true);
             }
         }
         else
         {
+            // topClass.getMethods() already returns every public method in the whole hierarchy, so only the
+            // top class needs that (expensive) call; superclasses only add their declared (non-public) methods.
+            // Public methods declared higher up are already collected and deduped via allMethodsSet.
+            boolean topLevel = true;
             while (clazz != null)
             {
-                addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, clazz);
+                addNonPrivateMethods(topClass, excludeFinalMethods, methodMap, allMethods, allMethodsSet, clazz, topLevel);
+                topLevel = false;
                 clazz = clazz.getSuperclass();
             }
         }
@@ -391,20 +398,36 @@ public final class ClassUtil
 
     private static void addNonPrivateMethods(Class<?> topClass, boolean excludeFinalMethods,
                                              Map<String, List<Method>> methodMap, List<Method> allMethods,
-                                             Class<?> clazz)
+                                             Set<Method> allMethodsSet, Class<?> clazz, boolean includeInheritedPublicMethods)
     {
-        List<Method> temp = new ArrayList<>(Arrays.asList(clazz.getMethods()));
-        for (Method method : clazz.getDeclaredMethods())
+        List<Method> temp;
+        if (includeInheritedPublicMethods)
         {
-            if (!temp.contains(method))
+            Method[] classMethods = clazz.getMethods();
+            Method[] declaredMethods = clazz.getDeclaredMethods();
+            temp = new ArrayList<>(classMethods.length + declaredMethods.length);
+            Collections.addAll(temp, classMethods);
+            for (Method method : declaredMethods)
             {
-                temp.add(method);
+                // a declared method is in getMethods() iff it is public, so only the non-public
+                // declared methods (private/protected/package) still need to be added here.
+                // This avoids both an O(n^2) List#contains and a temporary de-dup Set.
+                if (!Modifier.isPublic(method.getModifiers()))
+                {
+                    temp.add(method);
+                }
             }
+        }
+        else
+        {
+            // inherited public methods were already collected from the top class (and deduped via
+            // allMethodsSet below), so this level only needs to contribute its declared methods.
+            temp = Arrays.asList(clazz.getDeclaredMethods());
         }
 
         for (Method method : temp)
         {
-            if (allMethods.contains(method))
+            if (allMethodsSet.contains(method))
             {
                 continue;
             }
@@ -450,6 +473,7 @@ public final class ClassUtil
                 methods = new ArrayList<>();
                 methods.add(method);
                 allMethods.add(method);
+                allMethodsSet.add(method);
                 methodMap.put(method.getName(), methods);
             }
             else
@@ -459,6 +483,7 @@ public final class ClassUtil
                     // method is not overridden, so add it
                     methods.add(method);
                     allMethods.add(method);
+                    allMethodsSet.add(method);
                 }
             }
         }
