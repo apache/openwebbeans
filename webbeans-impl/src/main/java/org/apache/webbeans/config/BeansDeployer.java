@@ -1111,6 +1111,11 @@ public class BeansDeployer
     {
         logger.fine("Validation of injection points has started.");
 
+        // The bean set is final now, so resolve against a clean cache. Done once here (not per validate()
+        // call) so the resolver caches and type index are built once and shared across the parallel
+        // validation partitions instead of being cleared and rebuilt by every worker thread.
+        webBeansContext.getBeanManagerImpl().getInjectionResolver().clearCaches();
+
         decoratorsManager.validateDecoratorClasses();
         interceptorsManager.validateInterceptorClasses();
 
@@ -1224,8 +1229,8 @@ public class BeansDeployer
      */
     private <T, B extends Bean<?>> void validate(Collection<B> beans)
     {
-        webBeansContext.getBeanManagerImpl().getInjectionResolver().clearCaches();
-
+        // NB: caches are cleared once in validateInjectionPoints() before validation starts, not here -
+        // this method runs concurrently per bean-partition and must not wipe the shared resolver caches.
         if (beans != null && beans.size() > 0)
         {
             Set<String> beanNames = new HashSet<>(Math.min(beans.size(), 200));
