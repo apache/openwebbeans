@@ -56,7 +56,8 @@ public abstract class AbstractAnnotated implements Annotated
 
     /**Set of annotations*/
     private Set<Annotation> annotations = new HashSet<>();
-    private Set<Class<?>> repeatables = new HashSet<>();
+    /** lazily created - repeatable annotations are rare, so most annotated elements never need this Set */
+    private Set<Class<?>> repeatables;
 
     private final WebBeansContext webBeansContext;
     
@@ -124,6 +125,10 @@ public abstract class AbstractAnnotated implements Annotated
         }
         if (repeatables != null && !repeatables.isEmpty())
         {
+            if (this.repeatables == null)
+            {
+                this.repeatables = new HashSet<>();
+            }
             this.repeatables.addAll(repeatables.stream().map(Annotation::annotationType).collect(toList()));
             this.annotations.addAll(repeatables);
         }
@@ -131,7 +136,7 @@ public abstract class AbstractAnnotated implements Annotated
 
     public Set<Class<?>> getRepeatables()
     {
-        return repeatables;
+        return repeatables == null ? Collections.emptySet() : repeatables;
     }
 
     /**
