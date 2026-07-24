@@ -18,6 +18,7 @@ package org.apache.webbeans.test.component.classscanning;
 
 import java.io.File;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import org.apache.webbeans.test.AbstractUnitTest;
 import org.junit.Test;
@@ -30,6 +31,7 @@ import static org.junit.Assert.assertNull;
  */
 public class NoClassDefFoundHandlingTest extends AbstractUnitTest
 {
+    private static Logger logger = Logger.getLogger(NoClassDefFoundHandlingTest.class.getName());
 
     @Test
     public void testNoClassDefFoundHandling()
@@ -45,8 +47,13 @@ public class NoClassDefFoundHandlingTest extends AbstractUnitTest
     {
         String classResourceName = "/" + className.replace('.', '/') + ".class";
         final URL classRessource = this.getClass().getResource(classResourceName);
-        if (classRessource != null) {
+        if (classRessource != null)
+        {
             new File(classRessource.getFile()).delete();
+        }
+        else
+        {
+            logger.warning("Class do delete was not found: " + classResourceName + " at location ");
         }
     }
 }
