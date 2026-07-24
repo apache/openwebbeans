@@ -97,6 +97,13 @@ public class InjectionResolver
     private Map<String, Set<Bean<?>>> resolvedBeansByName = new ConcurrentHashMap<>();
 
     /**
+     * Index of all beans by the raw {@link Class} of each of their (api) types.
+     * Built lazily once the bean set is final (post startup) so type-based resolution can look up
+     * candidate beans instead of linearly scanning the whole deployment. Reset in {@link #clearCaches()}.
+     */
+    private volatile Map<Class<?>, Set<Bean<?>>> beansByRawType;
+
+    /**
      * Whether the container is in startup mode.
      * Set to {@code false} immediately before the BeforeDeploymentValidation event gets fired.
      */
@@ -139,6 +146,41 @@ public class InjectionResolver
     {
         resolvedBeansByName.clear();
         resolvedBeansByType.clear();
+        beansByRawType = null;
+    }
+
+    /**
+     * Lazily built index mapping the raw {@link Class} of every bean api type to the beans carrying it.
+     * Only used once the bean set is final (post startup); it mirrors exactly which beans the linear
+     * fast-matching scan would find via {@link ClassUtil#isRawClassEquals(Type, Type)}.
+     */
+    private Map<Class<?>, Set<Bean<?>>> getBeansByRawType()
+    {
+        Map<Class<?>, Set<Bean<?>>> index = beansByRawType;
+        if (index == null)
+        {
+            synchronized (this)
+            {
+                index = beansByRawType;
+                if (index == null)
+                {
+                    index = new HashMap<>();
+                    for (Bean<?> bean : webBeansContext.getBeanManagerImpl().getBeans())
+                    {
+                        for (Type apiType : bean.getTypes())
+                        {
+                            Class<?> rawType = ClassUtil.getRawPrimitiveType(apiType);
+                            if (rawType != null)
+                            {
+                                index.computeIfAbsent(rawType, k -> new HashSet<>()).add(bean);
+                            }
+                        }
+                    }
+                    beansByRawType = index;
+                }
+            }
+        }
+        return index;
     }
 
     /**
@@ -424,44 +466,67 @@ public class InjectionResolver
 
         boolean returnAll = injectionPointType.equals(Object.class) && currentQualifier;
 
-        for (Bean<?> component : webBeansContext.getBeanManagerImpl().getBeans())
+        // Once the bean set is final (post startup) the fast-matching scan is a pure raw-type filter,
+        // so we can look up the candidate beans in the index instead of scanning the whole deployment.
+        if (fastMatching && !startup && !returnAll)
         {
-            // no need to check instanceof OwbBean as we always wrap in a
-            // ThirdpartyBeanImpl at least
-            if (!((OwbBean) component).isEnabled())
+            Class<?> ipRawType = ClassUtil.getRawPrimitiveType(injectionPointType);
+            if (ipRawType != null)
             {
-                continue;
-            }
-
-            if (returnAll)
-            {
-                resolvedComponents.add(component);
-            }
-            else
-            {
-                if (fastMatching)
+                Set<Bean<?>> candidates = getBeansByRawType().get(ipRawType);
+                if (candidates != null)
                 {
-                    for (Type componentApiType : component.getTypes())
+                    for (Bean<?> component : candidates)
                     {
-
-                        if (ClassUtil.isRawClassEquals(injectionPointType, componentApiType))
+                        if (((OwbBean) component).isEnabled())
                         {
                             resolvedComponents.add(component);
-                            break;
                         }
                     }
                 }
+            }
+        }
+        else
+        {
+            for (Bean<?> component : webBeansContext.getBeanManagerImpl().getBeans())
+            {
+                // no need to check instanceof OwbBean as we always wrap in a
+                // ThirdpartyBeanImpl at least
+                if (!((OwbBean) component).isEnabled())
+                {
+                    continue;
+                }
+
+                if (returnAll)
+                {
+                    resolvedComponents.add(component);
+                }
                 else
                 {
-                    for (Type componentApiType : component.getTypes())
+                    if (fastMatching)
                     {
-                        visitedForGenerics.clear();
-                        if (GenericsUtil.satisfiesDependency(
-                                isDelegate, AbstractProducerBean.class.isInstance(component),
-                                injectionPointType, componentApiType, visitedForGenerics))
+                        for (Type componentApiType : component.getTypes())
                         {
-                            resolvedComponents.add(component);
-                            break;
+
+                            if (ClassUtil.isRawClassEquals(injectionPointType, componentApiType))
+                            {
+                                resolvedComponents.add(component);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (Type componentApiType : component.getTypes())
+                        {
+                            visitedForGenerics.clear();
+                            if (GenericsUtil.satisfiesDependency(
+                                    isDelegate, AbstractProducerBean.class.isInstance(component),
+                                    injectionPointType, componentApiType, visitedForGenerics))
+                            {
+                                resolvedComponents.add(component);
+                                break;
+                            }
                         }
                     }
                 }

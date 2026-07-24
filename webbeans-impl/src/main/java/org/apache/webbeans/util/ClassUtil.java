@@ -1031,7 +1031,7 @@ public final class ClassUtil
         return ipClass.equals(apiClass);
     }
 
-    private static Class getRawPrimitiveType(Type type)
+    public static Class getRawPrimitiveType(Type type)
     {
         if (type instanceof Class)
         {
