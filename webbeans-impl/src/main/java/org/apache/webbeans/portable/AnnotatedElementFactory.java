@@ -21,8 +21,12 @@ package org.apache.webbeans.portable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -327,7 +331,7 @@ public final class AnnotatedElementFactory
         }
         methods = Collections.unmodifiableSet(getFilteredMethods(annotatedType.getJavaClass(),
                                                                  (Set)annotatedType.getMethods(),
-            new HashSet<>()));
+            new HashSet<>(), new HashMap<>()));
         Set<AnnotatedMethod<?>> old = annotatedMethodsOfTypeCache.putIfAbsent(annotatedType, methods);
         if (old != null)
         {
@@ -354,7 +358,8 @@ public final class AnnotatedElementFactory
         annotatedMethodsOfTypeCache.clear();
     }
     
-    private Set<? extends AnnotatedMethod<?>> getFilteredMethods(Class<?> type, Set<AnnotatedMethod<?>> allMethods, Set<AnnotatedMethod<?>> filteredMethods)
+    private Set<? extends AnnotatedMethod<?>> getFilteredMethods(Class<?> type, Set<AnnotatedMethod<?>> allMethods,
+            Set<AnnotatedMethod<?>> filteredMethods, Map<String, List<AnnotatedMethod<?>>> filteredByName)
     {
         if (type == null)
         {
@@ -362,17 +367,25 @@ public final class AnnotatedElementFactory
         }
         for (AnnotatedMethod<?> annotatedMethod: allMethods)
         {
-            if (annotatedMethod.getJavaMember().getDeclaringClass() == type && !isOverridden(annotatedMethod, filteredMethods))
+            if (annotatedMethod.getJavaMember().getDeclaringClass() == type && !isOverridden(annotatedMethod, filteredByName))
             {
                 filteredMethods.add(annotatedMethod);
+                filteredByName.computeIfAbsent(annotatedMethod.getJavaMember().getName(), k -> new ArrayList<>(2))
+                    .add(annotatedMethod);
             }
         }
-        return getFilteredMethods(type.getSuperclass(), allMethods, filteredMethods);
+        return getFilteredMethods(type.getSuperclass(), allMethods, filteredMethods, filteredByName);
     }
 
-    private boolean isOverridden(AnnotatedMethod<?> superclassMethod, Set<AnnotatedMethod<?>> methods)
+    private boolean isOverridden(AnnotatedMethod<?> superclassMethod, Map<String, List<AnnotatedMethod<?>>> filteredByName)
     {
-        for (AnnotatedMethod<?> subclassMethod : methods)
+        // only methods with the same name can override, so restrict the scan to that bucket (avoids O(n^2))
+        List<AnnotatedMethod<?>> sameName = filteredByName.get(superclassMethod.getJavaMember().getName());
+        if (sameName == null)
+        {
+            return false;
+        }
+        for (AnnotatedMethod<?> subclassMethod : sameName)
         {
             if (ClassUtil.isOverridden(subclassMethod.getJavaMember(), superclassMethod.getJavaMember()))
             {
