@@ -766,21 +766,27 @@ public class InterceptorResolutionService
                 }
             }
         }
+        // index the AnnotatedMethods by their java member so the matching below is O(n) instead of O(n^2).
+        // Each AnnotatedMethod wraps a distinct java.lang.reflect.Method, so the members are unique keys.
+        Map<Method, AnnotatedMethod<?>> annotatedMethodsByMember = new HashMap<>(annotatedMethods.size());
+        for (AnnotatedMethod<?> annotatedMethod : annotatedMethods)
+        {
+            annotatedMethodsByMember.put(annotatedMethod.getJavaMember(), annotatedMethod);
+        }
+
         for (Method interceptableMethod : interceptableMethods)
         {
-            for (AnnotatedMethod<?> annotatedMethod : annotatedMethods)
+            AnnotatedMethod<?> annotatedMethod = annotatedMethodsByMember.get(interceptableMethod);
+            if (annotatedMethod != null)
             {
-                if (annotatedMethod.getJavaMember().equals(interceptableMethod))
+                int modifiers = annotatedMethod.getJavaMember().getModifiers();
+                if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
                 {
-                    int modifiers = annotatedMethod.getJavaMember().getModifiers();
-                    if (Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers))
-                    {
-                        // we must only intercept business methods
-                        continue;
-                    }
-
-                    interceptableAnnotatedMethods.add(annotatedMethod);
+                    // we must only intercept business methods
+                    continue;
                 }
+
+                interceptableAnnotatedMethods.add(annotatedMethod);
             }
         }
 
