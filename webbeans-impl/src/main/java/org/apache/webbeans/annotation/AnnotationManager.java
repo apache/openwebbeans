@@ -130,6 +130,14 @@ public final class AnnotationManager
      */
     public Set<Annotation> getInterceptorAnnotations(Set<Annotation> typeAnns)
     {
+        if (typeAnns.isEmpty())
+        {
+            // all interceptor bindings are derived from typeAnns, so no annotations means no bindings.
+            // Short-circuit here to skip the meta-annotation scan and map allocations below for every
+            // annotation-free element. A fresh mutable Set is returned as callers may add to the result.
+            return new HashSet<>();
+        }
+
         // use a map to ensure that every annotation type is present only once
         Map<Class<? extends Annotation>, Annotation> bindings = new HashMap<>();
 
