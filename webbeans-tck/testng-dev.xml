@@ -15,8 +15,8 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue">
-    <test name="JSR-346 TCK">
+<suite name="Jakarta-CDI-TCK" verbose="2" configfailurepolicy="continue">
+    <test name="Jakarta CDI TCK">
 
         <classes>
             <class name="org.jboss.cdi.tck.interceptors.tests.contract.invocationContext.InvocationContextTest" >

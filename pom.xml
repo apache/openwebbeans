@@ -79,6 +79,8 @@
         <httpclient.version>4.5.14</httpclient.version>
         <xbean.version>4.31</xbean.version>
         <arquillian.version>1.8.1.Final</arquillian.version>
+        <!-- the Arquillian "SE managed" container used by the CDI SE TCK; released separately from arquillian core -->
+        <arquillian.se.container.version>1.0.2.Final</arquillian.se.container.version>
         <cdi.tck.version>4.1.0</cdi.tck.version>
 
         <osgi.servlet.range>4.0</osgi.servlet.range>
@@ -734,6 +736,7 @@
         <module>webbeans-ee</module>
         <module>webbeans-jms</module>
         <module>webbeans-tck</module>
+        <module>webbeans-tck-se</module>
         <module>webbeans-jsf</module>
         <module>webbeans-osgi</module>
         <module>distribution</module>
