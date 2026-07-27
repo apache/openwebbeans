@@ -512,56 +512,93 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         {
             beanClassesPerBda = new HashMap<>();
             ClassLoader loader = WebBeansUtil.getCurrentClassLoader();
-            boolean dontSkipNCDFT = !(webBeansContext != null &&
-                    webBeansContext.getOpenWebBeansConfiguration().isSkipNoClassDefFoundErrorTriggers());
+            WebBeansContext webBeansContext = webBeansContext();
+            boolean dontSkipNCDFT = !webBeansContext.getOpenWebBeansConfiguration().isSkipNoClassDefFoundErrorTriggers();
 
-            for (OwbAnnotationFinder annotationFinder : annotationFinders)
+            final int numCpus = webBeansContext.getWebBeansUtil().getNumCpuCoresToUse();
+            final int numThreads = Math.min(webBeansContext.getOpenWebBeansConfiguration().getBeanDeployerMaxThreads(), numCpus);
+
+            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+            List<CompletableFuture<Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>>>> futures = new ArrayList<>(annotationFinders.size());
+            try
             {
-
-                for (CdiArchive.FoundClasses foundClasses : annotationFinder.getCdiArchive().classesByUrl().values())
+                for (OwbAnnotationFinder annotationFinder : annotationFinders)
                 {
-                    Set<Class<?>> classSet = new HashSet<>();
-                    boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED == foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode();
-                    for (String className : foundClasses.getClassNames())
+                    futures.add(CompletableFuture.supplyAsync(() ->
                     {
-                        try
+                        Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>> classesPerBeanArchiveInfo = new HashMap<>();
+                        for (CdiArchive.FoundClasses foundClasses : annotationFinder.getCdiArchive().classesByUrl().values())
                         {
-                            if (scanModeAnnotated)
+                            Set<Class<?>> classSet = new HashSet<>();
+                            boolean scanModeAnnotated = BeanDiscoveryMode.ANNOTATED == foundClasses.getBeanArchiveInfo().getBeanDiscoveryMode();
+                            for (String className : foundClasses.getClassNames())
                             {
-                                // in this case we need to find out whether we should keep this class in the Archive
-                                AnnotationFinder.ClassInfo classInfo = annotationFinder.getClassInfo(className);
-                                if (classInfo == null || !isBeanAnnotatedClass(classInfo))
+                                try
                                 {
-                                    continue;
-                                }
-                            }
+                                    if (scanModeAnnotated)
+                                    {
+                                        // in this case we need to find out whether we should keep this class in the Archive
+                                        AnnotationFinder.ClassInfo classInfo = annotationFinder.getClassInfo(className);
+                                        if (classInfo == null || !isBeanAnnotatedClass(classInfo))
+                                        {
+                                            continue;
+                                        }
+                                    }
 
-                            Class<?> clazz = ClassUtil.getClassFromName(className, loader, dontSkipNCDFT);
-                            if (clazz != null)
-                            {
-                                // we can add this class cause it has been loaded completely
-                                classSet.add(clazz);
-                            }
-                        }
-                        catch (NoClassDefFoundError e)
-                        {
-                            if (isAnonymous(className))
-                            {
-                                if (logger.isLoggable(Level.FINE))
+                                    Class<?> clazz = ClassUtil.getClassFromName(className, loader, dontSkipNCDFT);
+                                    if (clazz != null)
+                                    {
+                                        // we can add this class cause it has been loaded completely
+                                        classSet.add(clazz);
+                                    }
+                                }
+                                catch (NoClassDefFoundError e)
                                 {
-                                    logger.log(Level.FINE, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
+                                    if (isAnonymous(className))
+                                    {
+                                        if (logger.isLoggable(Level.FINE))
+                                        {
+                                            logger.log(Level.FINE, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
+                                        }
+                                    }
+                                    else if (logger.isLoggable(Level.WARNING))
+                                    {
+                                        logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
+                                    }
                                 }
                             }
-                            else if (logger.isLoggable(Level.WARNING))
-                            {
-                                logger.log(Level.WARNING, OWBLogConst.WARN_0018, new Object[]{className, e.toString()});
-                            }
+                            classesPerBeanArchiveInfo.put(foundClasses.getBeanArchiveInfo(), classSet);
                         }
+                        return classesPerBeanArchiveInfo;
+                    }, executor));
+                }
+
+                for (CompletableFuture<Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>>> f : futures)
+                {
+                    try
+                    {
+                        beanClassesPerBda.putAll(f.get());
                     }
-
-                    beanClassesPerBda.put(foundClasses.getBeanArchiveInfo(), classSet);
+                    catch (CompletionException ce)
+                    {
+                        Throwable t = ce.getCause();
+                        throw new WebBeansDeploymentException(t);
+                    }
+                    catch (ExecutionException e)
+                    {
+                        throw new WebBeansDeploymentException(e);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        logger.info("Interrupted, aborting MetaDataDiscovery");
+                    }
                 }
             }
+            finally
+            {
+                executor.shutdown();
+            }
+
         }
         return beanClassesPerBda;
     }

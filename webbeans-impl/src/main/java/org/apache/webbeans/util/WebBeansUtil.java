@@ -182,6 +182,30 @@ public final class WebBeansUtil
     }
 
     /**
+     * Calculate how many CPU cores we should use for doing parallel tasks.
+     * The higher the amount of CPU cores is, the less improvements we get per core.
+     * Thus for more than 3 cores, we should use at least one core for other tasks.
+     * If we have more than 7 cores, we spare 2 cores for other work.
+     *
+     * Certain tasks have additional configuration to limit the maximum threads to use.
+     */
+    public int getNumCpuCoresToUse()
+    {
+        int numCpus = Runtime.getRuntime().availableProcessors();
+
+        if (numCpus > 3)
+        {
+            numCpus--;
+        }
+        if (numCpus > 7)
+        {
+            numCpus--;
+        }
+
+        return numCpus;
+    }
+
+    /**
      * Gets current classloader with current thread.
      *
      * @return Current class loader instance

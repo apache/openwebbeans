@@ -1141,11 +1141,7 @@ public class BeansDeployer
 
         //Validate Others
 
-        int numCpus = Runtime.getRuntime().availableProcessors();
-
-        // for each pack of beans we take a new thread.
-        int numParts = Math.min(numCpus, 1+ (beans.size() / BEANS_PER_THREAD_MIN));
-        numParts = Math.min(webBeansContext.getOpenWebBeansConfiguration().getBeanDeployerMaxThreads(), numParts);
+        int numParts = getNumParallelDeployThreads(beans);
 
         List<Collection<Bean<?>>> beanParts = partition(beans, numParts);
 
@@ -1192,6 +1188,16 @@ public class BeansDeployer
         validateObservers(webBeansContext.getNotificationManager().getObserverMethods());
 
         logger.info(OWBLogConst.INFO_0003);
+    }
+
+    public int getNumParallelDeployThreads(Set<Bean<?>> beans)
+    {
+        int numCpus = webBeansContext.getWebBeansUtil().getNumCpuCoresToUse();
+
+        // for each pack of beans we take a new thread.
+        int numParts = Math.min(numCpus, 1+ (beans.size() / BEANS_PER_THREAD_MIN));
+        numParts = Math.min(webBeansContext.getOpenWebBeansConfiguration().getBeanDeployerMaxThreads(), numParts);
+        return numParts;
     }
 
     private List<Collection<Bean<?>>> partition(Set<Bean<?>> beans, int numParts)
