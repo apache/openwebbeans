@@ -21,7 +21,6 @@ package org.apache.webbeans.component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.enterprise.context.Dependent;
@@ -65,19 +64,19 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
 
     public BeanAttributesImpl(Set<Type> types)
     {
-        this(types, AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET, Dependent.class, null, Collections.<Class<? extends Annotation>>emptySet(), false);
+        this(types, AnnotationUtil.DEFAULT_AND_ANY_ANNOTATION_SET, Dependent.class, null, Collections.emptySet(), false);
     }
 
     public BeanAttributesImpl(Set<Type> types, Set<Annotation> qualifiers)
     {
-        this(types, qualifiers, Dependent.class, null, Collections.<Class<? extends Annotation>>emptySet(), false);
+        this(types, qualifiers, Dependent.class, null, Collections.emptySet(), false);
     }
 
     public BeanAttributesImpl(Set<Type> types,
                         Set<Annotation> qualifiers,
                         Class<? extends Annotation> scope)
     {
-        this(types, qualifiers, scope, null, Collections.<Class<? extends Annotation>>emptySet(), false);
+        this(types, qualifiers, scope, null, Collections.emptySet(), false);
     }
 
     public BeanAttributesImpl(Set<Type> types,
@@ -95,13 +94,13 @@ public class BeanAttributesImpl<T> implements BeanAttributes<T>
                         Set<Class<? extends Annotation>> stereotypes,
                         boolean alternative)
     {
-        this.types = types == null? Collections.<Type>emptySet(): Collections.unmodifiableSet(new HashSet<>(types));
-        this.qualifiers = qualifiers == null? Collections.<Annotation>emptySet(): Collections.unmodifiableSet(new HashSet<>(qualifiers));
+        this.types = types == null? Collections.emptySet(): Collections.unmodifiableSet(types);
+        this.qualifiers = qualifiers == null? Collections.emptySet(): Collections.unmodifiableSet(qualifiers);
         this.scope = scope;
         this.name = name;
         this.stereotypes = stereotypes == null
-                ? Collections.<Class<? extends Annotation>>emptySet()
-                : Collections.unmodifiableSet(new HashSet<>(stereotypes));
+                ? Collections.emptySet()
+                : Collections.unmodifiableSet(stereotypes);
         this.alternative = alternative;
     }
 
