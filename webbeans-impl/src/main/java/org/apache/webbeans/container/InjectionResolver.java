@@ -104,6 +104,13 @@ public class InjectionResolver
     private volatile Map<Class<?>, Set<Bean<?>>> beansByRawType;
 
     /**
+     * Index of all beans by their EL name.
+     * Built lazily once the bean set is final (post startup) so name based resolution can look up
+     * candidate beans instead of linearly scanning the whole deployment. Reset in {@link #clearCaches()}.
+     */
+    private volatile Map<String, Set<Bean<?>>> beansByName;
+
+    /**
      * Whether the container is in startup mode.
      * Set to {@code false} immediately before the BeforeDeploymentValidation event gets fired.
      */
@@ -147,6 +154,7 @@ public class InjectionResolver
         resolvedBeansByName.clear();
         resolvedBeansByType.clear();
         beansByRawType = null;
+        beansByName = null;
     }
 
     /**
@@ -177,6 +185,32 @@ public class InjectionResolver
                         }
                     }
                     beansByRawType = index;
+                }
+            }
+        }
+        return index;
+    }
+
+    private Map<String, Set<Bean<?>>> getBeansByName()
+    {
+        Map<String, Set<Bean<?>>> index = beansByName;
+        if (index == null)
+        {
+            synchronized (this)
+            {
+                index = beansByName;
+                if (index == null)
+                {
+                    index = new HashMap<>();
+                    for (Bean<?> bean : webBeansContext.getBeanManagerImpl().getBeans())
+                    {
+                        String beanName = bean.getName();
+                        if (beanName != null)
+                        {
+                            index.computeIfAbsent(beanName, k -> new HashSet<>()).add(bean);
+                        }
+                    }
+                    beansByName = index;
                 }
             }
         }
@@ -360,17 +394,29 @@ public class InjectionResolver
             return resolvedComponents;
         }
 
-        resolvedComponents = new HashSet<>();
-        Set<Bean<?>> deployedComponents = webBeansContext.getBeanManagerImpl().getBeans();
-
-        //Finding all beans with given name
-        for (Bean<?> component : deployedComponents)
+        // Once the bean set is final (post startup) the name index answers this directly. The scan
+        // below is O(all beans) per name, which validateBeanNames() repeats for every EL name in the
+        // deployment.
+        if (!startup)
         {
-            if (component.getName() != null)
+            Set<Bean<?>> named = getBeansByName().get(name);
+            // copied because the result is handed out and cached below
+            resolvedComponents = named == null ? new HashSet<>() : new HashSet<>(named);
+        }
+        else
+        {
+            resolvedComponents = new HashSet<>();
+            Set<Bean<?>> deployedComponents = webBeansContext.getBeanManagerImpl().getBeans();
+
+            //Finding all beans with given name
+            for (Bean<?> component : deployedComponents)
             {
-                if (component.getName().equals(name))
+                if (component.getName() != null)
                 {
-                    resolvedComponents.add(component);
+                    if (component.getName().equals(name))
+                    {
+                        resolvedComponents.add(component);
+                    }
                 }
             }
         }
@@ -466,11 +512,13 @@ public class InjectionResolver
 
         boolean returnAll = injectionPointType.equals(Object.class) && currentQualifier;
 
+        // the raw type of the injection point is invariant across the whole scan below
+        Class<?> ipRawType = fastMatching ? ClassUtil.getRawPrimitiveType(injectionPointType) : null;
+
         // Once the bean set is final (post startup) the fast-matching scan is a pure raw-type filter,
         // so we can look up the candidate beans in the index instead of scanning the whole deployment.
         if (fastMatching && !startup && !returnAll)
         {
-            Class<?> ipRawType = ClassUtil.getRawPrimitiveType(injectionPointType);
             if (ipRawType != null)
             {
                 Set<Bean<?>> candidates = getBeansByRawType().get(ipRawType);
@@ -505,13 +553,16 @@ public class InjectionResolver
                 {
                     if (fastMatching)
                     {
-                        for (Type componentApiType : component.getTypes())
+                        if (ipRawType != null)
                         {
-
-                            if (ClassUtil.isRawClassEquals(injectionPointType, componentApiType))
+                            for (Type componentApiType : component.getTypes())
                             {
-                                resolvedComponents.add(component);
-                                break;
+                                Class<?> apiRawType = ClassUtil.getRawPrimitiveType(componentApiType);
+                                if (apiRawType != null && ipRawType.equals(apiRawType))
+                                {
+                                    resolvedComponents.add(component);
+                                    break;
+                                }
                             }
                         }
                     }
