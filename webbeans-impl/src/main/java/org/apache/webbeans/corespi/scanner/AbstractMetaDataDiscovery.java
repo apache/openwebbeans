@@ -28,6 +28,7 @@ import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.corespi.scanner.xbean.CdiArchive;
 import org.apache.webbeans.corespi.scanner.xbean.OwbAnnotationFinder;
+import org.apache.webbeans.corespi.scanner.xbean.ThreadSafeUserFilter;
 import org.apache.webbeans.exception.WebBeansDeploymentException;
 import org.apache.webbeans.logger.WebBeansLoggerFacade;
 import org.apache.webbeans.spi.BDABeansXmlScanner;
@@ -52,7 +53,9 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,6 +68,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,6 +77,10 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
     protected static final Logger logger = WebBeansLoggerFacade.getLogger(AbstractMetaDataDiscovery.class);
 
     public static final String META_INF_BEANS_XML = "META-INF/beans.xml";
+
+    // with more threads the largest archive bounds the scan time whatever the submission order is,
+    // so sorting the archives only pays off when threads are scarce
+    private static final int LPT_MAX_THREADS = 4;
 
     // via constant to also adopt to shading.
     private static final String DEPENDENT_CLASS = Dependent.class.getName();
@@ -130,7 +138,8 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             beanArchiveService = webBeansContext.getBeanArchiveService();
         }
 
-        final Filter userFilter = webBeansContext.getService(Filter.class);
+        Filter userFilter = webBeansContext.getService(Filter.class);
+
         Map<String, URL> beanDeploymentUrls = getBeanDeploymentUrls();
         if (!webBeansContext.getOpenWebBeansConfiguration().getScanExtensionJars())
         {
@@ -143,35 +152,87 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             extensionJars.clear(); // no more needed
         }
 
-        int numCpus = Runtime.getRuntime().availableProcessors();
-        int numThreads = Math.min(webBeansContext.getOpenWebBeansConfiguration().getScannerServiceMaxThreads(), numCpus);
+        final var debug = logger.isLoggable(Level.FINE);
+        final var scanStart = debug ? System.nanoTime() : 0L;
 
-        if (numThreads <= 1)
+        int numCpus = Runtime.getRuntime().availableProcessors();
+        int numThreads = Math.min(
+                Math.min(webBeansContext.getOpenWebBeansConfiguration().getScannerServiceMaxThreads(), numCpus),
+                beanDeploymentUrls.size() /* uber jars */);
+
+        Archive customArchive = getAdditionalArchive();
+        final URL customArchiveOwner = customArchiveOwner(beanDeploymentUrls.values(), customArchive);
+        if (customArchive != null && beanDeploymentUrls.isEmpty())
+        {
+            annotationFinders.add(new OwbAnnotationFinder(new CdiArchive(
+                    beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
+                    Collections.emptyList(), userFilter, customArchive)));
+        }
+        else if (numThreads <= 1)
         {
             // single threaded scanning
             for (URL beanDeploymentUrl : beanDeploymentUrls.values())
             {
-                annotationFinders.add(createOwbAnnotationFinder(beanDeploymentUrl, userFilter));
+                annotationFinders.add(createOwbAnnotationFinder(
+                        beanDeploymentUrl, userFilter, beanDeploymentUrl == customArchiveOwner ? customArchive : null));
             }
         }
         else
         {
-            // multithreaded scanning
-            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-            List<CompletableFuture<OwbAnnotationFinder>> futures = new ArrayList<>(beanDeploymentUrls.size());
+            // filter is by design single threaded so if not enforced to be thread safe just make it working
+            // it is likely the cpu will burn on the jar deflation more than the filter so fill not hurt that much
+            if (userFilter != null && !(userFilter instanceof ThreadSafeUserFilter))
+            {
+                userFilter = ThreadSafeUserFilter.wrap(userFilter);
+            }
 
+            final var urls = new ArrayList<>(beanDeploymentUrls.values());
+            final var sizes = new HashMap<String, Long>(urls.size());
+            for (final URL url : urls)
+            {
+                // resolve the bda info on the caller thread, the service can mutate its cache on misses
+                beanArchiveService.getBeanArchiveInformation(url);
+                sizes.put(url.toExternalForm(), estimateArchiveSize(url));
+            }
+            if (numThreads <= LPT_MAX_THREADS)
+            {
+                // few threads: scan biggest jars first (greedy LPT packing)
+                urls.sort(Comparator.comparingLong((URL url) -> sizes.get(url.toExternalForm())).reversed());
+            }
+
+            final long sliceSize = webBeansContext.getOpenWebBeansConfiguration().getScannerServiceSliceSize();
+
+            // multithreaded scanning, big archives are scanned by concurrent slices merged afterwards
+            ExecutorService executor = newNamedPool(numThreads, "owb-scanner-");
+            List<List<CompletableFuture<OwbAnnotationFinder>>> futures = new ArrayList<>(urls.size());
+
+            final var filter = userFilter;
             try
             {
-                for (URL beanDeploymentUrl : beanDeploymentUrls.values())
+                for (URL beanDeploymentUrl : urls)
                 {
-                    futures.add(CompletableFuture.supplyAsync(() -> createOwbAnnotationFinder(beanDeploymentUrl, userFilter), executor));
+                    final var archive = beanDeploymentUrl == customArchiveOwner ? customArchive : null;
+                    final int slices = sliceCount(sizes.get(beanDeploymentUrl.toExternalForm()), sliceSize, numThreads);
+                    final var group = new ArrayList<CompletableFuture<OwbAnnotationFinder>>(slices);
+                    for (int i = 0; i < slices; i++)
+                    {
+                        final var sliceFilter = slices <= 1 ? filter : sliceFilter(filter, slices, i);
+                        group.add(CompletableFuture.supplyAsync(
+                                () -> createOwbAnnotationFinder(beanDeploymentUrl, sliceFilter, archive), executor));
+                    }
+                    futures.add(group);
                 }
 
-                for (CompletableFuture<OwbAnnotationFinder> f : futures)
+                for (List<CompletableFuture<OwbAnnotationFinder>> group : futures)
                 {
                     try
                     {
-                        annotationFinders.add(f.get());
+                        final var finder = group.get(0).get();
+                        for (int i = 1; i < group.size(); i++)
+                        {
+                            finder.merge(group.get(i).get());
+                        }
+                        annotationFinders.add(finder);
                     }
                     catch (CompletionException ce)
                     {
@@ -193,17 +254,90 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
                 executor.shutdown();
             }
         }
+
+        if (debug)
+        {
+            logger.fine("Scanned " + beanDeploymentUrls.size() + " bean archives with " + Math.max(1, numThreads) +
+                    " thread(s) in " + (System.nanoTime() - scanStart) / 1_000_000 + "ms");
+        }
     }
 
     @Nonnull
-    private OwbAnnotationFinder createOwbAnnotationFinder(URL beanDeploymentUrl, Filter userFilter)
+    private OwbAnnotationFinder createOwbAnnotationFinder(URL beanDeploymentUrl, Filter userFilter, Archive customArchive)
     {
+        final var start = logger.isLoggable(Level.FINE) ? System.nanoTime() : -1L;
         CdiArchive archive = new CdiArchive(
             beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
-            Collections.singletonList(beanDeploymentUrl), userFilter, getAdditionalArchive());
-        return new OwbAnnotationFinder(archive);
+            Collections.singletonList(beanDeploymentUrl), userFilter, customArchive);
+        final var finder = new OwbAnnotationFinder(archive);
+        if (start >= 0)
+        {
+            final var classes = archive.classesByUrl().values().stream()
+                    .mapToLong(found -> found.getClassNames().size())
+                    .sum();
+            logger.fine("Scanned " + classes + " classes from " + beanDeploymentUrl +
+                    " in " + (System.nanoTime() - start) / 1_000_000 + "ms");
+        }
+        return finder;
     }
 
+    // the single deployment url whose finder scans the additional archive, avoids scanning it once per url
+    private static URL customArchiveOwner(final Collection<URL> urls, final Archive customArchive)
+    {
+        if (customArchive == null || urls.isEmpty())
+        {
+            return null;
+        }
+        return urls.stream()
+                .filter(url -> "openwebbeans".equals(url.getProtocol()))
+                .findFirst()
+                .orElseGet(() -> urls.iterator().next());
+    }
+
+    // how many concurrent slices to scan an archive with, 1 disables the slicing for it
+    private static int sliceCount(final long size, final long sliceSize, final int maxSlices)
+    {
+        if (sliceSize <= 0 || size == Long.MAX_VALUE || size < sliceSize)
+        {
+            return 1;
+        }
+        return (int) Math.min(maxSlices, (size + sliceSize - 1) / sliceSize);
+    }
+
+    private static Filter sliceFilter(final Filter userFilter, final int slices, final int slice)
+    {
+        return name -> Math.floorMod(name.hashCode(), slices) == slice && (userFilter == null || userFilter.accept(name));
+    }
+
+    private static ExecutorService newNamedPool(final int numThreads, final String prefix)
+    {
+        final var threadId = new AtomicInteger();
+        return Executors.newFixedThreadPool(numThreads, task -> new Thread(task, prefix + threadId.incrementAndGet()));
+    }
+
+    // estimated scanning cost of an archive, only used to order the parallel scan
+    private static long estimateArchiveSize(final URL url)
+    {
+        try
+        {
+            final var file = Files.toFile(url);
+            if (file == null)
+            {
+                return Long.MAX_VALUE; // unknown protocol, assume it is big to scan it first
+            }
+            if (file.isFile())
+            {
+                return file.length();
+            }
+            return -1L; // directory (exploded classes), no decompression needed so scan it last
+        }
+        catch (final RuntimeException re)
+        {
+            return Long.MAX_VALUE;
+        }
+    }
+
+    // must not be called > 1 since we don't know what children do there
     protected Archive getAdditionalArchive()
     {
         return null;
@@ -540,7 +674,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             final int numCpus = webBeansContext.getWebBeansUtil().getNumCpuCoresToUse();
             final int numThreads = Math.min(webBeansContext.getOpenWebBeansConfiguration().getBeanDeployerMaxThreads(), numCpus);
 
-            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+            ExecutorService executor = newNamedPool(numThreads, "owb-bda-loader-");
             List<CompletableFuture<Map<BeanArchiveService.BeanArchiveInformation, Set<Class<?>>>>> futures = new ArrayList<>(annotationFinders.size());
             try
             {

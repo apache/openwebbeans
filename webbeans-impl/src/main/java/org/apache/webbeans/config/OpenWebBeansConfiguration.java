@@ -92,9 +92,14 @@ public class OpenWebBeansConfiguration
     /**
      * The maximum number of threads to use for the ScannerService.
      * We detect how many CPU cores we do have and use that as maximum threads or the configured maxThreads.
-     * If we use more than a single thread and use a xbean-finder Filter, then it must be thread-safe!
      */
     public static final String SCANNER_SERVICE_MAX_THREADS = "org.apache.webbeans.scanner.maxThreads";
+
+    /**
+     * Archives bigger than this size (in bytes) get scanned concurrently by slices of about this size.
+     * Zero or negative disables the slicing.
+     */
+    public static final String SCANNER_SERVICE_SLICE_SIZE = "org.apache.webbeans.scanner.sliceSize";
 
     /**Container lifecycle*/
     public static final String CONTAINER_LIFECYCLE = "org.apache.webbeans.spi.ContainerLifecycle";
@@ -605,5 +610,11 @@ public class OpenWebBeansConfiguration
     {
         final String maxThreadsStr = getProperty(OpenWebBeansConfiguration.SCANNER_SERVICE_MAX_THREADS);
         return maxThreadsStr == null ? Integer.MAX_VALUE : Integer.parseInt(maxThreadsStr.trim());
+    }
+
+    public long getScannerServiceSliceSize()
+    {
+        final String sliceSizeStr = getProperty(OpenWebBeansConfiguration.SCANNER_SERVICE_SLICE_SIZE);
+        return sliceSizeStr == null ? 0 : Long.parseLong(sliceSizeStr.trim());
     }
 }

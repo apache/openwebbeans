@@ -38,7 +38,6 @@ public class BeanArchiveFilter implements Filter
     /**
      *
      * @param urlClasses will be filled during class scanning. It's more or less an output.
-     * @param userFilter must be thread-safe. Can be {@code null}.
      */
     public BeanArchiveFilter(BeanArchiveInformation beanArchiveInfo, List<String> urlClasses, Filter userFilter)
     {

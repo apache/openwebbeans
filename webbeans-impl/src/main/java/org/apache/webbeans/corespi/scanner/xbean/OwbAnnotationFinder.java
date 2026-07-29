@@ -22,7 +22,11 @@ import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.archive.Archive;
 import org.apache.xbean.finder.archive.ClassesArchive;
 
+import org.apache.xbean.finder.util.SingleLinkedList;
+
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -70,4 +74,30 @@ public class OwbAnnotationFinder extends AnnotationFinder
         return classInfos.get(className);
     }
 
+    /**
+     * Absorbs another finder which scanned a disjoint slice of the same bean archive.
+     * Must be called before any find/link usage.
+     */
+    public void merge(final OwbAnnotationFinder other)
+    {
+        classInfos.putAll(other.classInfos);
+        originalInfos.putAll(other.originalInfos);
+        for (final Map.Entry<String, List<Info>> entry : other.annotated.entrySet())
+        {
+            // no addAll, values can be xbean SingleLinkedList
+            final List<Info> target = annotated.computeIfAbsent(entry.getKey(), k -> new SingleLinkedList<>());
+            for (final Info info : entry.getValue())
+            {
+                target.add(info);
+            }
+        }
+        other.getCdiArchive().classesByUrl().forEach((url, foundClasses) ->
+        {
+            final CdiArchive.FoundClasses base = getCdiArchive().classesByUrl().get(url);
+            if (base != null)
+            {
+                base.getClassNames().addAll(foundClasses.getClassNames());
+            }
+        });
+    }
 }
