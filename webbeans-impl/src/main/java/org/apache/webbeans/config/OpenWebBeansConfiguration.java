@@ -92,6 +92,7 @@ public class OpenWebBeansConfiguration
     /**
      * The maximum number of threads to use for the ScannerService.
      * We detect how many CPU cores we do have and use that as maximum threads or the configured maxThreads.
+     * If we use more than a single thread and use a xbean-finder Filter, then it must be thread-safe!
      */
     public static final String SCANNER_SERVICE_MAX_THREADS = "org.apache.webbeans.scanner.maxThreads";
 

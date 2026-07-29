@@ -22,6 +22,7 @@ package org.apache.webbeans.corespi.scanner;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
+import jakarta.annotation.Nonnull;
 import org.apache.webbeans.config.OWBLogConst;
 import org.apache.webbeans.config.OpenWebBeansConfiguration;
 import org.apache.webbeans.config.WebBeansContext;
@@ -145,46 +146,62 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         int numCpus = Runtime.getRuntime().availableProcessors();
         int numThreads = Math.min(webBeansContext.getOpenWebBeansConfiguration().getScannerServiceMaxThreads(), numCpus);
 
-        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-        List<CompletableFuture<OwbAnnotationFinder>> futures = new ArrayList<>(beanDeploymentUrls.size());
-
-        try
+        if (numThreads <= 1)
         {
+            // single threaded scanning
             for (URL beanDeploymentUrl : beanDeploymentUrls.values())
             {
-                futures.add(CompletableFuture.supplyAsync(() -> {
-                    CdiArchive archive = new CdiArchive(
-                        beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
-                        Collections.singletonList(beanDeploymentUrl), userFilter, getAdditionalArchive());
-                    return new OwbAnnotationFinder(archive);
-                }, executor));
-            }
-
-            for (CompletableFuture<OwbAnnotationFinder> f : futures)
-            {
-                try
-                {
-                    annotationFinders.add(f.get());
-                }
-                catch (CompletionException ce)
-                {
-                    Throwable t = ce.getCause();
-                    throw new WebBeansDeploymentException(t);
-                }
-                catch (ExecutionException e)
-                {
-                    throw new WebBeansDeploymentException(e);
-                }
-                catch (InterruptedException e)
-                {
-                    logger.info("Interrupted, aborting MetaDataDiscovery");
-                }
+                annotationFinders.add(createOwbAnnotationFinder(beanDeploymentUrl, userFilter));
             }
         }
-        finally
+        else
         {
-            executor.shutdown();
+            // multithreaded scanning
+            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+            List<CompletableFuture<OwbAnnotationFinder>> futures = new ArrayList<>(beanDeploymentUrls.size());
+
+            try
+            {
+                for (URL beanDeploymentUrl : beanDeploymentUrls.values())
+                {
+                    futures.add(CompletableFuture.supplyAsync(() -> createOwbAnnotationFinder(beanDeploymentUrl, userFilter), executor));
+                }
+
+                for (CompletableFuture<OwbAnnotationFinder> f : futures)
+                {
+                    try
+                    {
+                        annotationFinders.add(f.get());
+                    }
+                    catch (CompletionException ce)
+                    {
+                        Throwable t = ce.getCause();
+                        throw new WebBeansDeploymentException(t);
+                    }
+                    catch (ExecutionException e)
+                    {
+                        throw new WebBeansDeploymentException(e);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        logger.info("Interrupted, aborting MetaDataDiscovery");
+                    }
+                }
+            }
+            finally
+            {
+                executor.shutdown();
+            }
         }
+    }
+
+    @Nonnull
+    private OwbAnnotationFinder createOwbAnnotationFinder(URL beanDeploymentUrl, Filter userFilter)
+    {
+        CdiArchive archive = new CdiArchive(
+            beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
+            Collections.singletonList(beanDeploymentUrl), userFilter, getAdditionalArchive());
+        return new OwbAnnotationFinder(archive);
     }
 
     protected Archive getAdditionalArchive()

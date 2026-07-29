@@ -61,6 +61,10 @@ public class CdiArchive implements Archive
         this(beanArchiveService, loader, urls.values(), userFilter, customArchive);
     }
 
+    /**
+     *
+     * @param userFilter must be thread-safe
+     */
     public CdiArchive(BeanArchiveService beanArchiveService, ClassLoader loader, Collection<URL> urls,
                       Filter userFilter, Archive customArchive)
     {
