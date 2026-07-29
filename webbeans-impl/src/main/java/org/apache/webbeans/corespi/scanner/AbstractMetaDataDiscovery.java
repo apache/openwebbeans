@@ -201,6 +201,11 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         return beanArchiveLocations;
     }
 
+    public List<OwbAnnotationFinder> getAnnotationFinders()
+    {
+        return annotationFinders;
+    }
+
     /**
      * @return URLs of all classpath entries which
      */
