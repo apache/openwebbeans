@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test scanning of a class which cannot
@@ -47,9 +48,10 @@ public class NoClassDefFoundHandlingTest extends AbstractUnitTest
     {
         String classResourceName = "/" + className.replace('.', '/') + ".class";
         final URL classRessource = this.getClass().getResource(classResourceName);
+        logger.info("Class do delete : " + className + " at location " + classRessource != null ? classRessource.getFile() : "null");
         if (classRessource != null)
         {
-            new File(classRessource.getFile()).delete();
+            assertTrue("File " + classRessource.getFile() + "could not be deleted", new File(classRessource.getFile()).delete());
         }
         else
         {
