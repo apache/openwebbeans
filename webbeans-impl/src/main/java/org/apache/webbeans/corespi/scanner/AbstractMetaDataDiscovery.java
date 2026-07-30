@@ -35,6 +35,7 @@ import org.apache.webbeans.spi.BDABeansXmlScanner;
 import org.apache.webbeans.spi.BdaScannerService;
 import org.apache.webbeans.spi.BeanArchiveService;
 import org.apache.webbeans.spi.BeanArchiveService.BeanDiscoveryMode;
+import org.apache.webbeans.spi.annotations.ThreadSafe;
 import org.apache.webbeans.util.ClassUtil;
 import org.apache.webbeans.util.UrlSet;
 import org.apache.webbeans.util.WebBeansUtil;
@@ -181,7 +182,8 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         {
             // filter is by design single threaded so if not enforced to be thread safe just make it working
             // it is likely the cpu will burn on the jar deflation more than the filter so fill not hurt that much
-            if (userFilter != null && !(userFilter instanceof ThreadSafeUserFilter))
+            // If a filter is marked as ThreadSafe, then we don't wrap it.
+            if (userFilter != null && !(userFilter instanceof ThreadSafeUserFilter) && !(userFilter.getClass().isAnnotationPresent(ThreadSafe.class)))
             {
                 userFilter = ThreadSafeUserFilter.wrap(userFilter);
             }
