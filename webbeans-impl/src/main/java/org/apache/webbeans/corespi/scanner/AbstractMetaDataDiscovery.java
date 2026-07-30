@@ -158,7 +158,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
         int numCpus = Runtime.getRuntime().availableProcessors();
         int numThreads = Math.min(
                 Math.min(webBeansContext.getOpenWebBeansConfiguration().getScannerServiceMaxThreads(), numCpus),
-                beanDeploymentUrls.size() /* uber jars */);
+            (beanDeploymentUrls.size() / 2) /* uber jars */);
 
         Archive customArchive = getAdditionalArchive();
         final URL customArchiveOwner = customArchiveOwner(beanDeploymentUrls.values(), customArchive);
