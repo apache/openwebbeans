@@ -183,7 +183,7 @@ public abstract class AbstractMetaDataDiscovery implements BdaScannerService
             // filter is by design single threaded so if not enforced to be thread safe just make it working
             // it is likely the cpu will burn on the jar deflation more than the filter so fill not hurt that much
             // If a filter is marked as ThreadSafe, then we don't wrap it.
-            if (userFilter != null && !(userFilter instanceof ThreadSafeUserFilter) && !(userFilter.getClass().isAnnotationPresent(ThreadSafe.class)))
+            if (userFilter != null && !(userFilter.getClass().isAnnotationPresent(ThreadSafe.class)))
             {
                 userFilter = ThreadSafeUserFilter.wrap(userFilter);
             }

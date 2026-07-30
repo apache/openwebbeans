@@ -37,7 +37,6 @@ public class ContextualsImpl implements Contextuals
     public static class InspectableImpl<T> implements Inspectable<T>
     {
         private final T instance;
-        private final Context context;
 
         private CreationalContext<T> ccCreate;
         private CreationalContext<T> ccDestroy;
@@ -46,7 +45,6 @@ public class ContextualsImpl implements Contextuals
         InspectableImpl(T instance, Context context)
         {
             this.instance = instance;
-            this.context = context;
         }
 
         @Override
