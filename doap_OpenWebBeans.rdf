@@ -39,9 +39,9 @@
     <category rdf:resource="http://projects.apache.org/category/javaee" />
     <release>
       <Version>
-        <name>2.0.27</name>
-        <created>2022-05-24</created>
-        <revision>2.0.27</revision>
+        <name>owb-4.1.0</name>
+        <created>2026-06-26</created>
+        <revision>4.1.0</revision>
       </Version>
     </release>
     <repository>
