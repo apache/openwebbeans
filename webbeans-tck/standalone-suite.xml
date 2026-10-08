@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<suite name="JSR-346-TCK" verbose="2" configfailurepolicy="continue" >
+<suite name="Jakarta-CDI-TCK" verbose="2" configfailurepolicy="continue" >
 
     <listeners>
         <!-- Required - avoid randomly mixed test method execution -->
@@ -33,7 +33,7 @@
         -->
     </listeners>
 
-    <test name="JSR-346 TCK">
+    <test name="Jakarta CDI TCK">
         <groups>
             <run>
                 <exclude name="integration" />
@@ -45,7 +45,9 @@
         <packages>
             <package name="org.jboss.cdi.tck.tests.*">
 
-                <!--X TODO OWB-1182 CDI 2.0 exlcuded for now - current focus on ee -->
+                <!-- The SE TCK runs in the openwebbeans-tck-se module: it needs the Arquillian
+                     "SE managed" container, which cannot share a classpath with the in-VM
+                     owb-arquillian-standalone container used here. See webbeans-tck-se/pom.xml. -->
                 <exclude name="org.jboss.cdi.tck.tests.se.*" />
 
                 <!-- Tests which do require a BuildCompatibleExtension and thus do not run with OWB-4.0 yet -->

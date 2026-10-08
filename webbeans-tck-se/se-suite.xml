@@ -1,0 +1,171 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements. See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version
+    2.0 (the "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+    applicable law or agreed to in writing, software distributed under the
+    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+    CONDITIONS OF ANY KIND, either express or implied. See the License for
+    the specific language governing permissions and limitations under the
+    License.
+-->
+<suite name="Jakarta-CDI-SE-TCK" verbose="2" configfailurepolicy="continue">
+
+    <listeners>
+        <!-- Required - avoid randomly mixed test method execution -->
+        <listener class-name="org.jboss.cdi.tck.impl.testng.SingleTestClassMethodInterceptor"/>
+        <!-- Optional - intended for debug purpose only -->
+        <listener class-name="org.jboss.cdi.tck.impl.testng.ConfigurationLoggingListener"/>
+        <listener class-name="org.jboss.cdi.tck.impl.testng.ProgressLoggingTestListener"/>
+    </listeners>
+
+    <test name="Jakarta CDI SE TCK">
+        <groups>
+            <run>
+                <exclude name="integration"/>
+                <exclude name="javaee-full"/>
+            </run>
+        </groups>
+
+        <packages>
+            <package name="org.jboss.cdi.tck.tests.se.*"/>
+        </packages>
+
+        <classes>
+
+            <!--
+                Using a SeContainer after close() must fail with IllegalStateException.
+
+                Jakarta CDI 4.1, section 25.2 "SeContainer interface":
+                  "close() method explicitly shuts down the container. If it is called and the
+                   container was already shutdown, it throws an IllegalStateException."
+                  "getBeanManager() [...] If it is called and the container was already shutdown,
+                   it throws an IllegalStateException."
+                  "If any Instance.select() method is called and the container was already shutdown,
+                   the IllegalStateException is thrown."
+
+                OWBContainer tracks the running state in an AtomicBoolean and reports it correctly
+                via isRunning(), but getBeanManager() and the select() overloads never consult that
+                flag, so they keep working on the closed container instead of throwing.
+            -->
+            <class name="org.jboss.cdi.tck.tests.se.container.BootstrapSEContainerTest">
+                <methods>
+                    <exclude name="instanceSelectAnnotationThrowsISEWhenAccessedAfterShutdown"/>
+                    <exclude name="instanceSelectClassThrowsISEWhenAccessedAfterShutdown"/>
+                    <exclude name="seContainerThrowsISEWhenAccessingBmAtShutdownContainer"/>
+                    <exclude name="testContainerCloseMethodOnNotInitializedContainer"/>
+                </methods>
+            </class>
+
+            <!-- Same root cause and same spec rule as above (CDI 4.1, 25.2): a contextual reference
+                 obtained from a closed container still resolves instead of failing with
+                 IllegalStateException. -->
+            <class name="org.jboss.cdi.tck.tests.se.container.contextualReference.InvalidContextualReferenceTest">
+                <methods>
+                    <exclude name="testReferenceUsedAfterContainerShutdown"/>
+                </methods>
+            </class>
+
+            <!--
+                @ActivateRequestContext / RequestContextController.
+
+                These tests cover four separate rules:
+                  - CDI 4.1, 6.6.1 "Request context lifecycle": events with qualifier
+                    @Initialized(RequestScoped.class), @BeforeDestroyed(RequestScoped.class) and
+                    @Destroyed(RequestScoped.class) are fired when the request context is
+                    initialized / about to be destroyed / destroyed. The observer counters staying
+                    at 0 means these events never arrive.
+                  - CDI 4.1, 6.6.1: "The request context is active [...] during @PostConstruct
+                    callback of any bean" (requestContextIsActiveDuringPostConstructCallback).
+                  - CDI 4.1, 6.5.2 "Activating Built In Contexts": RequestContextController
+                    "throws a ContextNotActiveException if there is no request context active"
+                    (requestControllerDeactivatedThrowsException).
+                  - CDI 4.1, 6.5.2: the @ActivateRequestContext interceptor "is automatically
+                    registered with a priority of PLATFORM_BEFORE + 100"
+                    (builtInInterceptorHasGivenPriority).
+
+                SeInitializerFacade only forces StandaloneContextsService when a CDI provider is
+                explicitly selected; on the plain SeContainerInitializer.newInstance() path it falls
+                back to OWBInitializer, which leaves the configured default DefaultContextsService in
+                place. The request context is then activated on a different service than the one the
+                @Initialized/@BeforeDestroyed/@Destroyed(RequestScoped) observers are bound to, so
+                the observer counters stay at 0 and the context is not seen as active.
+            -->
+            <class name="org.jboss.cdi.tck.tests.se.context.activation.interceptor.ActivateRequestContextByInterceptorTest">
+                <methods>
+                    <exclude name=".*"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.se.context.activation.programmatic.ActivateRequestContextProgrammaticallyTest">
+                <methods>
+                    <exclude name="programmaticRequestContextActivation"/>
+                    <exclude name="requestControllerDeactivatedThrowsException"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.se.context.request.RequestContextTest">
+                <methods>
+                    <exclude name="requestContextIsActiveDuringPostConstructCallback"/>
+                </methods>
+            </class>
+
+            <!--
+                Startup / Shutdown lifecycle events.
+
+                CDI 4.1, 9.6.2 "Shutdown event":
+                  "Implementations are required to synchronously fire an event with payload
+                   jakarta.enterprise.event.Shutdown and qualifier jakarta.enterprise.inject.Any
+                   during application shutdown. This event is fired during CDI container shutdown
+                   but not later than the event with qualifier @BeforeDestroyed(ApplicationScoped.class)."
+
+                StandaloneLifeCycle.afterStartApplication() fires jakarta.enterprise.event.Startup
+                after @Initialized(ApplicationScoped), which is the order required by 9.6.1
+                "Startup event". The matching beforeStopApplication() never fires
+                jakarta.enterprise.event.Shutdown at all, so the assertion on the two recorded
+                shutdown events fails.
+            -->
+            <class name="org.jboss.cdi.tck.tests.se.events.lifecycle.StartupShutdownTest">
+                <methods>
+                    <exclude name="testEvents"/>
+                </methods>
+            </class>
+
+            <!--
+                Implicit bean archive discovery in Java SE.
+
+                CDI 4.1, 27.1 "Bean archive in Java SE" - an archive without a beans.xml cannot be
+                discovered as an implicit bean archive unless:
+                  "the application is launched with system property
+                   jakarta.enterprise.inject.scan.implicit set to true, or
+                   the container was initialized with a map containing an entry parameter with
+                   jakarta.enterprise.inject.scan.implicit as key and Boolean.TRUE as value."
+                The two tests cover those two mechanisms. The Boolean value is prescribed by the
+                spec, and SeContainerInitializer.addProperty is declared addProperty(String, Object)
+                with a boxed boolean in its own javadoc example.
+
+                OWBInitializer.addProperty() maps that key to "org.apache.webbeans.scanBeansXmlOnly",
+                but only String values are routed into the configuration properties - a non-String
+                value is instead treated as a *service instance*, so initialize() ends up calling
+                loader.loadClass("org.apache.webbeans.scanBeansXmlOnly") and dies with
+                IllegalArgumentException: ClassNotFoundException.
+            -->
+            <class name="org.jboss.cdi.tck.tests.se.discovery.implicit.ImplicitBeanArchiveSETest">
+                <methods>
+                    <exclude name="testImplicitArchiveDiscovered"/>
+                </methods>
+            </class>
+            <class name="org.jboss.cdi.tck.tests.se.discovery.implicit.ImplicitBeanArchiveWithSystemPropertyTest">
+                <methods>
+                    <exclude name="testImplicitArchiveDiscovered"/>
+                </methods>
+            </class>
+
+        </classes>
+    </test>
+
+</suite>
