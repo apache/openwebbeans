@@ -110,7 +110,7 @@ public abstract class AbstractLifeCycle implements ContainerLifecycle
             return;
         }
 
-        // Initalize Application Context
+        // Initialize Application Context
         logger.info(OWBLogConst.INFO_0005);
         
         long begin = System.currentTimeMillis();

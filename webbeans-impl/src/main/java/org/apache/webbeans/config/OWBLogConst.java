@@ -88,15 +88,15 @@ public final class OWBLogConst
     public static final String ERROR_0015 = "ERROR_0015"; // Illegal access exception for field : [{0}] in decorator class : [{1}]
     public static final String ERROR_0016 = "ERROR_0016"; // IllegalArgumentException has occurred while calling the field: [{0}] on the class: [{1}]
     public static final String ERROR_0017 = "ERROR_0017"; // IllegalAccessException has occurred while calling the field: [{0}] on the class: [{1}]
-    public static final String ERROR_0018 = "ERROR_0018"; // An error occured while starting application context path \: [{0}]
-    public static final String ERROR_0019 = "ERROR_0019"; // An error occured while starting request \: [{0}]
-    public static final String ERROR_0020 = "ERROR_0020"; // An error occured while starting session \: [{0}]
-    public static final String ERROR_0021 = "ERROR_0021"; // An error occured while stopping the container.
+    public static final String ERROR_0018 = "ERROR_0018"; // An error occurred while starting application context path \: [{0}]
+    public static final String ERROR_0019 = "ERROR_0019"; // An error occurred while starting request \: [{0}]
+    public static final String ERROR_0020 = "ERROR_0020"; // An error occurred while starting session \: [{0}]
+    public static final String ERROR_0021 = "ERROR_0021"; // An error occurred while stopping the container.
     public static final String ERROR_0022 = "ERROR_0022"; // Unable to inject dependencies of EJB interceptor instance with class \: [{0}]
-    public static final String ERROR_0023 = "ERROR_0023"; // An error occured while injecting Java EE Resources for the bean instance \: [{0}]
+    public static final String ERROR_0023 = "ERROR_0023"; // An error occurred while injecting Java EE Resources for the bean instance \: [{0}]
     public static final String ERROR_0024 = "ERROR_0024"; // Unable to get resource with class \: [{0}] in \: [{1}] with name \: [{2}].
     public static final String ERROR_0025 = "ERROR_0025"; // Unable to inject field \: [{0}]
-    public static final String ERROR_0026 = "ERROR_0026"; // An error occured while injecting dependencies of bean \: [{0}]
+    public static final String ERROR_0026 = "ERROR_0026"; // An error occurred while injecting dependencies of bean \: [{0}]
     public static final String ERROR_0027 = "ERROR_0027"; // Unable to create AnnotatedType for class \: [{0}]. Exception cause \: [{1}].
     public static final String ERROR_0028 = "ERROR_0028"; // Can't use logger factory class [{0}]. Exception cause \: [{1}].
 
