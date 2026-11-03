@@ -38,7 +38,7 @@ package org.apache.webbeans.component;
  * are annotated with {@link jakarta.enterprise.inject.Produces} annotation.
  * These methods become the producer method components of this web beans component.
  * It maybe defined using the web-beans.xml file using the &lt;producer&gt; element.
- * It is possible to mix these two definitons.
+ * It is possible to mix these two definitions.
  * </p>
  * <p>
  * For further details about the components, see Web Beans Specification

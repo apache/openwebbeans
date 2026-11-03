@@ -1027,7 +1027,7 @@ public final class WebBeansUtil
                     }
                 }
             }
-        } // else activated implicitely
+        } // else activated implicitly
 
         // CDI 4+: @Alternative together with @Priority on the producer method/field selects the producer
         // globally, even when the declaring bean class is not an @Alternative (see CDI spec 5.2.2).
