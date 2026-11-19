@@ -77,7 +77,7 @@ public class PreScannedCDISeScannerService extends CDISeScannerService
         }).toArray(Class[]::new);
         addClassesDeploymentUrl();
         final BeanArchiveService beanArchiveService = webBeansContext.getBeanArchiveService();
-        CdiArchive archive = new CdiArchive(
+        final CdiArchive archive = new CdiArchive(
                 beanArchiveService, WebBeansUtil.getCurrentClassLoader(),
                 emptyList(), null, getAdditionalArchive());
         final Map.Entry<String, URL> deplUrl = getBeanDeploymentUrls().entrySet().iterator().next();
@@ -87,7 +87,15 @@ public class PreScannedCDISeScannerService extends CDISeScannerService
                         deplUrl.getValue(),
                         Stream.of(classes.split(",")).collect(toList()),
                         beanArchiveService.getBeanArchiveInformation(deplUrl.getValue())));
-        annotationFinders.add(new OwbAnnotationFinder(reflectClasses));
+        // Read annotation metadata from reflection, but expose the populated CDI archive for deployment.
+        annotationFinders.add(new OwbAnnotationFinder(reflectClasses)
+        {
+            @Override
+            public CdiArchive getCdiArchive()
+            {
+                return archive;
+            }
+        });
     }
 
     @Override

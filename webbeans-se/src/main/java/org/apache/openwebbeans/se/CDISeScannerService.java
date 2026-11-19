@@ -219,7 +219,7 @@ public class CDISeScannerService extends AbstractMetaDataDiscovery
     public Set<URL> getBeanXmls()
     {
         final Set<URL> result = new HashSet<>(super.getBeanXmls());
-        final URL embeddedUrl = beanDeploymentUrls.get(CDISeBeanArchiveService.EMBEDDED_URL);
+        final URL embeddedUrl = getBeanDeploymentUrls().get(CDISeBeanArchiveService.EMBEDDED_URL);
         if (embeddedUrl != null)
         {
             result.add(embeddedUrl);
